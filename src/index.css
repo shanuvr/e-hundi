@@ -1,6 +1,17 @@
 @import "tailwindcss";
 
 @layer base {
+  html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+  }
+
   body {
     font-family: 'Outfit', sans-serif;
   }

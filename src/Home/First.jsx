@@ -17,7 +17,7 @@ export default function First({ templeName = "Shri Siddhivinayak Temple", onComp
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative w-full sm:max-w-md mx-auto min-h-[100dvh] sm:min-h-[90dvh] flex flex-col justify-between items-center p-6 sm:p-8 text-center overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25 shadow-none sm:shadow-[0_0_60px_rgba(245,158,11,0.2)] backdrop-blur-xl"
+      className="relative w-full sm:max-w-md mx-auto h-[100dvh] max-h-[100dvh] sm:h-auto sm:min-h-[90dvh] flex flex-col justify-between items-center p-5 sm:p-8 text-center overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25 shadow-none sm:shadow-[0_0_60px_rgba(245,158,11,0.2)] backdrop-blur-xl"
     >
       {/* Background Image with Balanced Devotional Overlay */}
       <div 

@@ -98,16 +98,16 @@ export default function Second({ onBack, onNext }) {
   );
 
   const overlay = createPortal(
-    <div className="fixed inset-0 pointer-events-none z-20">
+    <div className="fixed inset-0 pointer-events-none z-50">
       <AnimatePresence>
         {ripples.map((r) => (
           <motion.span
             key={r.id}
-            className="absolute rounded-full border border-amber-200/70"
+            className="absolute rounded-full border-2 border-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.8)]"
             style={{ left: r.x, top: r.y, width: 24, height: 24, marginLeft: -12, marginTop: -12 }}
-            initial={{ scale: 0.25, opacity: 0.9 }}
-            animate={{ scale: 2.6, opacity: 0 }}
-            transition={{ duration: 0.62, ease: 'easeOut' }}
+            initial={{ scale: 0.2, opacity: 1 }}
+            animate={{ scale: 2.8, opacity: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
             onAnimationComplete={() => dropRipple(r.id)}
           />
         ))}
@@ -117,36 +117,33 @@ export default function Second({ onBack, onNext }) {
         {flights.map((f) => {
           const dx = f.target.x - (f.from.left + f.from.width / 2);
           const dy = f.target.y - (f.from.top + f.from.height / 2);
-          const lift = Math.min(90, Math.abs(dy) * 0.35 + 40);
+          const lift = Math.min(110, Math.abs(dy) * 0.4 + 40);
 
           return (
             <motion.div
               key={f.id}
-              className="absolute"
+              className="absolute pointer-events-none"
               style={{ left: f.from.left, top: f.from.top, width: f.from.width }}
               initial={{ x: 0, y: 0, scale: 1, opacity: 1, rotate: 0 }}
               animate={{
-                x: { to: dx, transition: { duration: 0.92, ease: [0.32, 0, 0.4, 1] } },
-                y: {
-                  to: [0, -lift, dy],
-                  transition: { duration: 0.92, times: [0, 0.5, 1], ease: [0.4, 0, 0.55, 1] },
-                },
-                scale: {
-                  to: f.isCoin ? [1, 1.12, 0.06] : [1, 1.05, 0.22],
-                  transition: { duration: 0.92, times: [0, 0.34, 1] },
-                },
-                rotate: {
-                  to: f.isCoin ? [0, 200, 620] : [0, -3, 5],
-                  transition: { duration: 0.92, ease: 'easeInOut' },
-                },
-                opacity: {
-                  to: f.isCoin ? [1, 1, 0] : [1, 0.9, 0],
-                  transition: { duration: 0.92, times: f.isCoin ? [0, 0.74, 1] : [0, 0.34, 0.6] },
-                },
+                x: dx,
+                y: [0, -lift, dy],
+                scale: f.isCoin ? [1, 1.15, 0.08] : [1, 1.08, 0.22],
+                rotate: f.isCoin ? [0, 180, 540] : [0, -6, 8],
+                opacity: f.isCoin ? [1, 1, 0] : [1, 0.95, 0],
+              }}
+              transition={{
+                duration: 0.85,
+                ease: 'easeInOut',
+                x: { duration: 0.85, ease: [0.32, 0, 0.4, 1] },
+                y: { duration: 0.85, times: [0, 0.45, 1], ease: [0.35, 0, 0.55, 1] },
+                scale: { duration: 0.85, times: [0, 0.35, 1] },
+                rotate: { duration: 0.85, ease: 'easeInOut' },
+                opacity: { duration: 0.85, times: f.isCoin ? [0, 0.8, 1] : [0, 0.45, 0.75] },
               }}
               onAnimationComplete={() => endFlight(f.id)}
             >
-              <Money value={f.value} className="w-full drop-shadow-[0_6px_14px_rgba(0,0,0,0.6)]" />
+              <Money value={f.value} className="w-full drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)]" />
             </motion.div>
           );
         })}
@@ -161,7 +158,7 @@ export default function Second({ onBack, onNext }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 0.99 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="relative w-full sm:max-w-md mx-auto min-h-[100dvh] sm:min-h-[92dvh] flex flex-col items-center p-4 sm:p-6 overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25"
+      className="relative w-full sm:max-w-md mx-auto h-[100dvh] max-h-[100dvh] sm:h-auto sm:min-h-[92dvh] flex flex-col justify-between items-center p-3 sm:p-6 overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25"
     >
       <div
         className="absolute inset-0 pointer-events-none bg-cover bg-center bg-no-repeat"
@@ -171,15 +168,15 @@ export default function Second({ onBack, onNext }) {
       </div>
 
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center divine-aura">
-        <Mandala className="w-[400px] h-[400px] sm:w-[500px] sm:h-[500px] opacity-60" />
+        <Mandala className="w-[360px] h-[360px] sm:w-[500px] sm:h-[500px] opacity-60" />
       </div>
 
       {/* Header */}
-      <div className="w-full flex items-center justify-between z-10 shrink-0">
+      <div className="w-full flex items-center justify-between z-10 shrink-0 pt-0.5">
         <button
           onClick={onBack}
           aria-label="Back"
-          className="p-2.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 backdrop-blur-md cursor-pointer transition-colors hover:bg-amber-500/20"
+          className="p-2 sm:p-2.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 backdrop-blur-md cursor-pointer transition-colors hover:bg-amber-500/20"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -190,7 +187,7 @@ export default function Second({ onBack, onNext }) {
           onClick={ringBell}
           whileTap={{ scale: 0.85 }}
           aria-label="Ring temple bell"
-          className="relative p-2.5 rounded-full bg-gradient-to-tr from-amber-500/20 to-yellow-400/10 border border-amber-400/40 text-amber-300 hover:text-amber-100 hover:border-amber-300 transition-colors shadow-md cursor-pointer"
+          className="relative p-2 sm:p-2.5 rounded-full bg-gradient-to-tr from-amber-500/20 to-yellow-400/10 border border-amber-400/40 text-amber-300 hover:text-amber-100 hover:border-amber-300 transition-colors shadow-md cursor-pointer"
         >
           <motion.span
             className="block"
@@ -212,12 +209,12 @@ export default function Second({ onBack, onNext }) {
       </div>
 
       {/* Slogan */}
-      <div className="relative z-10 w-full flex flex-col items-center pt-2">
+      <div className="relative z-10 w-full flex flex-col items-center pt-0.5">
         <motion.p
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="font-malayalam text-amber-100 text-center text-[15px] sm:text-base leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+          className="font-malayalam text-amber-100 text-center text-sm sm:text-base leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
         >
           ദൈവാരാധനയുടെ സുവിശേഷം
         </motion.p>
@@ -225,28 +222,24 @@ export default function Second({ onBack, onNext }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.55 }}
           transition={{ delay: 0.25, duration: 0.5 }}
-          className="text-[9px] uppercase tracking-[0.28em] text-amber-200/70 mt-1"
+          className="text-[8.5px] uppercase tracking-[0.28em] text-amber-200/70 mt-0.5"
         >
           The Glory of Worship
         </motion.p>
       </div>
 
-      {/* Hundi — a transparent cutout, so it gets a glow and a ground shadow
-          rather than a clipping frame and an overlay gradient.
-          The outer div owns the entrance; the inner one owns the impact pulse,
-          because `animate={controls}` replaces the entrance entirely and would
-          otherwise strand opacity at 0 until the first coin is tapped. */}
+      {/* Hundi Box */}
       <motion.div
         initial={{ opacity: 0, scale: 0.94, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
-        className="relative z-30 mt-3 w-52 sm:w-72"
+        className="relative z-30 my-auto w-40 sm:w-64 shrink-0"
       >
         <motion.div ref={bandaramRef} animate={bandAnim} className="relative">
           {/* Slot: lights up on impact so the eye follows the coin into the box */}
           <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '26%' }}>
             <motion.div
-              className="h-1.5 w-16 rounded-full bg-amber-200"
+              className="h-1.5 w-14 sm:w-16 rounded-full bg-amber-200"
               animate={slotGlow ? { opacity: [0, 1, 0.15], scaleX: [0.7, 1.15, 1] } : { opacity: 0.18 }}
               transition={{ duration: 0.7, ease: 'easeOut' }}
             />
@@ -267,7 +260,7 @@ export default function Second({ onBack, onNext }) {
                 initial={{ opacity: 0, y: -26, scale: 0.5, rotate: -25 }}
                 animate={{ opacity: 0.85, y: p.y, scale: 1, rotate: p.r }}
                 transition={{ duration: 0.55, ease: 'easeOut' }}
-                className="absolute left-1/2 -translate-x-1/2 w-8 h-8 object-contain pointer-events-none"
+                className="absolute left-1/2 -translate-x-1/2 w-7 h-7 sm:w-8 sm:h-8 object-contain pointer-events-none"
               />
             ))}
           </AnimatePresence>
@@ -276,14 +269,13 @@ export default function Second({ onBack, onNext }) {
           <img
             src="/hundi.png"
             alt="Temple Hundi donation box"
-            className="relative w-full h-auto drop-shadow-[0_8px_22px_rgba(0,0,0,0.8)] brightness-110"
+            className="relative w-full max-h-[22vh] sm:max-h-none object-contain drop-shadow-[0_8px_22px_rgba(0,0,0,0.8)] brightness-110"
           />
-
         </motion.div>
       </motion.div>
 
       {/* Running total */}
-      <div className="relative z-10 w-full mt-4 flex items-center justify-center gap-2.5">
+      <div className="relative z-10 w-full my-auto flex items-center justify-center gap-2">
         <span className="font-malayalam text-xs text-amber-200/70">ആകെ</span>
         <div className="relative h-7 overflow-hidden min-w-[76px] px-3 flex items-center justify-center rounded-full bg-black/45 border border-amber-400/30 backdrop-blur-md">
           <AnimatePresence mode="popLayout" initial={false}>
@@ -293,7 +285,7 @@ export default function Second({ onBack, onNext }) {
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: -22, opacity: 0, scale: 0.75 }}
               transition={{ duration: 0.24, ease: 'easeOut' }}
-              className="absolute inset-0 flex items-center justify-center gap-0.5 font-cinzel font-bold text-lg text-amber-50 tabular-nums"
+              className="absolute inset-0 flex items-center justify-center gap-0.5 font-cinzel font-bold text-base sm:text-lg text-amber-50 tabular-nums"
             >
               <span className="text-xs opacity-70">₹</span>
               {total}
@@ -303,9 +295,9 @@ export default function Second({ onBack, onNext }) {
       </div>
 
       {/* Coins */}
-      <div className="relative z-10 w-full mt-5">
+      <div className="relative z-10 w-full mt-1 sm:mt-2">
         <Label>Coins</Label>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
           {COINS.map((value, i) => (
             <motion.button
               key={value}
@@ -315,7 +307,7 @@ export default function Second({ onBack, onNext }) {
               whileTap={{ scale: 0.85 }}
               onClick={(e) => placeOffering(value, e)}
               aria-label={`Offer ${value} rupee coin`}
-              className="mx-auto w-full max-w-[50px] sm:max-w-[60px] cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-full"
+              className="mx-auto w-full max-w-[42px] sm:max-w-[56px] cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-full"
             >
               <Money value={value} className="w-full h-auto drop-shadow-[0_3px_8px_rgba(0,0,0,0.55)]" />
             </motion.button>
@@ -324,9 +316,9 @@ export default function Second({ onBack, onNext }) {
       </div>
 
       {/* Notes */}
-      <div className="relative z-10 w-full mt-3">
+      <div className="relative z-10 w-full mt-1 sm:mt-2">
         <Label>Notes</Label>
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
           {NOTES.map((value, i) => (
             <motion.button
               key={value}
@@ -336,7 +328,7 @@ export default function Second({ onBack, onNext }) {
               whileTap={{ scale: 0.94 }}
               onClick={(e) => placeOffering(value, e)}
               aria-label={`Offer ${value} rupee note`}
-              className="mx-auto w-full max-w-[124px] sm:max-w-[158px] cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-md"
+              className="mx-auto w-full max-w-[115px] sm:max-w-[158px] cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-md"
             >
               <Money value={value} className="w-full h-auto drop-shadow-[0_3px_8px_rgba(0,0,0,0.55)]" />
             </motion.button>
@@ -345,12 +337,12 @@ export default function Second({ onBack, onNext }) {
       </div>
 
       {/* Offer button */}
-      <div className="relative z-10 w-full mt-auto pt-4 pb-1">
+      <div className="relative z-10 w-full mt-auto pt-2 pb-1">
         <motion.button
           onClick={onNext}
           disabled={total === 0}
           whileTap={total === 0 ? undefined : { scale: 0.97 }}
-          className={`w-full py-4 px-6 rounded-2xl font-malayalam text-lg border transition-all duration-300 ${
+          className={`w-full py-3 sm:py-4 px-6 rounded-2xl font-malayalam text-base sm:text-lg border transition-all duration-300 ${
             total > 0
               ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold shadow-[0_8px_25px_rgba(217,119,6,0.35)] border-yellow-200/50 cursor-pointer'
               : 'bg-amber-400/15 text-amber-200/45 border-amber-200/10 cursor-not-allowed'
