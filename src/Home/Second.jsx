@@ -128,18 +128,18 @@ export default function Second({ onBack, onNext }) {
               animate={{
                 x: dx,
                 y: [0, -lift, dy],
-                scale: f.isCoin ? [1, 1.15, 0.08] : [1, 1.08, 0.22],
-                rotate: f.isCoin ? [0, 180, 540] : [0, -6, 8],
-                opacity: f.isCoin ? [1, 1, 0] : [1, 0.95, 0],
+                scale: f.isCoin ? [1, 1.25, 1.15, 0.4, 0.08] : [1, 1.12, 1.05, 0.5, 0.18],
+                rotate: f.isCoin ? [0, 90, 240, 480] : [0, -4, 4, 0],
+                opacity: f.isCoin ? [1, 1, 1, 0.8, 0] : [1, 1, 1, 0.7, 0],
               }}
               transition={{
-                duration: 0.85,
+                duration: 0.88,
                 ease: 'easeInOut',
-                x: { duration: 0.85, ease: [0.32, 0, 0.4, 1] },
-                y: { duration: 0.85, times: [0, 0.45, 1], ease: [0.35, 0, 0.55, 1] },
-                scale: { duration: 0.85, times: [0, 0.35, 1] },
-                rotate: { duration: 0.85, ease: 'easeInOut' },
-                opacity: { duration: 0.85, times: f.isCoin ? [0, 0.8, 1] : [0, 0.45, 0.75] },
+                x: { duration: 0.88, ease: [0.25, 0.1, 0.25, 1] },
+                y: { duration: 0.88, times: [0, 0.4, 1], ease: [0.25, 0.1, 0.35, 1] },
+                scale: { duration: 0.88, times: [0, 0.25, 0.75, 0.92, 1] },
+                rotate: { duration: 0.88, times: [0, 0.3, 0.75, 1], ease: 'easeInOut' },
+                opacity: { duration: 0.88, times: [0, 0.5, 0.8, 0.94, 1] },
               }}
               onAnimationComplete={() => endFlight(f.id)}
             >
@@ -209,22 +209,22 @@ export default function Second({ onBack, onNext }) {
       </div>
 
       {/* Slogan */}
-      <div className="relative z-10 w-full flex flex-col items-center pt-0.5">
+      <div className="relative z-10 w-full flex flex-col items-center pt-1 px-2">
         <motion.p
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="font-malayalam text-amber-100 text-center text-sm sm:text-base leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+          className="font-malayalam font-medium text-amber-50 text-center text-[15px] sm:text-[17px] leading-snug drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] max-w-[340px]"
         >
-          ദൈവാരാധനയുടെ സുവിശേഷം
+          ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു
         </motion.p>
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.55 }}
+          animate={{ opacity: 0.65 }}
           transition={{ delay: 0.25, duration: 0.5 }}
-          className="text-[8.5px] uppercase tracking-[0.28em] text-amber-200/70 mt-0.5"
+          className="text-[9px] sm:text-[9.5px] uppercase tracking-[0.25em] text-amber-200/80 mt-1 font-medium"
         >
-          The Glory of Worship
+          Every Sacred Offering Brings Divine Blessings
         </motion.p>
       </div>
 
@@ -233,19 +233,19 @@ export default function Second({ onBack, onNext }) {
         initial={{ opacity: 0, scale: 0.94, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
-        className="relative z-30 my-auto w-40 sm:w-64 shrink-0"
+        className="relative z-30 my-auto w-48 sm:w-72 shrink-0"
       >
         <motion.div ref={bandaramRef} animate={bandAnim} className="relative">
           {/* Slot: lights up on impact so the eye follows the coin into the box */}
           <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '26%' }}>
             <motion.div
-              className="h-1.5 w-14 sm:w-16 rounded-full bg-amber-200"
+              className="h-1.5 w-16 sm:w-18 rounded-full bg-amber-200"
               animate={slotGlow ? { opacity: [0, 1, 0.15], scaleX: [0.7, 1.15, 1] } : { opacity: 0.18 }}
               transition={{ duration: 0.7, ease: 'easeOut' }}
             />
             <motion.div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-300/70 blur-md"
-              animate={slotGlow ? { width: 130, height: 130, opacity: [0.9, 0] } : { width: 0, height: 0, opacity: 0 }}
+              animate={slotGlow ? { width: 140, height: 140, opacity: [0.9, 0] } : { width: 0, height: 0, opacity: 0 }}
               transition={{ duration: 0.65, ease: 'easeOut' }}
             />
           </div>
@@ -260,7 +260,7 @@ export default function Second({ onBack, onNext }) {
                 initial={{ opacity: 0, y: -26, scale: 0.5, rotate: -25 }}
                 animate={{ opacity: 0.85, y: p.y, scale: 1, rotate: p.r }}
                 transition={{ duration: 0.55, ease: 'easeOut' }}
-                className="absolute left-1/2 -translate-x-1/2 w-7 h-7 sm:w-8 sm:h-8 object-contain pointer-events-none"
+                className="absolute left-1/2 -translate-x-1/2 w-8 h-8 sm:w-9 sm:h-9 object-contain pointer-events-none"
               />
             ))}
           </AnimatePresence>
@@ -269,7 +269,7 @@ export default function Second({ onBack, onNext }) {
           <img
             src="/hundi.png"
             alt="Temple Hundi donation box"
-            className="relative w-full max-h-[22vh] sm:max-h-none object-contain drop-shadow-[0_8px_22px_rgba(0,0,0,0.8)] brightness-110"
+            className="relative w-full max-h-[25vh] sm:max-h-none object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.85)] brightness-110"
           />
         </motion.div>
       </motion.div>
