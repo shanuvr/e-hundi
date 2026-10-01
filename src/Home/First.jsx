@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Diya from '../components/Diya';
-import Mandala from '../components/Mandala';
-import Sparkle from '../components/Sparkle';
 
 export const FIRST_SCREEN_DURATION = 3000;
 
@@ -16,54 +14,16 @@ export default function First({ templeName = "Shri Siddhivinayak Temple", onComp
     <motion.div
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative w-full sm:max-w-md mx-auto h-[100dvh] max-h-[100dvh] sm:h-auto sm:min-h-[90dvh] flex flex-col justify-between items-center p-5 sm:p-8 text-center overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25 shadow-none sm:shadow-[0_0_60px_rgba(245,158,11,0.2)] backdrop-blur-xl"
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="relative w-full h-full flex flex-col justify-between items-center p-5 sm:p-8 text-center"
     >
-      {/* Background Image with Balanced Devotional Overlay */}
-      <div 
-        className="absolute inset-0 pointer-events-none bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url('/bg.jpg')` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/45 to-stone-950/65" />
-      </div>
-
-      {/* Background Sacred Geometric Mandala */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center divine-aura">
-        <Mandala className="w-[420px] h-[420px] sm:w-[520px] sm:h-[520px] opacity-80 drop-shadow-[0_0_40px_rgba(245,158,11,0.25)]" />
-      </div>
-
-      {/* Floating Sparkle Particles */}
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={{
-            y: [0, -30, 0],
-            x: [0, i % 2 === 0 ? 12 : -12, 0],
-            opacity: [0.2, 0.9, 0.2],
-            scale: [0.7, 1.1, 0.7],
-          }}
-          transition={{
-            duration: 3 + i * 0.7,
-            repeat: Infinity,
-            delay: i * 0.4,
-            ease: "easeInOut",
-          }}
-          className="absolute text-amber-300 pointer-events-none select-none"
-          style={{
-            top: `${14 + (i * 12)}%`,
-            left: `${10 + ((i * 15) % 80)}%`,
-          }}
-        >
-          <Sparkle className="w-3 h-3 sm:w-4 sm:h-4" />
-        </motion.div>
-      ))}
-
       {/* Top Header: Temple Badge */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.15, duration: 0.5 }}
-        className="w-full flex items-center justify-center z-10 pt-1"
+        className="w-full flex items-center justify-center z-10 pt-1 shrink-0"
       >
         <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/15 to-amber-900/20 px-4 py-1.5 rounded-full border border-amber-400/30 backdrop-blur-md shadow-inner">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -74,7 +34,7 @@ export default function First({ templeName = "Shri Siddhivinayak Temple", onComp
       </motion.div>
 
       {/* Center Sacred Hero: Glowing ॐ & Devotional Message */}
-      <div className="flex flex-col items-center justify-center my-auto z-10 py-6 w-full">
+      <div className="flex flex-col items-center justify-center my-auto z-10 py-4 w-full">
         {/* Pulsing Sacred Om Container */}
         <div className="relative flex items-center justify-center mb-6">
           {/* Radiant Halo rings */}
@@ -160,7 +120,7 @@ export default function First({ templeName = "Shri Siddhivinayak Temple", onComp
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.4 }}
-        className="w-full z-10 flex flex-col items-center gap-3 pb-1"
+        className="w-full z-10 flex flex-col items-center gap-3 pb-1 shrink-0"
       >
         <div className="w-full max-w-[220px] h-[3px] rounded-full bg-amber-400/15 overflow-hidden">
           <motion.div

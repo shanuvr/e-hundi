@@ -1,182 +1,218 @@
-// Devotional Temple Audio Synthesizer (Bell, Metallic Coins, Crisp Banknotes) using Web Audio API
+// E-Hundi audio: temple bell, coin dropping into a hundi (onto other coins), banknote sliding in.
+// Drop-in replacement: same exports (playTempleBell, playCoinDrop, playNoteDrop).
+// Call from a user tap (browsers block audio otherwise).
 
-let sharedContext = null;
+let ctx = null;
+let master = null;
+let reverbIn = null;
+let noiseBuf = null;
 
 const getContext = () => {
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   if (!AudioCtx) return null;
 
-  if (!sharedContext || sharedContext.state === 'closed') {
-    sharedContext = new AudioCtx();
+  if (!ctx || ctx.state === 'closed') {
+    ctx = new AudioCtx();
+
+    // master chain: compressor -> output (prevents clipping when sounds overlap)
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -14;
+    comp.ratio.value = 4;
+    master = ctx.createGain();
+    master.gain.value = 0.9;
+    master.connect(comp);
+    comp.connect(ctx.destination);
+
+    // small metal-box reverb (the inside of the hundi)
+    const len = Math.floor(ctx.sampleRate * 0.7);
+    const ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) {
+      const d = ir.getChannelData(c);
+      for (let i = 0; i < len; i++) {
+        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.2);
+      }
+    }
+    const conv = ctx.createConvolver();
+    conv.buffer = ir;
+    reverbIn = ctx.createGain();
+    reverbIn.gain.value = 0.35;
+    reverbIn.connect(conv);
+    conv.connect(master);
+
+    // shared white-noise buffer
+    noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+    const nd = noiseBuf.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
   }
-  if (sharedContext.state === 'suspended') {
-    sharedContext.resume();
-  }
-  return sharedContext;
+  if (ctx.state === 'suspended') ctx.resume();
+  return ctx;
 };
 
-// 🔔 1. Rich Brass Temple Bell
+const rand = (a, b) => a + Math.random() * (b - a);
+
+// short filtered noise burst
+const noiseBurst = (t, { type = 'highpass', freq = 4000, q = 0.7, gain = 0.2, dur = 0.01, wet = 0.3 }) => {
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuf;
+  const f = ctx.createBiquadFilter();
+  f.type = type;
+  f.frequency.value = freq;
+  f.Q.value = q;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(gain, t + 0.0015);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(f);
+  f.connect(g);
+  g.connect(master);
+  const w = ctx.createGain();
+  w.gain.value = wet;
+  g.connect(w);
+  w.connect(reverbIn);
+  src.start(t, Math.random() * 0.5);
+  src.stop(t + dur + 0.02);
+};
+
+// one metal coin strike: inharmonic partials + impact tick + optional hollow hundi body ring
+const clink = (t, { freq, gain, decay, body = false, wet = 0.4 }) => {
+  const ratios = [1, 2.32, 4.25, 6.63];
+  const amps = [1, 0.55, 0.3, 0.15];
+
+  const out = ctx.createGain();
+  out.gain.value = gain;
+  out.connect(master);
+  const send = ctx.createGain();
+  send.gain.value = wet;
+  out.connect(send);
+  send.connect(reverbIn);
+
+  ratios.forEach((r, i) => {
+    const f = freq * r * rand(0.99, 1.01);
+    if (f > 15000) return;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = f;
+    const d = decay / (1 + i * 0.7);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(amps[i], t + 0.0008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    osc.connect(g);
+    g.connect(out);
+    osc.start(t);
+    osc.stop(t + d + 0.02);
+  });
+
+  // sharp metal-on-metal tick
+  noiseBurst(t, { type: 'highpass', freq: 5000, gain: gain * 0.5, dur: 0.012, wet: 0.2 });
+
+  // hollow metal box resonance
+  if (body) {
+    noiseBurst(t, { type: 'bandpass', freq: rand(520, 760), q: 7, gain: gain * 0.9, dur: 0.22, wet: 0.6 });
+  }
+};
+
+// 🔔 Temple bell
 export const playTempleBell = () => {
   try {
-    const ctx = getContext();
-    if (!ctx) return;
-
+    if (!getContext()) return;
     const now = ctx.currentTime;
-    const frequencies = [440, 880, 1320, 1760, 2640, 3520];
+    const freqs = [440, 880, 1320, 1760, 2640, 3520];
     const gains = [0.4, 0.25, 0.15, 0.08, 0.04, 0.02];
-
-    const bus = ctx.createGain();
-    bus.gain.setValueAtTime(0.9, now);
-    bus.connect(ctx.destination);
-
-    frequencies.forEach((freq, idx) => {
+    freqs.forEach((f, i) => {
       const osc = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-
-      osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
-      osc.frequency.setValueAtTime(freq + (Math.random() * 4 - 2), now);
-
-      gainNode.gain.setValueAtTime(gains[idx], now);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
-
-      osc.connect(gainNode);
-      gainNode.connect(bus);
-
+      const g = ctx.createGain();
+      osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+      osc.frequency.value = f + rand(-2, 2);
+      g.gain.setValueAtTime(gains[i], now);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
+      osc.connect(g);
+      g.connect(master);
       osc.start(now);
       osc.stop(now + 3.3);
     });
-  } catch (err) {
-    console.error("Temple bell audio error:", err);
+  } catch (e) {
+    console.error('Temple bell audio error:', e);
   }
 };
 
-// 🪙 2. Realistic Metallic Coin "Clink & Settle" Sound
-export const playCoinDrop = () => {
+// 🪙 Coin falls into hundi, hits the coins already inside, bounces and settles
+// value (optional): 10, 20, 50 ... heavier coins ring lower
+export const playCoinDrop = (value = 10) => {
   try {
-    const ctx = getContext();
-    if (!ctx) return;
-
+    if (!getContext()) return;
     const now = ctx.currentTime;
-    const mainBus = ctx.createGain();
-    mainBus.gain.setValueAtTime(0.85, now);
-    mainBus.connect(ctx.destination);
+    const pitch = value >= 50 ? 0.85 : value >= 20 ? 0.95 : 1;
 
-    // Primary metallic clink frequencies (high brass resonant pings)
-    const coinFrequencies = [3400, 4800, 2150, 1420];
-    const coinGains = [0.45, 0.25, 0.35, 0.2];
-    const decayTimes = [0.18, 0.12, 0.28, 0.35];
+    // tiny slide down the slot
+    noiseBurst(now, { type: 'bandpass', freq: 2500, q: 1.2, gain: 0.05, dur: 0.07, wet: 0.2 });
 
-    coinFrequencies.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+    // main impact on the pile (after ~90ms fall)
+    let t = now + 0.09;
+    clink(t, { freq: rand(2700, 3300) * pitch, gain: 0.5, decay: 0.28, body: true });
+    // other coins in the pile get hit and ring lower
+    clink(t + 0.004, { freq: rand(1900, 2400) * pitch, gain: 0.3, decay: 0.35, wet: 0.5 });
+    clink(t + 0.011, { freq: rand(3600, 4400), gain: 0.22, decay: 0.2 });
 
-      osc.type = i === 0 ? 'triangle' : 'sine';
-      osc.frequency.setValueAtTime(freq, now);
-
-      gain.gain.setValueAtTime(coinGains[i], now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + decayTimes[i]);
-
-      osc.connect(gain);
-      gain.connect(mainBus);
-
-      osc.start(now);
-      osc.stop(now + decayTimes[i] + 0.05);
-    });
-
-    // Secondary subtle bounce (simulates coin hitting bottom coins 45ms later)
-    const bounceTime = now + 0.048;
-    const bounceOsc = ctx.createOscillator();
-    const bounceGain = ctx.createGain();
-
-    bounceOsc.type = 'triangle';
-    bounceOsc.frequency.setValueAtTime(3900, bounceTime);
-
-    bounceGain.gain.setValueAtTime(0.3, bounceTime);
-    bounceGain.gain.exponentialRampToValueAtTime(0.0001, bounceTime + 0.14);
-
-    bounceOsc.connect(bounceGain);
-    bounceGain.connect(mainBus);
-
-    bounceOsc.start(bounceTime);
-    bounceOsc.stop(bounceTime + 0.15);
-
-    // Sharp metallic impact click
-    const clickOsc = ctx.createOscillator();
-    const clickGain = ctx.createGain();
-    clickOsc.type = 'square';
-    clickOsc.frequency.setValueAtTime(5200, now);
-    clickOsc.frequency.exponentialRampToValueAtTime(1200, now + 0.025);
-
-    clickGain.gain.setValueAtTime(0.2, now);
-    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
-
-    clickOsc.connect(clickGain);
-    clickGain.connect(mainBus);
-
-    clickOsc.start(now);
-    clickOsc.stop(now + 0.03);
-
-  } catch (err) {
-    console.error("Coin audio error:", err);
-  }
-};
-
-// 💵 3. Realistic Banknote Paper "Rustle & Slide" Sound
-export const playNoteDrop = () => {
-  try {
-    const ctx = getContext();
-    if (!ctx) return;
-
-    const now = ctx.currentTime;
-    const duration = 0.22;
-    const bufferSize = ctx.sampleRate * duration;
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-
-    // Generate textured paper friction noise
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
+    // bounces: shrinking gaps, shrinking volume
+    let gap = 0.085;
+    for (let i = 0; i < 5; i++) {
+      t += gap * rand(0.7, 1.1);
+      gap *= 0.68;
+      clink(t, {
+        freq: rand(2300, 4600) * pitch,
+        gain: 0.34 * Math.pow(0.68, i),
+        decay: 0.16,
+        body: i < 2,
+      });
     }
 
-    const noiseSource = ctx.createBufferSource();
-    noiseSource.buffer = buffer;
+    // settling rattle among the pile
+    for (let i = 0; i < 5; i++) {
+      t += rand(0.025, 0.07);
+      clink(t, {
+        freq: rand(1800, 5800),
+        gain: rand(0.05, 0.12),
+        decay: rand(0.05, 0.12),
+        wet: 0.5,
+      });
+    }
+  } catch (e) {
+    console.error('Coin audio error:', e);
+  }
+};
 
-    // Bandpass filter to simulate crisp banknote paper frequency range
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(2800, now);
-    filter.frequency.exponentialRampToValueAtTime(1100, now + duration);
-    filter.Q.setValueAtTime(2.2, now);
+// 💵 Banknote: crinkle, slide through the slot, soft landing on the pile
+export const playNoteDrop = () => {
+  try {
+    if (!getContext()) return;
+    const now = ctx.currentTime;
 
-    const gainNode = ctx.createGain();
-    gainNode.gain.setValueAtTime(0.001, now);
-    gainNode.gain.linearRampToValueAtTime(0.4, now + 0.03);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+    // paper slide (soft swoosh)
+    noiseBurst(now, { type: 'bandpass', freq: 3200, q: 0.6, gain: 0.14, dur: 0.28, wet: 0.15 });
+    noiseBurst(now + 0.05, { type: 'highpass', freq: 6000, q: 0.5, gain: 0.06, dur: 0.22, wet: 0.1 });
 
-    noiseSource.connect(filter);
-    filter.connect(gainNode);
-    gainNode.connect(ctx.destination);
+    // crinkle grains (paper creasing)
+    const grains = 16;
+    for (let i = 0; i < grains; i++) {
+      const t = now + rand(0, 0.34);
+      noiseBurst(t, {
+        type: 'bandpass',
+        freq: rand(2500, 8000),
+        q: rand(0.7, 1.6),
+        gain: rand(0.05, 0.22),
+        dur: rand(0.004, 0.014),
+        wet: 0.15,
+      });
+    }
 
-    noiseSource.start(now);
-    noiseSource.stop(now + duration + 0.02);
-
-    // Soft low-end banknote insertion thump
-    const flapOsc = ctx.createOscillator();
-    const flapGain = ctx.createGain();
-    flapOsc.type = 'sine';
-    flapOsc.frequency.setValueAtTime(320, now + 0.02);
-    flapOsc.frequency.exponentialRampToValueAtTime(80, now + 0.1);
-
-    flapGain.gain.setValueAtTime(0.18, now + 0.02);
-    flapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-
-    flapOsc.connect(flapGain);
-    flapGain.connect(ctx.destination);
-
-    flapOsc.start(now + 0.02);
-    flapOsc.stop(now + 0.12);
-
-  } catch (err) {
-    console.error("Note audio error:", err);
+    // soft landing on top of the pile inside the hundi
+    const land = now + 0.3;
+    noiseBurst(land, { type: 'lowpass', freq: 900, q: 0.7, gain: 0.16, dur: 0.1, wet: 0.5 });
+    noiseBurst(land, { type: 'bandpass', freq: 620, q: 5, gain: 0.07, dur: 0.15, wet: 0.6 });
+    // a couple of coins shift under the note
+    clink(land + 0.03, { freq: rand(2000, 3000), gain: 0.05, decay: 0.08, wet: 0.5 });
+  } catch (e) {
+    console.error('Note audio error:', e);
   }
 };

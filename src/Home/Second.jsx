@@ -107,7 +107,7 @@ export default function Second({ onBack, onNext }) {
         
         if (flight.isCoin) {
           // 🪙 Real metallic coin clink into brass Hundi + double tap bounce haptic
-          playCoinDrop();
+          playCoinDrop(flight.value);
           triggerHaptic([25, 35, 50]);
         } else {
           // 💵 Real paper banknote rustle & slide into box + flutter haptic
@@ -176,22 +176,12 @@ export default function Second({ onBack, onNext }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 0.99 }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="relative w-full sm:max-w-md mx-auto h-[100dvh] max-h-[100dvh] sm:h-auto sm:min-h-[92dvh] flex flex-col justify-between items-center p-3 sm:p-6 overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="relative w-full h-full flex flex-col justify-between items-center p-3 sm:p-6"
     >
-      <div
-        className="absolute inset-0 pointer-events-none bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url('/bg.jpg')` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/55 to-stone-950/80" />
-      </div>
-
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center divine-aura">
-        <Mandala className="w-[360px] h-[360px] sm:w-[500px] sm:h-[500px] opacity-60" />
-      </div>
 
       {/* Header */}
       <div className="w-full flex items-center justify-between z-10 shrink-0 pt-0.5">
