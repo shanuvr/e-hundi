@@ -161,7 +161,7 @@ export default function Second({ onBack, onNext }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 0.99 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="relative w-full sm:max-w-md mx-auto min-h-screen sm:min-h-[92vh] flex flex-col items-center p-5 sm:p-6 overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25"
+      className="relative w-full sm:max-w-md mx-auto min-h-[100dvh] sm:min-h-[92dvh] flex flex-col items-center p-4 sm:p-6 overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25"
     >
       <div
         className="absolute inset-0 pointer-events-none bg-cover bg-center bg-no-repeat"
@@ -303,7 +303,7 @@ export default function Second({ onBack, onNext }) {
       </div>
 
       {/* Coins */}
-      <div className="relative z-10 w-full mt-6">
+      <div className="relative z-10 w-full mt-5">
         <Label>Coins</Label>
         <div className="grid grid-cols-5 gap-2">
           {COINS.map((value, i) => (
@@ -324,7 +324,7 @@ export default function Second({ onBack, onNext }) {
       </div>
 
       {/* Notes */}
-      <div className="relative z-10 w-full mt-4">
+      <div className="relative z-10 w-full mt-3">
         <Label>Notes</Label>
         <div className="grid grid-cols-2 gap-2.5">
           {NOTES.map((value, i) => (
@@ -345,7 +345,7 @@ export default function Second({ onBack, onNext }) {
       </div>
 
       {/* Offer button */}
-      <div className="relative z-10 w-full mt-auto pt-5 pb-1">
+      <div className="relative z-10 w-full mt-auto pt-4 pb-1">
         <motion.button
           onClick={onNext}
           disabled={total === 0}
