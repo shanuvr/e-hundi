@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.font-philosopher {
+  font-family: 'Philosopher', sans-serif;
+}
+
+.font-yatra {
+  font-family: 'Yatra One', cursive;
+}
+
+/* ॐ needs a Devanagari face; Yatra One's ॐ is too decorative to read as sacred */
+.font-om {
+  font-family: 'Noto Serif Devanagari', 'Yatra One', serif;
+}
+
+.font-malayalam {
+  font-family: 'Noto Serif Malayalam', serif;
+}
+
+/* Custom Devotional Glows & Radial Gradients */
+.gold-glow {
+  filter: drop-shadow(0 0 25px rgba(245, 158, 11, 0.45)) drop-shadow(0 0 50px rgba(217, 119, 6, 0.25));
+}
+
+.divine-aura {
+  background: radial-gradient(circle at center, rgba(245, 158, 11, 0.18) 0%, rgba(180, 83, 9, 0.08) 45%, transparent 70%);
+}
+
+.mandala-spin {
+  animation: spinSlow 50s linear infinite;
+}
+
+.mandala-spin-reverse {
+  animation: spinSlowRev 40s linear infinite;
+}
+
+/* Applies to inline SVG flame groups; pivots from the wick so it sways, not scales */
+.flame-flicker {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: flameFlicker 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinSlowRev {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes flameFlicker {
+  0% { transform: scale(1, 1) skewX(0deg); opacity: 0.95; filter: drop-shadow(0 0 8px #f59e0b); }
+  25% { transform: scale(1.06, 0.95) skewX(1.6deg); opacity: 1; filter: drop-shadow(0 0 14px #fbbf24); }
+  50% { transform: scale(0.97, 1.06) skewX(-2deg); opacity: 0.9; filter: drop-shadow(0 0 10px #f59e0b); }
+  75% { transform: scale(1.03, 0.98) skewX(1.2deg); opacity: 1; filter: drop-shadow(0 0 16px #fbbf24); }
+  100% { transform: scale(1, 1) skewX(0deg); opacity: 0.95; filter: drop-shadow(0 0 8px #f59e0b); }
+}
+/* Respect users who ask the OS to reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .flame-flicker,
+  .mandala-spin,
+  .mandala-spin-reverse {
+    animation: none;
+  }
+}
