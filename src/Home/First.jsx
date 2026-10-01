@@ -62,20 +62,29 @@ export default function First({ templeName = "Shri Siddhivinayak Temple", onComp
             }}
             className="relative w-36 h-36 rounded-full bg-gradient-to-b from-amber-400/25 via-amber-600/20 to-black/60 border-2 border-amber-400/60 flex items-center justify-center shadow-[0_0_45px_rgba(245,158,11,0.4)] backdrop-blur-md"
           >
-            {/* Sacred ॐ Symbol */}
-            <motion.span
+            {/* Sacred ॐ Symbol - Mathematically centered with SVG */}
+            <motion.svg
+              viewBox="0 0 100 100"
+              className="w-28 h-28 select-none"
               animate={{
-                textShadow: [
-                  "0 0 15px rgba(251, 191, 36, 0.7)",
-                  "0 0 35px rgba(245, 158, 11, 1)",
-                  "0 0 15px rgba(251, 191, 36, 0.7)",
+                filter: [
+                  "drop-shadow(0 0 8px rgba(251, 191, 36, 0.7))",
+                  "drop-shadow(0 0 20px rgba(245, 158, 11, 1))",
+                  "drop-shadow(0 0 8px rgba(251, 191, 36, 0.7))",
                 ],
               }}
               transition={{ duration: 2.6, repeat: Infinity }}
-              className="text-7xl font-om font-bold text-amber-200 select-none"
             >
-              ॐ
-            </motion.span>
+              <text
+                x="50"
+                y="59"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="font-om font-bold text-[56px] fill-amber-200"
+              >
+                ॐ
+              </text>
+            </motion.svg>
           </motion.div>
         </div>
 
