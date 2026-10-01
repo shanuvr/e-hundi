@@ -20,13 +20,13 @@ function App() {
   const Current = STEPS[step].component;
 
   return (
-    <main className="h-[100dvh] max-h-[100dvh] sm:h-auto sm:max-h-none sm:min-h-screen w-full flex flex-col items-center justify-center p-0 sm:p-4 md:p-6 relative selection:bg-amber-500 selection:text-stone-950 overflow-hidden sm:overflow-auto bg-stone-950 sm:bg-white overscroll-none">
+    <main className="h-[100dvh] max-h-[100dvh] sm:h-screen sm:min-h-screen w-full flex flex-col items-center justify-center p-0 sm:p-2 md:p-3 relative selection:bg-amber-500 selection:text-stone-950 overflow-hidden bg-stone-950 sm:bg-white overscroll-none">
       {/* Background ambient lighting on white backdrop (desktop only) */}
       <div className="hidden sm:block fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-200/40 rounded-full blur-3xl pointer-events-none" />
       <div className="hidden sm:block fixed bottom-10 left-1/2 -translate-x-1/2 w-80 h-80 bg-orange-200/30 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Devotional Screen Container */}
-      <div className="relative w-full sm:max-w-md mx-auto h-[100dvh] max-h-[100dvh] sm:h-auto sm:min-h-[92dvh] flex flex-col justify-between items-center overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25 shadow-none sm:shadow-[0_0_60px_rgba(245,158,11,0.2)] bg-stone-950 z-10">
+      <div className="relative w-full sm:max-w-[390px] mx-auto h-[100dvh] max-h-[100dvh] sm:h-[750px] sm:max-h-[96vh] flex flex-col justify-between items-center overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25 shadow-none sm:shadow-[0_0_60px_rgba(245,158,11,0.2)] bg-stone-950 z-10">
         
         {/* 🌟 1. Persistent Background Image & Overlay (Never unmounts) */}
         <div
