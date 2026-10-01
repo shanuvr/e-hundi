@@ -307,7 +307,7 @@ export default function Second({ onBack, onNext }) {
       </div>
 
       {/* Coins */}
-      <div className="relative z-10 w-full mt-0.5 shrink-0">
+      <div className="relative z-10 w-full mt-0.5 sm:mt-1 shrink-0 px-1">
         <Label>Coins</Label>
         <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
           {COINS.map((value, i) => (
@@ -319,9 +319,9 @@ export default function Second({ onBack, onNext }) {
               whileTap={{ scale: 0.85 }}
               onClick={(e) => placeOffering(value, e)}
               aria-label={`Offer ${value} rupee coin`}
-              className="mx-auto w-full max-w-[40px] sm:max-w-[48px] cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-full"
+              className="mx-auto w-full max-w-[48px] sm:max-w-[56px] cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-full"
             >
-              <Money value={value} className="w-full h-auto drop-shadow-[0_3px_8px_rgba(0,0,0,0.55)]" />
+              <Money value={value} className="w-full h-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)] hover:scale-105 transition-transform" />
             </motion.button>
           ))}
         </div>
