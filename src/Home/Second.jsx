@@ -5,12 +5,22 @@ import { ArrowLeft, Bell } from 'lucide-react';
 import Mandala from '../components/Mandala';
 import Money from '../components/Money';
 import { moneyKind, moneySrc } from '../data/money';
-import { playTempleBell } from '../utils/audio';
+import { playTempleBell, playCoinDrop } from '../utils/audio';
 
 const COINS = [1, 2, 5, 10, 20];
 const NOTES = [50, 100, 200, 500];
 
 let flightId = 0;
+
+const triggerHaptic = (pattern = 40) => {
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    try {
+      navigator.vibrate(pattern);
+    } catch {
+      // ignore on unsupported devices
+    }
+  }
+};
 
 function Label({ children }) {
   return (
@@ -37,6 +47,7 @@ export default function Second({ onBack, onNext }) {
 
   const ringBell = useCallback(() => {
     playTempleBell();
+    triggerHaptic(60);
     setRung((n) => n + 1);
   }, []);
 
@@ -66,7 +77,9 @@ export default function Second({ onBack, onNext }) {
         { id, value, isCoin, from: source, target, kind: isCoin ? 'coin' : 'note' },
       ]);
       setTotal((t) => t + value);
-      if (navigator.vibrate) navigator.vibrate(12);
+      
+      // Initial tactile tap vibration (stronger to register on all phones)
+      triggerHaptic(45);
 
       setSlotGlow(true);
       const glowTimer = setTimeout(() => setSlotGlow(false), 700);
@@ -92,6 +105,9 @@ export default function Second({ onBack, onNext }) {
       setFlights((f) => f.filter((x) => x.id !== id));
       if (flight) {
         setRipples((r) => [...r, { id: `${id}-r`, x: flight.target.x, y: flight.target.y }]);
+        // Impact sound and double-tap haptic bump as money drops into Hundi
+        playCoinDrop();
+        triggerHaptic([30, 40, 55]);
       }
     },
     [flights],
