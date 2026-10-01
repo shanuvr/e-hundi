@@ -245,19 +245,19 @@ export default function Second({ onBack, onNext }) {
         initial={{ opacity: 0, scale: 0.94, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
-        className="relative z-30 my-auto w-40 sm:w-44 shrink-0"
+        className="relative z-30 my-auto w-48 sm:w-56 shrink-0"
       >
         <motion.div ref={bandaramRef} animate={bandAnim} className="relative">
           {/* Slot: lights up on impact so the eye follows the coin into the box */}
           <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '26%' }}>
             <motion.div
-              className="h-1.5 w-14 sm:w-16 rounded-full bg-amber-200"
+              className="h-1.5 w-16 sm:w-18 rounded-full bg-amber-200"
               animate={slotGlow ? { opacity: [0, 1, 0.15], scaleX: [0.7, 1.15, 1] } : { opacity: 0.18 }}
               transition={{ duration: 0.7, ease: 'easeOut' }}
             />
             <motion.div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-300/70 blur-md"
-              animate={slotGlow ? { width: 130, height: 130, opacity: [0.9, 0] } : { width: 0, height: 0, opacity: 0 }}
+              animate={slotGlow ? { width: 140, height: 140, opacity: [0.9, 0] } : { width: 0, height: 0, opacity: 0 }}
               transition={{ duration: 0.65, ease: 'easeOut' }}
             />
           </div>
@@ -272,7 +272,7 @@ export default function Second({ onBack, onNext }) {
                 initial={{ opacity: 0, y: -26, scale: 0.5, rotate: -25 }}
                 animate={{ opacity: 0.85, y: p.y, scale: 1, rotate: p.r }}
                 transition={{ duration: 0.55, ease: 'easeOut' }}
-                className="absolute left-1/2 -translate-x-1/2 w-7 h-7 sm:w-8 sm:h-8 object-contain pointer-events-none"
+                className="absolute left-1/2 -translate-x-1/2 w-8 h-8 sm:w-9 sm:h-9 object-contain pointer-events-none"
               />
             ))}
           </AnimatePresence>
@@ -281,7 +281,7 @@ export default function Second({ onBack, onNext }) {
           <img
             src="/hundi.png"
             alt="Temple Hundi donation box"
-            className="relative w-full max-h-[19vh] sm:max-h-[140px] object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.85)] brightness-110"
+            className="relative w-full max-h-[22vh] sm:max-h-[160px] object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.85)] brightness-110"
           />
         </motion.div>
       </motion.div>
