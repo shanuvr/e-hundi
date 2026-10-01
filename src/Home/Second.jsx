@@ -5,7 +5,7 @@ import { ArrowLeft, Bell } from 'lucide-react';
 import Mandala from '../components/Mandala';
 import Money from '../components/Money';
 import { moneyKind, moneySrc } from '../data/money';
-import { playTempleBell, playCoinDrop } from '../utils/audio';
+import { playTempleBell, playCoinDrop, playNoteDrop } from '../utils/audio';
 
 const COINS = [1, 2, 5, 10, 20];
 const NOTES = [50, 100, 200, 500];
@@ -63,8 +63,7 @@ export default function Second({ onBack, onNext }) {
       const bandaram = bandaramRef.current?.getBoundingClientRect();
       if (!bandaram) return;
 
-      // Coins drop through the slot on the lid; notes are too wide for a slot,
-      // so they settle on the front of the box instead.
+      // Coins drop through the slot on the lid; notes settle on the front of the box.
       const isCoin = moneyKind(value) === 'coin';
       const target = {
         x: bandaram.left + bandaram.width / 2,
@@ -78,8 +77,8 @@ export default function Second({ onBack, onNext }) {
       ]);
       setTotal((t) => t + value);
       
-      // Initial tactile tap vibration (stronger to register on all phones)
-      triggerHaptic(45);
+      // Initial tactile tap vibration
+      triggerHaptic(isCoin ? 35 : 45);
 
       setSlotGlow(true);
       const glowTimer = setTimeout(() => setSlotGlow(false), 700);
@@ -105,9 +104,16 @@ export default function Second({ onBack, onNext }) {
       setFlights((f) => f.filter((x) => x.id !== id));
       if (flight) {
         setRipples((r) => [...r, { id: `${id}-r`, x: flight.target.x, y: flight.target.y }]);
-        // Impact sound and double-tap haptic bump as money drops into Hundi
-        playCoinDrop();
-        triggerHaptic([30, 40, 55]);
+        
+        if (flight.isCoin) {
+          // 🪙 Real metallic coin clink into brass Hundi + double tap bounce haptic
+          playCoinDrop();
+          triggerHaptic([25, 35, 50]);
+        } else {
+          // 💵 Real paper banknote rustle & slide into box + flutter haptic
+          playNoteDrop();
+          triggerHaptic([40, 30]);
+        }
       }
     },
     [flights],
