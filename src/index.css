@@ -54,6 +54,12 @@
   animation: spinSlowRev 40s linear infinite;
 }
 
+/* The deity's own halo turns much slower than the sanctum mandala, so the two
+   rings read as separate layers of light instead of one spinning graphic. */
+.prabhavali-spin {
+  animation: spinSlow 90s linear infinite;
+}
+
 /* Applies to inline SVG flame groups; pivots from the wick so it sways, not scales */
 .flame-flicker {
   transform-box: fill-box;
@@ -82,7 +88,8 @@
 @media (prefers-reduced-motion: reduce) {
   .flame-flicker,
   .mandala-spin,
-  .mandala-spin-reverse {
+  .mandala-spin-reverse,
+  .prabhavali-spin {
     animation: none;
   }
 }

@@ -16,7 +16,7 @@ import {
 export const ADMIN_NAV = [
   {
     group: 'Overview',
-    items: [{ to: '/admin', end: true, label: 'Donations & Reports', icon: BarChart3 }],
+    items: [{ to: '/admin', end: true, label: 'Dashboard', icon: LayoutDashboard }],
   },
   {
     group: 'Customise',
@@ -32,6 +32,10 @@ export const ADMIN_NAV = [
       { to: '/admin/payments', label: 'Payments / UPI', icon: Wallet },
       { to: '/admin/darshan', label: 'Darshan', icon: CirclePlay },
     ],
+  },
+  {
+    group: 'Insights',
+    items: [{ to: '/admin/reports', label: 'Donations & Reports', icon: BarChart3 }],
   },
   {
     group: 'System',

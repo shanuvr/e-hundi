@@ -113,6 +113,28 @@ export default function AdminSideBar({ open, onClose, collapsed, onToggleCollaps
               <p className="text-[10px] text-stone-300 leading-tight mt-0.5 font-medium">Thiruvananthapuram</p>
             </div>
           </div>
+
+          {/* Desktop-only collapse control */}
+          <button
+            onClick={onToggleCollapse}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className={`hidden lg:flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs text-stone-500 hover:text-amber-200/90 hover:bg-white/[0.04] transition-colors ${
+              collapsed ? 'justify-center px-0' : ''
+            }`}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className={`w-4 h-4 shrink-0 transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+            <span className={collapsed ? 'hidden' : ''}>Collapse</span>
+          </button>
         </div>
       </aside>
     </>
