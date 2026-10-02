@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import First from './Home/First';
 import Second from './Home/Second';
 import Third from './Home/Third';
 import Mandala from './components/Mandala';
 import Sparkle from './components/Sparkle';
+import { preloadAssets } from './utils/preload';
 import './App.css';
 
 const STEPS = [
@@ -18,6 +19,10 @@ function App() {
   // The offering total is owned here so the Hundi screen and the Darshan screen
   // read from a single source of truth, and a reset clears it in one place.
   const [amount, setAmount] = useState(0);
+
+  useEffect(() => {
+    preloadAssets();
+  }, []);
 
   const goNext = useCallback(
     () => setStep((s) => Math.min(STEPS.length - 1, s + 1)),
