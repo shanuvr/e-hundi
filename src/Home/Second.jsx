@@ -61,12 +61,12 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange }) {
     setPaying(true);
     triggerHaptic([30, 40, 60]);
     submitTimer.current = setTimeout(() => {
-      celebrateOffering(later);
+      celebrateOffering();
       playTempleBell();
       triggerHaptic([25, 30, 25, 30, 80]);
       onNext();
     }, 2000);
-  }, [paying, amount, later, onNext]);
+  }, [paying, amount, onNext]);
 
   const dropRipple = useCallback((id) => {
     setRipples((r) => r.filter((x) => x.id !== id));
