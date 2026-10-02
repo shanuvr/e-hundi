@@ -43,7 +43,7 @@ function App() {
       <div className="hidden sm:block fixed bottom-10 left-1/2 -translate-x-1/2 w-80 h-80 bg-orange-200/30 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Devotional Screen Container */}
-      <div className="relative w-full sm:max-w-[390px] mx-auto h-[100dvh] max-h-[100dvh] sm:h-[750px] sm:max-h-[96vh] flex flex-col justify-between items-center overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25 shadow-none sm:shadow-[0_0_60px_rgba(245,158,11,0.2)] bg-stone-950 z-10">
+      <div className="relative w-full sm:max-w-[390px] mx-auto h-[100dvh] max-h-[100dvh] sm:h-[780px] sm:max-h-[96vh] flex flex-col justify-between items-center overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25 shadow-none sm:shadow-[0_0_60px_rgba(245,158,11,0.2)] bg-stone-950 z-10">
         
         {/* 🌟 1. Persistent Background Image & Overlay (Never unmounts) */}
         <div
@@ -91,7 +91,8 @@ function App() {
           <AnimatePresence mode="wait">
             <Current
               key={STEPS[step].key}
-              templeName="Shri Siddhivinayak Temple"
+              templeName="ശ്രീ മഹാദേവ ക്ഷേത്രം"
+              templeNameEn="Shri Mahadeva Temple"
               amount={amount}
               onAmountChange={setAmount}
               onComplete={goNext}

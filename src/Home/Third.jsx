@@ -4,6 +4,9 @@ import { ArrowLeft, Unlock, Video, Sparkles, Share2 } from 'lucide-react';
 import Mandala from '../components/Mandala';
 import Label from '../components/Label';
 
+/* Where offerings are collected. Surfaces on the receipt; admin-configurable. */
+const UPI_ID = 'shrimahadeva@upi';
+
 const makeReceipt = () =>
   `EH-${Date.now().toString(36).slice(-4).toUpperCase()}${Math.random()
     .toString(36)
@@ -126,7 +129,7 @@ function SuccessDialog({ amount, templeName, receipt, paidAt, onViewDarshan, onR
   );
 }
 
-export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri Siddhivinayak Temple' }) {
+export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri Mahadeva Temple' }) {
   // The offering is already settled by the time this screen plays, so the receipt
   // is fixed for the lifetime of the screen and the success pop is up front.
   const [receipt] = useState(makeReceipt);
@@ -255,6 +258,11 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
               <span className="text-sm opacity-60">₹</span>
               {amount}
             </span>
+          </div>
+
+          <div className="flex items-center justify-between px-4 py-2 bg-black/25 border-t border-amber-400/15">
+            <span className="text-[9px] uppercase tracking-[0.2em] text-amber-200/40">Paid to</span>
+            <span className="truncate text-[10.5px] font-medium text-amber-100/80">{UPI_ID}</span>
           </div>
 
           <div className="flex items-center justify-between gap-3 px-4 py-2 bg-black/25 border-t border-amber-400/15">
