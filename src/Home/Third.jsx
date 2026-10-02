@@ -27,83 +27,96 @@ function SuccessDialog({ amount, templeName, receipt, paidAt, onViewDarshan, onR
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.25, delay: 0.35 }}
-      className="absolute inset-0 z-[100] flex items-center justify-center p-4"
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="absolute inset-0 z-[100] flex items-center justify-center p-4 transform-gpu"
       role="dialog"
       aria-modal="true"
       aria-label="Payment successful"
     >
-      <div className="absolute inset-0 bg-stone-950/80 backdrop-blur-sm" onClick={onViewDarshan} />
+      {/* Crisp Dark Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/85 backdrop-blur-[6px] transition-opacity" 
+        onClick={onViewDarshan} 
+      />
 
+      {/* 120 FPS GPU Accelerated Modal Card */}
       <motion.div
-        initial={{ scale: 0.7, opacity: 0, y: 34 }}
+        initial={{ scale: 0.85, opacity: 0, y: 22 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.86, opacity: 0, y: 22 }}
-        transition={{ type: 'spring', stiffness: 240, damping: 20, delay: 0.35 }}
-        className="relative w-full max-w-[290px] rounded-3xl px-6 pb-5 pt-7 text-center bg-gradient-to-b from-amber-500/20 via-stone-900/95 to-stone-950 border border-amber-400/45 shadow-[0_0_70px_rgba(245,158,11,0.35)] backdrop-blur-xl"
+        exit={{ scale: 0.9, opacity: 0, y: 15 }}
+        transition={{ 
+          type: 'spring', 
+          stiffness: 340, 
+          damping: 28, 
+          mass: 0.75,
+          delay: 0.05 
+        }}
+        className="relative w-full max-w-[290px] rounded-3xl px-6 pb-5 pt-7 text-center bg-gradient-to-b from-stone-900/98 via-stone-900/95 to-stone-950/98 border border-amber-400/50 shadow-[0_20px_60px_rgba(0,0,0,0.85),0_0_40px_rgba(245,158,11,0.3)] transform-gpu will-change-transform"
       >
-        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-40 h-40 -translate-y-1/2 rounded-full bg-amber-400/20 blur-3xl pointer-events-none" />
+        {/* Subtle Warm Top Glow */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-36 h-20 -translate-y-1/2 rounded-full bg-amber-400/25 blur-2xl pointer-events-none" />
 
-        <div className="relative mx-auto w-[76px] h-[76px] mb-3">
+        {/* Success Icon & Animated Checkmark */}
+        <div className="relative mx-auto w-[74px] h-[74px] mb-3">
           <motion.span
-            className="absolute inset-0 rounded-full border border-amber-300/50"
-            initial={{ scale: 0.6, opacity: 0.9 }}
-            animate={{ scale: 1.7, opacity: 0 }}
-            transition={{ duration: 1.1, ease: 'easeOut', delay: 0.5 }}
+            className="absolute inset-0 rounded-full border border-amber-300/60 pointer-events-none"
+            initial={{ scale: 0.7, opacity: 0.8 }}
+            animate={{ scale: 1.5, opacity: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.15 }}
           />
-          <svg viewBox="0 0 52 52" className="w-full h-full" fill="none">
-            <circle cx="26" cy="26" r="24" fill="rgba(251,191,36,0.1)" stroke="#b45309" strokeWidth="1.5" />
+          <svg viewBox="0 0 52 52" className="w-full h-full transform-gpu" fill="none">
+            <circle cx="26" cy="26" r="24" fill="rgba(251,191,36,0.12)" stroke="#b45309" strokeWidth="1.5" />
             <motion.circle
               cx="26"
               cy="26"
               r="24"
               stroke="#fde68a"
-              strokeWidth="2"
+              strokeWidth="2.2"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
-              transition={{ duration: 0.55, delay: 0.5, ease: 'easeOut' }}
+              transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' }}
             />
             <motion.path
               d="M15.5 27.5l7.5 7.5 14-15.5"
               stroke="#fff7d6"
-              strokeWidth="3.4"
+              strokeWidth="3.5"
               strokeLinecap="round"
               strokeLinejoin="round"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
-              transition={{ duration: 0.42, delay: 0.85, ease: 'easeOut' }}
+              transition={{ duration: 0.35, delay: 0.35, ease: 'easeOut' }}
             />
           </svg>
         </div>
 
-        <p className="relative font-malayalam text-lg text-amber-50">സമർപ്പണം പൂർത്തിയായി</p>
-        <p className="relative mt-0.5 text-[9px] uppercase tracking-[0.3em] text-emerald-400/90 font-semibold">
+        <p className="relative font-malayalam text-lg text-amber-50 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">സമർപ്പണം പൂർത്തിയായി</p>
+        <p className="relative mt-0.5 text-[9px] uppercase tracking-[0.3em] text-emerald-400 font-semibold">
           Payment Successful
         </p>
 
-        <div className="relative mt-3.5 font-cinzel font-bold text-3xl text-amber-50 tabular-nums">
+        <div className="relative mt-3.5 font-cinzel font-bold text-3xl text-amber-50 tabular-nums drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
           <span className="text-base opacity-55">₹</span>
           {amount}
         </div>
-        <p className="relative mt-1 px-2 text-[10px] leading-snug text-amber-200/50">{templeName}</p>
+        <p className="relative mt-1 px-2 text-[10px] leading-snug text-amber-200/60">{templeName}</p>
 
-        <div className="relative mt-3 rounded-xl bg-black/35 border border-amber-400/20 px-3 py-2">
-          <p className="text-[8.5px] uppercase tracking-[0.2em] text-amber-200/40">Receipt No.</p>
-          <p className="text-[11px] font-semibold tracking-wide text-amber-100/90">{receipt}</p>
-          <p className="mt-0.5 text-[9px] text-amber-200/40">{formatStamp(paidAt)}</p>
+        <div className="relative mt-3 rounded-xl bg-black/45 border border-amber-400/25 px-3 py-2">
+          <p className="text-[8.5px] uppercase tracking-[0.2em] text-amber-200/50 font-medium">Receipt No.</p>
+          <p className="text-[11px] font-semibold tracking-wide text-amber-100">{receipt}</p>
+          <p className="mt-0.5 text-[9px] text-amber-200/50">{formatStamp(paidAt)}</p>
         </div>
 
         <div className="relative mt-4 flex flex-col gap-2">
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={onViewDarshan}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold font-malayalam text-sm cursor-pointer"
+            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold font-malayalam text-sm cursor-pointer shadow-[0_4px_16px_rgba(217,119,6,0.35)] transition-transform"
           >
             ദർശനം കാണുക
           </motion.button>
           <button
             onClick={onReset}
-            className="w-full py-2 rounded-xl bg-amber-400/10 border border-amber-300/20 text-amber-200/80 text-[11px] font-semibold uppercase tracking-[0.15em] cursor-pointer transition-colors hover:bg-amber-400/20"
+            className="w-full py-2 rounded-xl bg-amber-400/10 border border-amber-300/20 text-amber-200/85 text-[11px] font-semibold uppercase tracking-[0.15em] cursor-pointer transition-colors hover:bg-amber-400/20 active:scale-95"
           >
             Make Another Offering
           </button>
@@ -143,11 +156,11 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.35, ease: 'easeOut' }}
-      className="relative w-full h-full flex flex-col justify-between items-center p-3 sm:p-6"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.28, ease: 'easeOut' }}
+      className="relative w-full h-full flex flex-col justify-between items-center p-3 sm:p-6 transform-gpu"
     >
       {/* Header */}
       <div className="w-full flex items-center justify-between z-10 shrink-0 pt-0.5">
