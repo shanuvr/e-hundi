@@ -1,11 +1,12 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
-import { ArrowLeft, Bell } from 'lucide-react';
-import Mandala from '../components/Mandala';
+import { ArrowLeft, Bell, Loader2 } from 'lucide-react';
 import Money from '../components/Money';
+import Label from '../components/Label';
 import { moneyKind, moneySrc } from '../data/money';
 import { playTempleBell, playCoinDrop, playNoteDrop } from '../utils/audio';
+import { celebrateOffering } from '../utils/confetti';
 
 const COINS = [1, 2, 5, 10, 20];
 const NOTES = [50, 100, 200, 500];
@@ -22,28 +23,22 @@ const triggerHaptic = (pattern = 40) => {
   }
 };
 
-function Label({ children }) {
-  return (
-    <div className="flex items-center justify-center gap-1.5 mb-2.5">
-      <span className="h-px w-8 bg-gradient-to-r from-transparent to-amber-400/50" />
-      <span className="text-[9px] uppercase tracking-[0.3em] text-amber-200/55 font-semibold">
-        {children}
-      </span>
-      <span className="h-px w-8 bg-gradient-to-l from-transparent to-amber-400/50" />
-    </div>
-  );
-}
-
-export default function Second({ onBack, onNext }) {
+export default function Second({ onBack, onNext, amount = 0, onAmountChange }) {
   const bandaramRef = useRef(null);
   const lastGlowTimer = useRef(null);
+  const submitTimer = useRef(null);
+  const timers = useRef([]);
   const bandAnim = useAnimationControls();
   const [flights, setFlights] = useState([]);
   const [ripples, setRipples] = useState([]);
-  const [total, setTotal] = useState(0);
   const [rung, setRung] = useState(0);
   const [slotGlow, setSlotGlow] = useState(false);
   const [placed, setPlaced] = useState([]);
+  const [paying, setPaying] = useState(false);
+
+  const later = useCallback((fn, ms) => {
+    timers.current.push(setTimeout(fn, ms));
+  }, []);
 
   const ringBell = useCallback(() => {
     playTempleBell();
@@ -51,7 +46,27 @@ export default function Second({ onBack, onNext }) {
     setRung((n) => n + 1);
   }, []);
 
-  useEffect(() => () => clearTimeout(lastGlowTimer.current), []);
+  useEffect(
+    () => () => {
+      clearTimeout(lastGlowTimer.current);
+      clearTimeout(submitTimer.current);
+      timers.current.forEach(clearTimeout);
+    },
+    []
+  );
+
+  /** Offer button: hold on a spinner while the offering settles, celebrate, then play screen 3. */
+  const submitOffering = useCallback(() => {
+    if (paying || amount <= 0) return;
+    setPaying(true);
+    triggerHaptic([30, 40, 60]);
+    submitTimer.current = setTimeout(() => {
+      celebrateOffering(later);
+      playTempleBell();
+      triggerHaptic([25, 30, 25, 30, 80]);
+      onNext();
+    }, 2000);
+  }, [paying, amount, later, onNext]);
 
   const dropRipple = useCallback((id) => {
     setRipples((r) => r.filter((x) => x.id !== id));
@@ -75,7 +90,8 @@ export default function Second({ onBack, onNext }) {
         ...f,
         { id, value, isCoin, from: source, target, kind: isCoin ? 'coin' : 'note' },
       ]);
-      setTotal((t) => t + value);
+      // Functional update so two quick taps can't clobber each other's amount.
+      onAmountChange((t) => t + value);
       
       // Initial tactile tap vibration
       triggerHaptic(isCoin ? 35 : 45);
@@ -95,7 +111,7 @@ export default function Second({ onBack, onNext }) {
       lastGlowTimer.current = glowTimer;
       bandAnim.start({ scale: [1, 1.045, 1], transition: { duration: 0.42, ease: 'easeOut' } });
     },
-    [bandAnim],
+    [bandAnim, onAmountChange],
   );
 
   const endFlight = useCallback(
@@ -187,8 +203,11 @@ export default function Second({ onBack, onNext }) {
       <div className="w-full flex items-center justify-between z-10 shrink-0 pt-0.5">
         <button
           onClick={onBack}
+          disabled={paying}
           aria-label="Back"
-          className="p-2 sm:p-2.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 backdrop-blur-md cursor-pointer transition-colors hover:bg-amber-500/20"
+          className={`p-2 sm:p-2.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 backdrop-blur-md transition-colors ${
+            paying ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-amber-500/20'
+          }`}
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -292,7 +311,7 @@ export default function Second({ onBack, onNext }) {
         <div className="relative h-6 sm:h-7 overflow-hidden min-w-[72px] px-3 flex items-center justify-center rounded-full bg-black/45 border border-amber-400/30 backdrop-blur-md">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.span
-              key={total}
+              key={amount}
               initial={{ y: 22, opacity: 0, scale: 0.75 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: -22, opacity: 0, scale: 0.75 }}
@@ -300,7 +319,7 @@ export default function Second({ onBack, onNext }) {
               className="absolute inset-0 flex items-center justify-center gap-0.5 font-cinzel font-bold text-base sm:text-lg text-amber-50 tabular-nums"
             >
               <span className="text-xs opacity-70">₹</span>
-              {total}
+              {amount}
             </motion.span>
           </AnimatePresence>
         </div>
@@ -318,8 +337,9 @@ export default function Second({ onBack, onNext }) {
               transition={{ delay: 0.3 + i * 0.07, duration: 0.4, type: 'spring', stiffness: 260, damping: 18 }}
               whileTap={{ scale: 0.85 }}
               onClick={(e) => placeOffering(value, e)}
+              disabled={paying}
               aria-label={`Offer ${value} rupee coin`}
-              className="mx-auto w-full max-w-[48px] sm:max-w-[56px] cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-full"
+              className={`mx-auto w-full max-w-[48px] sm:max-w-[56px] focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-full transition-opacity ${paying ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <Money value={value} className="w-full h-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)] hover:scale-105 transition-transform" />
             </motion.button>
@@ -339,8 +359,9 @@ export default function Second({ onBack, onNext }) {
               transition={{ delay: 0.55 + i * 0.07, duration: 0.4 }}
               whileTap={{ scale: 0.94 }}
               onClick={(e) => placeOffering(value, e)}
+              disabled={paying}
               aria-label={`Offer ${value} rupee note`}
-              className="mx-auto w-full max-w-[110px] sm:max-w-[135px] cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-md"
+              className={`mx-auto w-full max-w-[110px] sm:max-w-[135px] focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-md transition-opacity ${paying ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <Money value={value} className="w-full h-auto drop-shadow-[0_3px_8px_rgba(0,0,0,0.55)]" />
             </motion.button>
@@ -351,17 +372,43 @@ export default function Second({ onBack, onNext }) {
       {/* Offer button */}
       <div className="relative z-10 w-full mt-auto pt-1 pb-1 shrink-0">
         <motion.button
-          onClick={onNext}
-          disabled={total === 0}
-          whileTap={total === 0 ? undefined : { scale: 0.97 }}
-          className={`w-full py-2.5 sm:py-3 px-6 rounded-2xl font-malayalam text-base sm:text-lg border transition-all duration-300 ${
-            total > 0
-              ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold shadow-[0_8px_25px_rgba(217,119,6,0.35)] border-yellow-200/50 cursor-pointer'
-              : 'bg-amber-400/15 text-amber-200/45 border-amber-200/10 cursor-not-allowed'
+          onClick={submitOffering}
+          disabled={amount === 0 || paying}
+          whileTap={amount === 0 || paying ? undefined : { scale: 0.97 }}
+          className={`w-full py-2.5 sm:py-3 px-6 rounded-2xl font-malayalam text-base sm:text-lg border transition-all duration-300 flex items-center justify-center gap-2 ${
+            paying
+              ? 'bg-gradient-to-r from-amber-500/75 via-amber-400/75 to-amber-600/75 text-stone-950 font-semibold border-yellow-200/30 cursor-wait'
+              : amount > 0
+                ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold shadow-[0_8px_25px_rgba(217,119,6,0.35)] border-yellow-200/50 cursor-pointer'
+                : 'bg-amber-400/15 text-amber-200/45 border-amber-200/10 cursor-not-allowed'
           }`}
         >
-          <span className={total > 0 ? '' : 'opacity-70'}>സമർപ്പിക്കുക</span>
+          {paying ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>സമർപ്പിക്കുക</span>
+            </>
+          ) : (
+            <span className={amount > 0 ? '' : 'opacity-70'}>സമർപ്പിക്കുക</span>
+          )}
         </motion.button>
+
+        {/* Status line under the button, only while the offering is settling */}
+        <div className="h-4 mt-1 flex items-center justify-center">
+          <AnimatePresence mode="wait" initial={false}>
+            {paying && (
+              <motion.p
+                key="paying"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="text-[9.5px] uppercase tracking-[0.2em] text-amber-200/55 font-medium"
+              >
+                Completing your offering
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {overlay}

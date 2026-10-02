@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import First from './Home/First';
 import Second from './Home/Second';
+import Third from './Home/Third';
 import Mandala from './components/Mandala';
 import Sparkle from './components/Sparkle';
 import './App.css';
@@ -9,13 +10,24 @@ import './App.css';
 const STEPS = [
   { key: 'welcome', component: First },
   { key: 'hundi', component: Second },
+  { key: 'darshan', component: Third },
 ];
 
 function App() {
   const [step, setStep] = useState(0);
+  // The offering total is owned here so the Hundi screen and the Darshan screen
+  // read from a single source of truth, and a reset clears it in one place.
+  const [amount, setAmount] = useState(0);
 
-  const goNext = useCallback(() => setStep((s) => s + 1), []);
+  const goNext = useCallback(
+    () => setStep((s) => Math.min(STEPS.length - 1, s + 1)),
+    []
+  );
   const goBack = useCallback(() => setStep((s) => Math.max(0, s - 1)), []);
+  const goReset = useCallback(() => {
+    setAmount(0);
+    setStep(0);
+  }, []);
 
   const Current = STEPS[step].component;
 
@@ -75,9 +87,12 @@ function App() {
             <Current
               key={STEPS[step].key}
               templeName="Shri Siddhivinayak Temple"
+              amount={amount}
+              onAmountChange={setAmount}
               onComplete={goNext}
               onNext={goNext}
               onBack={goBack}
+              onReset={goReset}
             />
           </AnimatePresence>
         </div>
