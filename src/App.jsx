@@ -20,7 +20,7 @@ function App() {
   const Current = STEPS[step].component;
 
   return (
-    <main className="h-[100dvh] max-h-[100dvh] sm:h-screen sm:min-h-screen w-full flex flex-col items-center justify-center p-0 sm:p-2 md:p-3 relative selection:bg-amber-500 selection:text-stone-950 overflow-hidden bg-stone-950 sm:bg-white overscroll-none">
+    <main className="h-[100dvh] max-h-[100dvh] sm:h-screen sm:min-h-screen w-full flex flex-col items-center justify-center p-0 sm:p-2 md:p-3 relative selection:bg-amber-500 selection:text-stone-950 overflow-hidden bg-stone-950 sm:bg-white">
       {/* Background ambient lighting on white backdrop (desktop only) */}
       <div className="hidden sm:block fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-200/40 rounded-full blur-3xl pointer-events-none" />
       <div className="hidden sm:block fixed bottom-10 left-1/2 -translate-x-1/2 w-80 h-80 bg-orange-200/30 rounded-full blur-3xl pointer-events-none" />
