@@ -308,7 +308,7 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
-      className="relative w-full h-full flex flex-col justify-between items-center p-3 sm:px-4 sm:py-3"
+      className="relative w-full h-full flex flex-col justify-between items-center p-3.5 sm:p-4 overflow-hidden"
     >
 
       {/* Header */}
@@ -419,7 +419,7 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
 
           <div className="absolute inset-x-3 bottom-1 h-5 rounded-[50%] bg-amber-500/30 blur-lg" />
           <img
-            src="/hundi.png"
+            src="/hundi.webp"
             alt="Temple Hundi donation box"
             className="relative w-full max-h-[22vh] sm:max-h-[135px] object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.85)] brightness-110"
           />

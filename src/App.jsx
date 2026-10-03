@@ -42,8 +42,8 @@ function App() {
       <div className="hidden sm:block fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-200/40 rounded-full blur-3xl pointer-events-none" />
       <div className="hidden sm:block fixed bottom-10 left-1/2 -translate-x-1/2 w-80 h-80 bg-orange-200/30 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Main Devotional Screen Container */}
-      <div className="relative w-full sm:max-w-[390px] mx-auto h-[100dvh] max-h-[100dvh] sm:h-[780px] sm:max-h-[96vh] flex flex-col justify-between items-center overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border sm:border-amber-500/25 shadow-none sm:shadow-[0_0_60px_rgba(245,158,11,0.2)] bg-stone-950 z-10">
+      {/* Main Devotional Screen Container (Optimized for both mobile and desktop preview) */}
+      <div className="relative w-full sm:max-w-[400px] mx-auto h-[100dvh] max-h-[100dvh] sm:h-[min(844px,96vh)] sm:max-h-[860px] flex flex-col justify-between items-center overflow-hidden rounded-none sm:rounded-[32px] border-0 sm:border sm:border-amber-500/30 shadow-none sm:shadow-[0_15px_60px_rgba(0,0,0,0.85),0_0_50px_rgba(245,158,11,0.2)] bg-stone-950 z-10">
         
         {/* 🌟 1. Persistent Background Image & Deep Sacred Overlay */}
         <div

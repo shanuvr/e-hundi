@@ -65,9 +65,9 @@ function SloganVerticalTicker() {
   const tickerItems = [...SLOKAS, ...SLOKAS];
 
   return (
-    <div className="relative w-full h-full min-h-[280px] max-h-[390px] flex flex-col items-center overflow-hidden rounded-2xl bg-black/75 border border-amber-400/40 shadow-[inset_0_1px_0_rgba(255,240,200,0.25),0_10px_30px_rgba(0,0,0,0.8)] backdrop-blur-md">
+    <div className="relative w-full h-full flex flex-col items-center overflow-hidden rounded-2xl bg-black/75 border border-amber-400/40 shadow-[inset_0_1px_0_rgba(255,240,200,0.25),0_8px_24px_rgba(0,0,0,0.8)] backdrop-blur-md">
       {/* Top Live Ticker Header */}
-      <div className="w-full z-20 flex items-center justify-between px-3 py-1.5 bg-stone-950/95 border-b border-amber-400/30">
+      <div className="w-full z-20 flex items-center justify-between px-3 py-1.5 bg-stone-950/95 border-b border-amber-400/30 shrink-0">
         <div className="flex items-center gap-1.5">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
@@ -77,31 +77,31 @@ function SloganVerticalTicker() {
             ദിവ്യ മന്ത്ര ധ്വനി
           </span>
         </div>
-        <span className="text-[8.5px] uppercase tracking-[0.2em] font-semibold text-amber-300/85">
+        <span className="text-[8px] sm:text-[8.5px] uppercase tracking-[0.2em] font-semibold text-amber-300/85">
           Devotional Chants
         </span>
       </div>
 
       {/* Upward Scrolling News-Style Viewport with Soft Vertical Fade Masks */}
       <div
-        className="relative w-full flex-1 overflow-hidden px-3"
+        className="relative w-full flex-1 min-h-0 overflow-hidden px-3"
         style={{
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%)',
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
         }}
       >
-        <div className="slogan-ticker-scroll flex flex-col gap-3 py-2">
+        <div className="slogan-ticker-scroll flex flex-col gap-2.5 py-2">
           {tickerItems.map((item, idx) => (
             <div
               key={`${item.id}-${idx}`}
-              className="flex flex-col items-center text-center px-2 py-2.5 rounded-xl bg-gradient-to-b from-stone-900/80 to-black/90 border border-amber-400/25 shadow-sm"
+              className="flex flex-col items-center text-center px-3 py-2.5 rounded-xl bg-gradient-to-b from-stone-900/80 to-black/90 border border-amber-400/25 shadow-sm"
             >
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/35 mb-1.5">
-                <span className="font-malayalam text-[9.5px] font-bold text-amber-200">
+              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/35 mb-1">
+                <span className="font-malayalam text-[9px] font-bold text-amber-200">
                   {item.tag}
                 </span>
                 <span className="text-amber-400/60 font-bold">&middot;</span>
-                <span className="text-[8px] uppercase tracking-wider text-amber-100 font-semibold">
+                <span className="text-[7.5px] uppercase tracking-wider text-amber-100 font-semibold">
                   {item.badge}
                 </span>
               </div>
@@ -110,7 +110,7 @@ function SloganVerticalTicker() {
                 {item.text}
               </p>
 
-              <p className="font-malayalam text-[10px] sm:text-[11px] font-medium text-amber-300/90 mt-1 leading-normal">
+              <p className="font-malayalam text-[10px] sm:text-[11px] font-medium text-amber-300/90 mt-0.5 leading-normal">
                 {item.translation}
               </p>
             </div>
@@ -261,14 +261,14 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.28, ease: 'easeOut' }}
-      className="relative w-full h-full flex flex-col justify-between items-center p-3 sm:p-6 transform-gpu"
+      className="relative w-full h-full flex flex-col justify-between items-center p-3.5 sm:p-5 overflow-hidden gap-1.5 sm:gap-2.5 transform-gpu"
     >
       {/* Header */}
       <div className="w-full flex items-center justify-between z-10 shrink-0 pt-0.5">
         <button
           onClick={onBack}
           aria-label="Back"
-          className="p-2 sm:p-2.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 backdrop-blur-md cursor-pointer transition-colors hover:bg-amber-500/20"
+          className="p-1.5 sm:p-2 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 backdrop-blur-md cursor-pointer transition-colors hover:bg-amber-500/20"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -281,51 +281,51 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
       </div>
 
       {/* Blessing line */}
-      <div className="relative z-10 w-full flex flex-col items-center px-2 pt-0.5 shrink-0">
+      <div className="relative z-10 w-full flex flex-col items-center px-1 shrink-0">
         <motion.p
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="font-malayalam font-medium text-center text-[13.5px] sm:text-[14.5px] leading-tight text-amber-50 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] max-w-[330px]"
+          className="font-malayalam font-medium text-center text-xs sm:text-[13.5px] leading-tight text-amber-50 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] max-w-[320px]"
         >
           നിങ്ങളുടെ സമർപ്പണം ദൈവം സ്വീകരിച്ചു
         </motion.p>
       </div>
 
       {/* Devotional Slogan Upward News-Style Ticker */}
-      <div className="relative z-10 w-full flex-1 min-h-0 flex items-center justify-center py-2">
+      <div className="relative z-10 w-full flex-1 min-h-[220px] flex flex-col py-1 overflow-hidden">
         <SloganVerticalTicker />
       </div>
 
       {/* Receipt summary */}
       <div className="relative z-10 w-full shrink-0">
-        <div className="w-full overflow-hidden rounded-2xl bg-black/40 border border-amber-400/30 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-          <div className="flex items-center gap-3 px-4 py-2.5 border-b border-amber-400/15">
-            <div className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-br from-amber-400/30 to-amber-700/20 border border-amber-400/30 flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+        <div className="w-full overflow-hidden rounded-2xl bg-black/50 border border-amber-400/30 backdrop-blur-md shadow-[0_6px_24px_rgba(0,0,0,0.6)]">
+          <div className="flex items-center gap-2.5 px-3.5 py-2 border-b border-amber-400/15">
+            <div className="w-7 h-7 shrink-0 rounded-full bg-gradient-to-br from-amber-400/30 to-amber-700/20 border border-amber-400/30 flex items-center justify-center">
+              <Sparkles className="w-3 h-3 text-amber-200" />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-[11px] font-semibold text-amber-100">{templeName}</p>
-              <p className="text-[9px] uppercase tracking-[0.2em] text-amber-200/45">Digital Hundi</p>
+              <p className="truncate text-[10.5px] font-semibold text-amber-100">{templeName}</p>
+              <p className="text-[8px] uppercase tracking-[0.2em] text-amber-200/50">Digital Hundi</p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between px-4 py-2.5">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-amber-200/55">Total Offering</span>
-            <span className="font-cinzel font-bold text-2xl text-amber-50 tabular-nums">
+          <div className="flex items-center justify-between px-3.5 py-1.5">
+            <span className="text-[9.5px] uppercase tracking-[0.2em] text-amber-200/60 font-medium">Total Offering</span>
+            <span className="font-cinzel font-bold text-xl sm:text-2xl text-amber-50 tabular-nums">
               <span className="text-sm opacity-60">₹</span>
               {amount}
             </span>
           </div>
 
-          <div className="flex items-center justify-between px-4 py-2 bg-black/25 border-t border-amber-400/15">
-            <span className="text-[9px] uppercase tracking-[0.2em] text-amber-200/40">Paid to</span>
-            <span className="truncate text-[10.5px] font-medium text-amber-100/80">{UPI_ID}</span>
+          <div className="flex items-center justify-between px-3.5 py-1.5 bg-black/30 border-t border-amber-400/15">
+            <span className="text-[8.5px] uppercase tracking-[0.2em] text-amber-200/50">Paid to</span>
+            <span className="truncate text-[10px] font-medium text-amber-100/90">{UPI_ID}</span>
           </div>
 
-          <div className="flex items-center justify-between gap-3 px-4 py-2 bg-black/25 border-t border-amber-400/15">
-            <span className="text-[9px] uppercase tracking-[0.2em] text-amber-200/40">Receipt</span>
-            <span className="truncate text-[10.5px] font-medium tracking-wide text-amber-100/80">
+          <div className="flex items-center justify-between gap-2 px-3.5 py-1.5 bg-black/30 border-t border-amber-400/15">
+            <span className="text-[8.5px] uppercase tracking-[0.2em] text-amber-200/50">Receipt</span>
+            <span className="truncate text-[10px] font-medium tracking-wide text-amber-100/90">
               {receipt} · {formatStamp(paidAt)}
             </span>
           </div>
@@ -333,11 +333,11 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
       </div>
 
       {/* Actions */}
-      <div className="relative z-10 w-full mt-2.5 shrink-0 flex items-center gap-2">
+      <div className="relative z-10 w-full shrink-0 flex items-center gap-2 pt-0.5">
         <motion.button
           onClick={onReset}
           whileTap={{ scale: 0.97 }}
-          className="flex-1 py-2.5 sm:py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold font-malayalam text-sm sm:text-base border border-yellow-200/50 shadow-[0_8px_25px_rgba(217,119,6,0.35)] cursor-pointer"
+          className="flex-1 py-2.5 sm:py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold font-malayalam text-sm sm:text-base border border-yellow-200/50 shadow-[0_6px_20px_rgba(217,119,6,0.35)] cursor-pointer"
         >
           മറ്റൊരു സമർപ്പണം
         </motion.button>
@@ -345,7 +345,7 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
           onClick={share}
           whileTap={{ scale: 0.92 }}
           aria-label="Share your offering"
-          className="w-[46px] shrink-0 py-2.5 sm:py-3 rounded-2xl bg-amber-500/10 text-amber-300 border border-amber-400/30 backdrop-blur-md hover:bg-amber-500/20 transition-colors flex items-center justify-center cursor-pointer"
+          className="w-[44px] shrink-0 py-2.5 sm:py-3 rounded-2xl bg-amber-500/10 text-amber-300 border border-amber-400/30 backdrop-blur-md hover:bg-amber-500/20 transition-colors flex items-center justify-center cursor-pointer"
         >
           <Share2 className="w-4 h-4" />
         </motion.button>

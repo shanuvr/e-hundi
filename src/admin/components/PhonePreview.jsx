@@ -67,7 +67,7 @@ function HundiMock() {
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col justify-center items-center gap-1.5">
-        <img src="/hundi.png" alt="" className="w-24 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.8)]" />
+        <img src="/hundi.webp" alt="" className="w-24 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.8)]" />
         <div className="flex items-center gap-1.5">
           <span className="font-malayalam text-[7px] text-amber-200/70">ആകെ</span>
           <span className="px-2 py-0.5 rounded-full bg-black/45 border border-amber-400/30 font-cinzel text-[10px] font-bold text-amber-50">

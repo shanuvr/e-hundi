@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Diya from '../components/Diya';
 import LotusBase from '../components/LotusBase';
 import Prabhavali from '../components/Prabhavali';
+import { MONEY } from '../data/money';
 import { playTempleBell } from '../utils/audio';
 
 export const FIRST_SCREEN_DURATION = 3500;
@@ -38,6 +39,25 @@ export default function First({ templeName = "ശ്രീ മഹാദേവ �
     return () => clearTimeout(timer);
   }, [onComplete]);
 
+  // Preload screen 2 assets silently in browser background when idle
+  useEffect(() => {
+    const preloadAssets = () => {
+      const urls = ['/hundi.webp', ...Object.values(MONEY).map((m) => m.src)];
+      urls.forEach((url) => {
+        const img = new Image();
+        img.src = url;
+      });
+    };
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const handle = window.requestIdleCallback(preloadAssets, { timeout: 1500 });
+      return () => window.cancelIdleCallback(handle);
+    } else {
+      const timer = setTimeout(preloadAssets, 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   const handleDevotionalTap = () => {
     playTempleBell();
     if (onComplete) onComplete();
@@ -50,32 +70,32 @@ export default function First({ templeName = "ശ്രീ മഹാദേവ �
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       onClick={handleDevotionalTap}
-      className="relative w-full h-full flex flex-col justify-between items-center p-5 sm:p-7 text-center cursor-pointer select-none transform-gpu will-change-transform"
+      className="relative w-full h-full flex flex-col justify-between items-center p-3.5 sm:p-5 text-center cursor-pointer select-none overflow-hidden transform-gpu will-change-transform"
     >
       {/* Temple Badge, crowned by a kalasham */}
       <motion.div
         initial={{ y: -16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.08, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full flex flex-col items-center z-10 pt-1 shrink-0 transform-gpu"
+        className="w-full flex flex-col items-center z-10 pt-0.5 shrink-0 transform-gpu"
       >
-        <Kalasham className="w-5 h-5 mb-1.5 drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]" />
-        <div className="px-5 py-1.5 rounded-full bg-black/80 border border-amber-400/50 shadow-[0_4px_16px_rgba(0,0,0,0.8)] backdrop-blur-md">
-          <p className="font-malayalam text-xs sm:text-[13px] font-bold text-amber-100 drop-shadow-sm">
+        <Kalasham className="w-4 h-4 sm:w-5 sm:h-5 mb-1 drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]" />
+        <div className="px-4 py-1 sm:px-5 sm:py-1.5 rounded-full bg-black/80 border border-amber-400/50 shadow-[0_4px_16px_rgba(0,0,0,0.8)] backdrop-blur-md">
+          <p className="font-malayalam text-[11px] sm:text-[13px] font-bold text-amber-100 drop-shadow-sm">
             {templeName}
           </p>
         </div>
       </motion.div>
 
       {/* Center Sacred Hero: ॐ on a lotus, lit by diyas */}
-      <div className="flex flex-col items-center justify-center my-auto z-10 py-2 w-full">
-        <div className="relative flex flex-col items-center mb-4">
+      <div className="flex flex-col items-center justify-center flex-1 min-h-0 z-10 py-1 sm:py-2 w-full">
+        <div className="relative flex flex-col items-center mb-2 sm:mb-3">
           {/* Prabhavali + Radiant Sanctum Halo */}
-          <Prabhavali className="absolute w-[228px] h-[228px] sm:w-[252px] sm:h-[252px] opacity-70 drop-shadow-[0_0_26px_rgba(245,158,11,0.28)] transform-gpu" />
+          <Prabhavali className="absolute w-[200px] h-[200px] sm:w-[225px] sm:h-[225px] opacity-70 drop-shadow-[0_0_24px_rgba(245,158,11,0.28)] transform-gpu" />
           <motion.div
-            animate={{ scale: [1, 1.18, 1], opacity: [0.35, 0.65, 0.35] }}
+            animate={{ scale: [1, 1.15, 1], opacity: [0.35, 0.65, 0.35] }}
             transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute w-44 h-44 sm:w-48 sm:h-48 rounded-full bg-gradient-to-tr from-amber-500/35 via-orange-500/28 to-yellow-300/38 blur-2xl pointer-events-none transform-gpu will-change-transform"
+            className="absolute w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-tr from-amber-500/35 via-orange-500/28 to-yellow-300/38 blur-2xl pointer-events-none transform-gpu will-change-transform"
           />
 
           {/* Golden Medallion */}
@@ -83,7 +103,7 @@ export default function First({ templeName = "ശ്രീ മഹാദേവ �
             initial={{ scale: 0, rotate: -45 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: 'spring', stiffness: 220, damping: 20, delay: 0.05 }}
-            className="relative w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-gradient-to-b from-amber-400/35 via-amber-700/25 to-black/90 border-2 border-amber-400/80 flex items-center justify-center shadow-[0_0_50px_rgba(245,158,11,0.6)] backdrop-blur-md transform-gpu will-change-transform"
+            className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-b from-amber-400/35 via-amber-700/25 to-black/90 border-2 border-amber-400/80 flex items-center justify-center shadow-[0_0_40px_rgba(245,158,11,0.6)] backdrop-blur-md transform-gpu will-change-transform"
           >
             {/* Pulsing divine aura inside medallion for smooth 120 FPS */}
             <motion.div
@@ -93,14 +113,14 @@ export default function First({ templeName = "ശ്രീ മഹാദേവ �
             />
             {/* Perfectly centered sacred Om symbol */}
             <div className="relative z-10 flex items-center justify-center w-full h-full select-none pointer-events-none">
-              <span className="font-om font-bold text-[54px] sm:text-[60px] leading-none text-amber-100 drop-shadow-[0_0_18px_rgba(251,191,36,0.95)] translate-y-[13px] sm:translate-y-[15px] translate-x-[1px]">
+              <span className="font-om font-bold text-[46px] sm:text-[54px] leading-none text-amber-100 drop-shadow-[0_0_18px_rgba(251,191,36,0.95)] translate-y-[11px] sm:translate-y-[13px] translate-x-[1px]">
                 ॐ
               </span>
             </div>
           </motion.div>
 
           {/* Lotus plinth — seats the ॐ instead of leaving it floating */}
-          <LotusBase className="relative w-[168px] sm:w-[190px] h-auto -mt-1 drop-shadow-[0_0_18px_rgba(245,158,11,0.35)] transform-gpu" />
+          <LotusBase className="relative w-[145px] sm:w-[170px] h-auto -mt-1 drop-shadow-[0_0_18px_rgba(245,158,11,0.35)] transform-gpu" />
         </div>
 
         {/* Lit diyas flanking the mantra with a high-contrast dark badge */}
@@ -108,15 +128,15 @@ export default function First({ templeName = "ശ്രീ മഹാദേവ �
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="flex items-center justify-center gap-3 sm:gap-4 mb-4 transform-gpu"
+          className="flex items-center justify-center gap-2.5 sm:gap-3 mb-2 sm:mb-3 transform-gpu"
         >
-          <Diya className="w-10 h-9 sm:w-12 sm:h-11 drop-shadow-[0_0_18px_rgba(251,191,36,0.7)] transform-gpu shrink-0" />
-          <div className="px-4 py-1.5 rounded-full bg-black/85 border border-amber-400/50 shadow-[0_2px_12px_rgba(0,0,0,0.8)] backdrop-blur-md">
-            <p className="font-malayalam text-xs sm:text-[13px] font-bold text-amber-100 tracking-normal drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+          <Diya className="w-8 h-7 sm:w-10 sm:h-9 drop-shadow-[0_0_16px_rgba(251,191,36,0.7)] transform-gpu shrink-0" />
+          <div className="px-3.5 py-1 rounded-full bg-black/85 border border-amber-400/50 shadow-[0_2px_12px_rgba(0,0,0,0.8)] backdrop-blur-md">
+            <p className="font-malayalam text-[11px] sm:text-xs font-bold text-amber-100 tracking-normal drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
               ॥ ഓം നമഃ ശിവായ ॥
             </p>
           </div>
-          <Diya className="w-10 h-9 sm:w-12 sm:h-11 drop-shadow-[0_0_18px_rgba(251,191,36,0.7)] transform-gpu shrink-0" />
+          <Diya className="w-8 h-7 sm:w-10 sm:h-9 drop-shadow-[0_0_16px_rgba(251,191,36,0.7)] transform-gpu shrink-0" />
         </motion.div>
 
         {/* Brand Title: Crisp, bold, high-contrast gold */}
@@ -124,16 +144,16 @@ export default function First({ templeName = "ശ്രീ മഹാദേവ �
           initial={{ y: 12, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="space-y-1 mb-4 transform-gpu flex flex-col items-center"
+          className="space-y-0.5 mb-2 sm:mb-3 transform-gpu flex flex-col items-center"
         >
-          <div className="flex items-center justify-center gap-3">
-            <span className="h-[1.5px] w-8 bg-gradient-to-r from-transparent to-amber-300" />
-            <h1 className="text-2xl sm:text-3xl font-malayalam font-extrabold text-amber-50 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+          <div className="flex items-center justify-center gap-2.5">
+            <span className="h-[1.5px] w-6 sm:w-8 bg-gradient-to-r from-transparent to-amber-300" />
+            <h1 className="text-xl sm:text-2xl font-malayalam font-extrabold text-amber-50 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
               ഇ-ഭാണ്ഡാരം
             </h1>
-            <span className="h-[1.5px] w-8 bg-gradient-to-l from-transparent to-amber-300" />
+            <span className="h-[1.5px] w-6 sm:w-8 bg-gradient-to-l from-transparent to-amber-300" />
           </div>
-          <p className="font-malayalam text-xs sm:text-sm font-semibold text-amber-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+          <p className="font-malayalam text-[11px] sm:text-xs font-semibold text-amber-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
             ഡിജിറ്റൽ ഭാണ്ഡാര സമർപ്പണം
           </p>
         </motion.div>
@@ -143,24 +163,24 @@ export default function First({ templeName = "ശ്രീ മഹാദേവ �
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.28, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="relative px-6 pt-5 pb-4 max-w-sm w-full
-            rounded-t-[28px] rounded-b-xl
+          className="relative px-4 py-3 sm:px-5 sm:py-3.5 max-w-[340px] w-full
+            rounded-2xl
             bg-gradient-to-b from-stone-900/95 via-stone-950/95 to-black/98
             border border-amber-400/50
-            shadow-[inset_0_1px_0_rgba(255,240,200,0.3),0_12px_36px_rgba(0,0,0,0.85)] transform-gpu"
+            shadow-[inset_0_1px_0_rgba(255,240,200,0.3),0_10px_30px_rgba(0,0,0,0.85)] transform-gpu"
         >
           {/* Etched inner rule */}
-          <span className="pointer-events-none absolute inset-1.5 rounded-t-[22px] rounded-b-lg border border-amber-300/20" />
+          <span className="pointer-events-none absolute inset-1.5 rounded-xl border border-amber-300/20" />
 
-          <h2 className="relative font-malayalam text-sm sm:text-base font-bold text-amber-100 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+          <h2 className="relative font-malayalam text-xs sm:text-sm font-bold text-amber-100 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
             &ldquo;നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം&rdquo;
           </h2>
 
-          <div className="relative mt-2.5 flex justify-center">
+          <div className="relative mt-2 flex justify-center">
             <motion.span
               animate={{ opacity: [0.75, 1, 0.75] }}
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-              className="px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 font-malayalam text-xs font-semibold drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transform-gpu"
+              className="px-3 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 font-malayalam text-[11px] font-semibold drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transform-gpu"
             >
               തൊഴുതു സമർപ്പിക്കുക
             </motion.span>
@@ -168,14 +188,14 @@ export default function First({ templeName = "ശ്രീ മഹാദേവ �
         </motion.div>
       </div>
 
-      {/* Auto-advance progress bar & Footer (Using pure GPU transform scaleX for 120 FPS) */}
+      {/* Auto-advance progress bar & Footer (Always firmly anchored at bottom) */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.35 }}
-        className="w-full z-10 flex flex-col items-center gap-2.5 pb-1 shrink-0 transform-gpu"
+        className="w-full z-20 flex flex-col items-center gap-1.5 sm:gap-2 pb-1 shrink-0 transform-gpu"
       >
-        <div className="w-full max-w-[200px] h-[3px] rounded-full bg-amber-400/12 overflow-hidden relative">
+        <div className="w-full max-w-[190px] h-[3px] rounded-full bg-amber-400/15 overflow-hidden relative">
           <motion.div
             className="w-full h-full rounded-full bg-gradient-to-r from-amber-600/70 via-amber-300 to-amber-100 shadow-[0_0_10px_rgba(251,191,36,0.6)] transform-gpu will-change-transform"
             initial={{ scaleX: 0 }}
@@ -188,11 +208,11 @@ export default function First({ templeName = "ശ്രീ മഹാദേവ �
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45, duration: 0.35 }}
-          className="flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/45 border border-amber-400/25 shadow-sm transform-gpu"
+          className="flex items-center gap-2 px-3 py-0.5 rounded-full bg-black/50 border border-amber-400/25 shadow-sm transform-gpu"
         >
-          <span className="font-malayalam text-xs text-amber-200 font-semibold tracking-wide">ഭാണ്ഡാരം</span>
+          <span className="font-malayalam text-[11px] text-amber-200 font-semibold tracking-wide">ഭാണ്ഡാരം</span>
           <span className="text-amber-400/60 font-bold">&middot;</span>
-          <span className="text-[11px] tracking-wider text-amber-100/90 font-medium">by Programers</span>
+          <span className="text-[10px] tracking-wider text-amber-100/90 font-medium">by Programers</span>
         </motion.div>
       </motion.div>
     </motion.div>

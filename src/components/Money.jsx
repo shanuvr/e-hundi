@@ -9,6 +9,8 @@ export default function Money({ value, className = '', alt }) {
       src={source.src}
       alt={alt ?? `₹${value} ${source.kind}`}
       draggable="false"
+      decoding="async"
+      loading="eager"
       className={`object-contain select-none ${className}`}
     />
   );
