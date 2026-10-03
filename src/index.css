@@ -47,49 +47,81 @@
 }
 
 .mandala-spin {
+  transform-origin: center center;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
   animation: spinSlow 50s linear infinite;
 }
 
 .mandala-spin-reverse {
+  transform-origin: center center;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
   animation: spinSlowRev 40s linear infinite;
 }
 
 /* The deity's own halo turns much slower than the sanctum mandala, so the two
    rings read as separate layers of light instead of one spinning graphic. */
 .prabhavali-spin {
+  transform-origin: center center;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
   animation: spinSlow 90s linear infinite;
 }
 
-/* Applies to inline SVG flame groups; pivots from the wick so it sways, not scales */
+/* Applies to inline SVG flame groups; pivots from the wick so it sways, not scales.
+   GPU hardware accelerated without dynamic filter recalculations for steady 120 FPS */
 .flame-flicker {
   transform-box: fill-box;
   transform-origin: 50% 100%;
-  animation: flameFlicker 2.5s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  animation: flameFlicker 2.2s ease-in-out infinite alternate;
 }
 
 @keyframes spinSlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from { transform: rotate(0deg) translate3d(0, 0, 0); }
+  to { transform: rotate(360deg) translate3d(0, 0, 0); }
 }
 
 @keyframes spinSlowRev {
-  from { transform: rotate(360deg); }
-  to { transform: rotate(0deg); }
+  from { transform: rotate(360deg) translate3d(0, 0, 0); }
+  to { transform: rotate(0deg) translate3d(0, 0, 0); }
 }
 
 @keyframes flameFlicker {
-  0% { transform: scale(1, 1) skewX(0deg); opacity: 0.95; filter: drop-shadow(0 0 8px #f59e0b); }
-  25% { transform: scale(1.06, 0.95) skewX(1.6deg); opacity: 1; filter: drop-shadow(0 0 14px #fbbf24); }
-  50% { transform: scale(0.97, 1.06) skewX(-2deg); opacity: 0.9; filter: drop-shadow(0 0 10px #f59e0b); }
-  75% { transform: scale(1.03, 0.98) skewX(1.2deg); opacity: 1; filter: drop-shadow(0 0 16px #fbbf24); }
-  100% { transform: scale(1, 1) skewX(0deg); opacity: 0.95; filter: drop-shadow(0 0 8px #f59e0b); }
+  0% { transform: scale3d(1, 1, 1) skewX(0deg); opacity: 0.92; }
+  25% { transform: scale3d(1.05, 0.96, 1) skewX(1.4deg); opacity: 1; }
+  50% { transform: scale3d(0.98, 1.05, 1) skewX(-1.8deg); opacity: 0.88; }
+  75% { transform: scale3d(1.03, 0.98, 1) skewX(1deg); opacity: 1; }
+  100% { transform: scale3d(1, 1, 1) skewX(0deg); opacity: 0.92; }
 }
+
+/* GPU sparkle float animation running off-thread on compositor */
+@keyframes sparkleFloat {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(0.7);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate3d(var(--sx, 10px), -28px, 0) scale(1.1);
+    opacity: 0.95;
+  }
+}
+
+.sparkle-particle {
+  will-change: transform, opacity;
+  animation: sparkleFloat var(--dur, 3.5s) ease-in-out infinite;
+  animation-delay: var(--del, 0s);
+}
+
 /* Respect users who ask the OS to reduce motion */
 @media (prefers-reduced-motion: reduce) {
   .flame-flicker,
   .mandala-spin,
   .mandala-spin-reverse,
-  .prabhavali-spin {
-    animation: none;
+  .prabhavali-spin,
+  .sparkle-particle {
+    animation: none !important;
   }
 }

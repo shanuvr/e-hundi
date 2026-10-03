@@ -1,4 +1,4 @@
-// E-Hundi audio: temple bell, coin dropping into a hundi (onto other coins), banknote sliding in.
+// E-Hundi audio: temple bell (brass ghanta), coin dropping into a hundi, banknote sliding in.
 // Drop-in replacement: same exports (playTempleBell, playCoinDrop, playNoteDrop).
 // Call from a user tap (browsers block audio otherwise).
 
@@ -50,8 +50,11 @@ const getContext = () => {
 
 const rand = (a, b) => a + Math.random() * (b - a);
 
-// short filtered noise burst
-const noiseBurst = (t, { type = 'highpass', freq = 4000, q = 0.7, gain = 0.2, dur = 0.01, wet = 0.3 }) => {
+// short filtered noise burst (attack is configurable so it can also make soft swooshes)
+const noiseBurst = (
+  t,
+  { type = 'highpass', freq = 4000, q = 0.7, gain = 0.2, dur = 0.01, wet = 0.3, attack = 0.0015 }
+) => {
   const src = ctx.createBufferSource();
   src.buffer = noiseBuf;
   const f = ctx.createBiquadFilter();
@@ -60,7 +63,7 @@ const noiseBurst = (t, { type = 'highpass', freq = 4000, q = 0.7, gain = 0.2, du
   f.Q.value = q;
   const g = ctx.createGain();
   g.gain.setValueAtTime(0.0001, t);
-  g.gain.linearRampToValueAtTime(gain, t + 0.0015);
+  g.gain.linearRampToValueAtTime(gain, t + attack);
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   src.connect(f);
   f.connect(g);
@@ -112,25 +115,72 @@ const clink = (t, { freq, gain, decay, body = false, wet = 0.4 }) => {
   }
 };
 
-// 🔔 Temple bell
+// ---------------------------------------------------------------------------
+// 🔔 Temple bell (cast brass ghanta)
+// Real bells are inharmonic: partials are NOT whole-number multiples, which is what
+// makes it sound like metal instead of a piano/organ. Each partial is doubled with a
+// tiny detune so it "beats" (the shimmering wobble of a real bell). Higher partials
+// die fast, the fundamental and hum ring long. A bright clapper strike starts it.
+// ---------------------------------------------------------------------------
+const BELL_BASE = 660; // pitch of the bell (Hz). Lower = bigger bell, higher = smaller bell.
+const BELL_STRIKES = 2; // temple bells are usually rung 2 times: ding... ding
+
+// [ratio to base, loudness, ring time in seconds]
+const BELL_PARTIALS = [
+  [0.5, 0.3, 4.5], // hum tone
+  [1.0, 0.6, 5.0], // prime / main note
+  [1.19, 0.35, 3.8], // minor-third tierce (gives the bell its colour)
+  [1.5, 0.25, 3.2],
+  [2.0, 0.4, 3.0], // nominal
+  [2.76, 0.35, 2.2],
+  [4.07, 0.28, 1.5],
+  [5.43, 0.2, 1.0],
+  [6.8, 0.14, 0.7],
+  [8.93, 0.09, 0.45],
+];
+
+const bellStrike = (t, strength) => {
+  const out = ctx.createGain();
+  out.gain.value = 0.32 * strength;
+  out.connect(master);
+
+  // long hall-like tail
+  const send = ctx.createGain();
+  send.gain.value = 0.5;
+  out.connect(send);
+  send.connect(reverbIn);
+
+  BELL_PARTIALS.forEach(([ratio, amp, ring]) => {
+    const f = BELL_BASE * ratio;
+    // two slightly detuned oscillators per partial -> natural beating shimmer
+    [-1, 1].forEach((sign) => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = f + sign * rand(0.8, 2.6);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(amp * 0.5, t + 0.002); // instant metallic attack
+      g.gain.exponentialRampToValueAtTime(amp * 0.5 * 0.35, t + 0.08); // quick drop after the hit
+      g.gain.exponentialRampToValueAtTime(0.0001, t + ring);
+      osc.connect(g);
+      g.connect(out);
+      osc.start(t);
+      osc.stop(t + ring + 0.05);
+    });
+  });
+
+  // clapper hitting brass: bright "tink" + metallic body knock
+  noiseBurst(t, { type: 'highpass', freq: 3500, gain: 0.5 * strength, dur: 0.03, wet: 0.4 });
+  noiseBurst(t, { type: 'bandpass', freq: 1800, q: 3, gain: 0.35 * strength, dur: 0.06, wet: 0.4 });
+};
+
 export const playTempleBell = () => {
   try {
     if (!getContext()) return;
-    const now = ctx.currentTime;
-    const freqs = [440, 880, 1320, 1760, 2640, 3520];
-    const gains = [0.4, 0.25, 0.15, 0.08, 0.04, 0.02];
-    freqs.forEach((f, i) => {
-      const osc = ctx.createOscillator();
-      const g = ctx.createGain();
-      osc.type = i % 2 === 0 ? 'sine' : 'triangle';
-      osc.frequency.value = f + rand(-2, 2);
-      g.gain.setValueAtTime(gains[i], now);
-      g.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
-      osc.connect(g);
-      g.connect(master);
-      osc.start(now);
-      osc.stop(now + 3.3);
-    });
+    const now = ctx.currentTime + 0.01;
+    for (let i = 0; i < BELL_STRIKES; i++) {
+      bellStrike(now + i * 0.7, i === 0 ? 1 : 0.8);
+    }
   } catch (e) {
     console.error('Temple bell audio error:', e);
   }
@@ -182,36 +232,47 @@ export const playCoinDrop = (value = 10) => {
   }
 };
 
-// 💵 Banknote: crinkle, slide through the slot, soft landing on the pile
+// 💵 Banknote: crisp paper flick, swoosh through the slot, crinkle, soft landing on the pile
+// Rebuilt to be clearly audible on phone speakers: energy sits in the 1.5-6 kHz range
+// (small speakers can't reproduce deep lows) and the swoosh now has a real attack/decay
+// envelope instead of an instant fade.
 export const playNoteDrop = () => {
   try {
     if (!getContext()) return;
-    const now = ctx.currentTime;
+    const now = ctx.currentTime + 0.01;
 
-    // paper slide (soft swoosh)
-    noiseBurst(now, { type: 'bandpass', freq: 3200, q: 0.6, gain: 0.14, dur: 0.28, wet: 0.15 });
-    noiseBurst(now + 0.05, { type: 'highpass', freq: 6000, q: 0.5, gain: 0.06, dur: 0.22, wet: 0.1 });
+    // initial paper flick
+    noiseBurst(now, { type: 'bandpass', freq: 4500, q: 0.8, gain: 0.7, dur: 0.05, wet: 0.15 });
+
+    // main swoosh of the note sliding through the slot (rises then fades)
+    noiseBurst(now + 0.02, {
+      type: 'bandpass', freq: 2600, q: 0.7, gain: 0.55, dur: 0.34, wet: 0.2, attack: 0.1,
+    });
+    noiseBurst(now + 0.04, {
+      type: 'highpass', freq: 5500, q: 0.5, gain: 0.3, dur: 0.3, wet: 0.15, attack: 0.12,
+    });
 
     // crinkle grains (paper creasing)
-    const grains = 16;
-    for (let i = 0; i < grains; i++) {
-      const t = now + rand(0, 0.34);
+    for (let i = 0; i < 20; i++) {
+      const t = now + rand(0.02, 0.38);
       noiseBurst(t, {
         type: 'bandpass',
-        freq: rand(2500, 8000),
-        q: rand(0.7, 1.6),
-        gain: rand(0.05, 0.22),
-        dur: rand(0.004, 0.014),
+        freq: rand(2000, 7000),
+        q: rand(0.8, 2),
+        gain: rand(0.25, 0.6),
+        dur: rand(0.006, 0.018),
         wet: 0.15,
       });
     }
 
-    // soft landing on top of the pile inside the hundi
-    const land = now + 0.3;
-    noiseBurst(land, { type: 'lowpass', freq: 900, q: 0.7, gain: 0.16, dur: 0.1, wet: 0.5 });
-    noiseBurst(land, { type: 'bandpass', freq: 620, q: 5, gain: 0.07, dur: 0.15, wet: 0.6 });
+    // soft landing on the pile: mid-range "pap" (audible on small speakers) + hollow box ring
+    const land = now + 0.36;
+    noiseBurst(land, { type: 'bandpass', freq: 1100, q: 1.2, gain: 0.6, dur: 0.12, wet: 0.5 });
+    noiseBurst(land, { type: 'bandpass', freq: 650, q: 5, gain: 0.3, dur: 0.18, wet: 0.6 });
+    noiseBurst(land, { type: 'highpass', freq: 3500, gain: 0.25, dur: 0.05, wet: 0.3 });
     // a couple of coins shift under the note
-    clink(land + 0.03, { freq: rand(2000, 3000), gain: 0.05, decay: 0.08, wet: 0.5 });
+    clink(land + 0.03, { freq: rand(2000, 3000), gain: 0.12, decay: 0.1, wet: 0.5 });
+    clink(land + 0.07, { freq: rand(2400, 3600), gain: 0.08, decay: 0.08, wet: 0.5 });
   } catch (e) {
     console.error('Note audio error:', e);
   }

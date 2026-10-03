@@ -16,23 +16,39 @@ export const preloadAssets = () => {
   if (hasPreloaded || typeof window === 'undefined') return;
   hasPreloaded = true;
 
-  // Use requestIdleCallback or immediate execution to preload without blocking the initial render
-  const runPreload = () => {
-    ASSETS_TO_PRELOAD.forEach((src) => {
+  // Defer preloading slightly so the welcome screen 120fps entrance animation finishes first
+  const schedulePreload = () => {
+    let index = 0;
+    const preloadNext = () => {
+      if (index >= ASSETS_TO_PRELOAD.length) return;
+      const src = ASSETS_TO_PRELOAD[index++];
       const img = new Image();
       img.src = src;
-      // img.decode() forces the browser to decompress the image into GPU texture ahead of time
       if ('decode' in img) {
-        img.decode().catch(() => {
-          // Ignore decode errors for fallback
-        });
+        img.decode()
+          .catch(() => {})
+          .finally(() => {
+            // Load subsequent assets with slight pacing to keep 120fps frame budget free
+            if ('requestIdleCallback' in window) {
+              window.requestIdleCallback(preloadNext, { timeout: 400 });
+            } else {
+              setTimeout(preloadNext, 30);
+            }
+          });
+      } else {
+        setTimeout(preloadNext, 30);
       }
-    });
+    };
+
+    preloadNext();
   };
 
-  if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(runPreload, { timeout: 1000 });
-  } else {
-    setTimeout(runPreload, 100);
-  }
+  // Wait 400ms after initial mount before starting asset ingestion
+  setTimeout(() => {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(schedulePreload, { timeout: 1500 });
+    } else {
+      setTimeout(schedulePreload, 200);
+    }
+  }, 400);
 };

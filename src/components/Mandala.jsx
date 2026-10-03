@@ -15,7 +15,7 @@ export default function Mandala({ className = '' }) {
   return (
     <svg
       viewBox="0 0 200 200"
-      className={className}
+      className={`transform-gpu will-change-transform ${className}`}
       fill="none"
       aria-hidden="true"
       focusable="false"

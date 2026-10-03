@@ -11,7 +11,7 @@ export default function Diya({ className = '' }) {
   return (
     <svg
       viewBox="-6 -6 76 68"
-      className={className}
+      className={`transform-gpu will-change-transform ${className}`}
       fill="none"
       aria-hidden="true"
       focusable="false"
