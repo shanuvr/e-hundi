@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Unlock, Video, Sparkles, Share2 } from 'lucide-react';
-import Mandala from '../components/Mandala';
+import { ArrowLeft, Unlock, Sparkles, Share2 } from 'lucide-react';
 import Label from '../components/Label';
 
 /* Where offerings are collected. Surfaces on the receipt; admin-configurable. */
@@ -22,6 +21,105 @@ const formatStamp = (d) =>
     minute: '2-digit',
     hour12: true,
   });
+
+const SLOKAS = [
+  {
+    id: 1,
+    tag: 'മഹാമൃത്യുഞ്ജയ മന്ത്രം',
+    badge: 'Maha Mrityunjaya',
+    text: '॥ ഓം ത്ര്യംബകം യജാമഹേ സുഗന്ധിം പുഷ്ടിവർധനം । ഉർവ്വാരുകമിവ ബന്ധനാന്മൃത്യോർമുക്ഷീയ മാഽമൃതാത് ॥',
+    translation: 'ദീർഘായുസ്സും സർവ്വ ദുരിതമുക്തിയും നൽകി ഭഗവാൻ അനുഗ്രഹിക്കട്ടെ',
+  },
+  {
+    id: 2,
+    tag: 'ശിവ സ്തോത്രം',
+    badge: 'Karpura Gauram',
+    text: '॥ കർപ്പൂര ഗൗരം കരുണാവതാരം സംസാരാസാരം ഭുജഗേന്ദ്രഹാരം । സദാ വസന്തം ഹൃദയാരവിന്ദേ ഭവം ഭവാനീ സഹിതം നമാമി ॥',
+    translation: 'ഭഗവാന്റെ ദിവ്യ സാന്നിധ്യവും കരുണയും സദാ കൂടെയുണ്ടാകട്ടെ',
+  },
+  {
+    id: 3,
+    tag: 'മഹാ ഗായത്രീ മന്ത്രം',
+    badge: 'Gayatri Mantra',
+    text: '॥ ഓം ഭൂർ ഭുവഃ സ്വഃ തത് സവിതുർ വരേണ്യം । ഭർഗോ ദേവസ്യ ധീമഹി ധിയോ യോ നഃ പ്രചോദയാത് ॥',
+    translation: 'ജ്ഞാനവും ആയുരാരോഗ്യ സൗഖ്യവും ഭഗവാൻ പ്രദാനം ചെയ്യട്ടെ',
+  },
+  {
+    id: 4,
+    tag: 'ശാന്തി മന്ത്രം',
+    badge: 'Universal Peace',
+    text: '॥ സർവ്വേ ഭവന്തു സുഖിനഃ സർവ്വേ സന്തു നിരാമയാഃ । സർവ്വേ ഭദ്രാനി പശ്യന്തു മാ കശ്ചിദ് ദുഃഖ ഭാഗ്ഭവേത് ॥',
+    translation: 'കുടുംബത്തിൽ സർവ്വ ഐശ്വര്യങ്ങളും ശാന്തിയും സമാധാനവും നിറയട്ടെ',
+  },
+  {
+    id: 5,
+    tag: 'ഭക്ത സമർപ്പണാനുഗ്രഹം',
+    badge: 'Divine Blessings',
+    text: '॥ ഓം നമഃ ശിവായ ശുഭായ സദാശിവായ । ഹര ഹര മഹാദേവ ॥',
+    translation: 'നിങ്ങളുടെ സമർപ്പണം ഭഗവാൻ സ്വീകരിച്ചിരിക്കുന്നു. പ്രാർത്ഥനകൾ സഫലമാകട്ടെ',
+  },
+];
+
+function SloganVerticalTicker() {
+  // Duplicate for seamless 360-degree continuous loop
+  const tickerItems = [...SLOKAS, ...SLOKAS];
+
+  return (
+    <div className="relative w-full h-full min-h-[280px] max-h-[390px] flex flex-col items-center overflow-hidden rounded-2xl bg-black/75 border border-amber-400/40 shadow-[inset_0_1px_0_rgba(255,240,200,0.25),0_10px_30px_rgba(0,0,0,0.8)] backdrop-blur-md">
+      {/* Top Live Ticker Header */}
+      <div className="w-full z-20 flex items-center justify-between px-3 py-1.5 bg-stone-950/95 border-b border-amber-400/30">
+        <div className="flex items-center gap-1.5">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
+          </span>
+          <span className="font-malayalam text-[10.5px] sm:text-[11.5px] font-bold text-amber-200 tracking-wide">
+            ദിവ്യ മന്ത്ര ധ്വനി
+          </span>
+        </div>
+        <span className="text-[8.5px] uppercase tracking-[0.2em] font-semibold text-amber-300/85">
+          Devotional Chants
+        </span>
+      </div>
+
+      {/* Upward Scrolling News-Style Viewport with Soft Vertical Fade Masks */}
+      <div
+        className="relative w-full flex-1 overflow-hidden px-3"
+        style={{
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%)',
+        }}
+      >
+        <div className="slogan-ticker-scroll flex flex-col gap-3 py-2">
+          {tickerItems.map((item, idx) => (
+            <div
+              key={`${item.id}-${idx}`}
+              className="flex flex-col items-center text-center px-2 py-2.5 rounded-xl bg-gradient-to-b from-stone-900/80 to-black/90 border border-amber-400/25 shadow-sm"
+            >
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/35 mb-1.5">
+                <span className="font-malayalam text-[9.5px] font-bold text-amber-200">
+                  {item.tag}
+                </span>
+                <span className="text-amber-400/60 font-bold">&middot;</span>
+                <span className="text-[8px] uppercase tracking-wider text-amber-100 font-semibold">
+                  {item.badge}
+                </span>
+              </div>
+
+              <p className="font-malayalam text-xs sm:text-[13px] font-bold text-amber-100 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] px-1">
+                {item.text}
+              </p>
+
+              <p className="font-malayalam text-[10px] sm:text-[11px] font-medium text-amber-300/90 mt-1 leading-normal">
+                {item.translation}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /** The "payment successful" pop. Dismiss it to reveal the Darshan screen behind. */
 function SuccessDialog({ amount, templeName, receipt, paidAt, onViewDarshan, onReset }) {
@@ -192,55 +290,15 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
         >
           നിങ്ങളുടെ സമർപ്പണം ദൈവം സ്വീകരിച്ചു
         </motion.p>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.65 }}
-          transition={{ delay: 0.25, duration: 0.5 }}
-          className="mt-0.5 text-[8.5px] uppercase tracking-[0.25em] text-amber-200/80 font-medium"
-        >
-          Your Offering Has Been Received
-        </motion.p>
       </div>
 
-      {/* Darshan medallion, unlocked */}
+      {/* Devotional Slogan Upward News-Style Ticker */}
       <div className="relative z-10 w-full flex-1 min-h-0 flex items-center justify-center py-2">
-        <div className="relative w-[190px] h-[190px] sm:w-[220px] sm:h-[220px] flex items-center justify-center">
-          <Mandala className="absolute inset-0 w-full h-full opacity-70" />
-          <motion.div
-            className="absolute w-36 h-36 rounded-full bg-amber-500/30 blur-3xl pointer-events-none"
-            animate={{ scale: [1, 1.18, 1], opacity: [0.5, 0.85, 0.5] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <motion.span
-            className="relative font-om text-5xl sm:text-6xl text-amber-100 select-none"
-            animate={{
-              filter: [
-                'drop-shadow(0 0 8px rgba(251,191,36,0.6))',
-                'drop-shadow(0 0 22px rgba(245,158,11,0.95))',
-                'drop-shadow(0 0 8px rgba(251,191,36,0.6))',
-              ],
-            }}
-            transition={{ duration: 2.6, repeat: Infinity }}
-          >
-            ॐ
-          </motion.span>
-
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 220, damping: 16, delay: 0.35 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label="Watch darshan"
-            className="absolute w-12 h-12 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 text-stone-950 border border-amber-100/60 shadow-[0_0_28px_rgba(245,158,11,0.6)] flex items-center justify-center cursor-pointer"
-          >
-            <Video className="w-5 h-5" />
-          </motion.button>
-        </div>
+        <SloganVerticalTicker />
       </div>
 
       {/* Receipt summary */}
       <div className="relative z-10 w-full shrink-0">
-        <Label>Offering Summary</Label>
         <div className="w-full overflow-hidden rounded-2xl bg-black/40 border border-amber-400/30 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
           <div className="flex items-center gap-3 px-4 py-2.5 border-b border-amber-400/15">
             <div className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-br from-amber-400/30 to-amber-700/20 border border-amber-400/30 flex items-center justify-center">

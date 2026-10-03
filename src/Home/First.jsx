@@ -91,20 +91,12 @@ export default function First({ templeName = "ശ്രീ മഹാദേവ �
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
               className="absolute inset-0 rounded-full bg-amber-400/20 blur-sm pointer-events-none transform-gpu"
             />
-            <svg
-              viewBox="0 0 100 100"
-              className="w-24 h-24 sm:w-28 sm:h-28 select-none relative z-10 drop-shadow-[0_0_18px_rgba(251,191,36,0.95)]"
-            >
-              <text
-                x="50"
-                y="59"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="font-om font-bold text-[56px] fill-amber-100"
-              >
+            {/* Perfectly centered sacred Om symbol */}
+            <div className="relative z-10 flex items-center justify-center w-full h-full select-none pointer-events-none">
+              <span className="font-om font-bold text-[54px] sm:text-[60px] leading-none text-amber-100 drop-shadow-[0_0_18px_rgba(251,191,36,0.95)] translate-y-[13px] sm:translate-y-[15px] translate-x-[1px]">
                 ॐ
-              </text>
-            </svg>
+              </span>
+            </div>
           </motion.div>
 
           {/* Lotus plinth — seats the ॐ instead of leaving it floating */}

@@ -115,13 +115,34 @@
   animation-delay: var(--del, 0s);
 }
 
+/* GPU vertical scrolling news-ticker animation for sacred slogans */
+@keyframes scrollUpTicker {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+.slogan-ticker-scroll {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  animation: scrollUpTicker 28s linear infinite;
+}
+
+.slogan-ticker-scroll:hover {
+  animation-play-state: paused;
+}
+
 /* Respect users who ask the OS to reduce motion */
 @media (prefers-reduced-motion: reduce) {
   .flame-flicker,
   .mandala-spin,
   .mandala-spin-reverse,
   .prabhavali-spin,
-  .sparkle-particle {
+  .sparkle-particle,
+  .slogan-ticker-scroll {
     animation: none !important;
   }
 }
