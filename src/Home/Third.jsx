@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Unlock, Sparkles, Share2, Volume2, VolumeX, Maximize2, X } from 'lucide-react';
-import { startDevotionalChant, stopDevotionalChant, isDevotionalChantPlaying } from '../utils/audio';
 
 /* Where offerings are collected. Surfaces on the receipt; admin-configurable. */
 const UPI_ID = 'shrimahadeva@upi';
@@ -121,36 +120,54 @@ function SilentDarshanVideo({ src, fallbackTitle, titleMalayalam, tag, onExpand 
   );
 }
 
-/** Devotional Media Bar: Left Speaker (Chant) + Center Silent Video + Right Silent Video */
+/** Devotional Media Bar: Left Speaker (Audio Ready) + Center Silent Video + Right Silent Video */
 function DevotionalMediaBar({ onOpenVideo }) {
-  const [chanting, setChanting] = useState(() => isDevotionalChantPlaying());
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
 
-  const handleToggleChant = () => {
-    if (chanting) {
-      stopDevotionalChant();
-      setChanting(false);
-    } else {
-      const started = startDevotionalChant();
-      if (started) setChanting(true);
-    }
+  const handleToggleAudio = () => {
+    setIsPlaying((prev) => {
+      const next = !prev;
+      if (audioRef.current) {
+        if (next) {
+          audioRef.current.play().catch(() => {
+            // Gracefully handled if audio.mp3 has not been uploaded yet
+          });
+        } else {
+          audioRef.current.pause();
+        }
+      }
+      return next;
+    });
   };
 
   return (
     <div className="w-full px-2 py-1.5 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/30 shrink-0">
+      {/* Hidden audio tag wired to /audio.mp3 for when you upload your audio file */}
+      <audio
+        ref={audioRef}
+        src="/audio.mp3"
+        loop
+        preload="none"
+        onEnded={() => setIsPlaying(false)}
+        onError={() => {
+          // If audio.mp3 is not found yet, fails silently
+        }}
+      />
       <div className="flex items-center gap-1.5 w-full">
-        {/* 1. Left: Speaker Button for Devotional Chants Audio */}
+        {/* 1. Left: Speaker Button for Devotional Audio */}
         <motion.button
-          onClick={handleToggleChant}
+          onClick={handleToggleAudio}
           whileTap={{ scale: 0.94 }}
-          aria-label={chanting ? 'Mute Devotional Chants' : 'Play Devotional Chants'}
+          aria-label={isPlaying ? 'Mute Devotional Audio' : 'Play Devotional Audio'}
           className={`relative flex-1 min-w-0 h-[42px] sm:h-[46px] rounded-lg flex flex-col items-center justify-center px-1 py-0.5 border transition-all cursor-pointer shadow-sm ${
-            chanting
+            isPlaying
               ? 'bg-gradient-to-b from-amber-500/25 via-amber-900/30 to-black/90 border-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)]'
               : 'bg-stone-900/90 hover:bg-stone-800/90 border-amber-400/40 text-stone-300'
           }`}
         >
-          {/* Animated Glow Halo when chanting */}
-          {chanting && (
+          {/* Animated Glow Halo when active */}
+          {isPlaying && (
             <motion.span
               animate={{ opacity: [0.3, 0.7, 0.3] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
@@ -160,7 +177,7 @@ function DevotionalMediaBar({ onOpenVideo }) {
 
           {/* Speaker Icon + Sound Wave equalizer */}
           <div className="relative flex items-center justify-center gap-1">
-            {chanting ? (
+            {isPlaying ? (
               <>
                 <Volume2 className="w-3.5 h-3.5 text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.8)] animate-pulse shrink-0" />
                 {/* 3 Animated Equalizer Wave Bars */}
@@ -190,8 +207,8 @@ function DevotionalMediaBar({ onOpenVideo }) {
           <p className="font-malayalam text-[8px] font-bold text-amber-100 leading-tight truncate w-full text-center mt-0.5">
             മന്ത്ര ധ്വനി
           </p>
-          <span className={`text-[6px] uppercase tracking-wider font-semibold leading-none ${chanting ? 'text-amber-300 animate-pulse' : 'text-amber-200/50'}`}>
-            {chanting ? 'Playing' : 'Chants'}
+          <span className={`text-[6px] uppercase tracking-wider font-semibold leading-none ${isPlaying ? 'text-amber-300 animate-pulse' : 'text-amber-200/50'}`}>
+            {isPlaying ? 'Playing' : 'Chants'}
           </span>
         </motion.button>
 
@@ -470,19 +487,14 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
       }
     };
     window.addEventListener('keydown', onKey);
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      stopDevotionalChant();
-    };
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   const handleBack = () => {
-    stopDevotionalChant();
     if (onBack) onBack();
   };
 
   const handleReset = () => {
-    stopDevotionalChant();
     if (onReset) onReset();
   };
 
