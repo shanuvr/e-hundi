@@ -75,7 +75,7 @@ function SilentDarshanVideo({ src, fallbackTitle, titleMalayalam, tag, onExpand 
   return (
     <div
       onClick={onExpand}
-      className="group relative flex-1 min-w-0 h-[42px] sm:h-[46px] rounded-lg overflow-hidden border border-amber-400/40 bg-stone-950 shadow-[0_2px_8px_rgba(0,0,0,0.7)] cursor-pointer hover:border-amber-300 transition-all active:scale-[0.97]"
+      className="group relative w-[76px] sm:w-[82px] h-[30px] sm:h-[32px] shrink-0 rounded-lg overflow-hidden border border-amber-400/40 bg-stone-950 shadow-sm cursor-pointer hover:border-amber-300 transition-all active:scale-[0.97]"
       title={`Watch ${fallbackTitle}`}
     >
       {/* Video stream (Always strictly muted for silent playback) */}
@@ -93,26 +93,30 @@ function SilentDarshanVideo({ src, fallbackTitle, titleMalayalam, tag, onExpand 
       ) : null}
 
       {/* Decorative Sacred Golden Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/50 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/60 pointer-events-none" />
 
-      {/* Center Sacred Diya Flame icon animation */}
+      {/* Center Sacred Diya icon animation */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <span className="text-amber-300 drop-shadow-[0_0_6px_rgba(245,158,11,0.9)] text-[11px]">
+        <span className="text-amber-300 drop-shadow-[0_0_4px_rgba(245,158,11,0.9)] text-[10px]">
           🪔
         </span>
       </div>
 
-      {/* Top Badge */}
-      <div className="absolute top-0.5 left-1 right-1 flex items-center justify-between pointer-events-none z-10">
-        <span className="px-1 py-0 rounded bg-black/80 border border-amber-400/40 font-malayalam text-[7px] font-bold text-amber-200 truncate">
+      {/* Left Title Badge */}
+      <div className="absolute top-0.5 left-1 pointer-events-none z-10">
+        <span className="font-malayalam text-[7px] font-bold text-amber-200 drop-shadow-sm truncate block">
           {titleMalayalam}
         </span>
-        <Maximize2 className="w-2 h-2 text-amber-300/80 group-hover:text-amber-100 transition-colors shrink-0" />
+      </div>
+
+      {/* Right Expand Icon */}
+      <div className="absolute top-0.5 right-1 pointer-events-none z-10">
+        <Maximize2 className="w-2 h-2 text-amber-300/80 group-hover:text-amber-100 transition-colors" />
       </div>
 
       {/* Bottom Subtitle */}
       <div className="absolute bottom-0.5 inset-x-1 text-center pointer-events-none z-10">
-        <span className="text-[6.5px] uppercase tracking-wider text-amber-100/90 font-semibold truncate block drop-shadow-md">
+        <span className="text-[6px] uppercase tracking-wider text-amber-100/90 font-semibold truncate block drop-shadow-md">
           {tag}
         </span>
       </div>
@@ -142,7 +146,7 @@ function DevotionalMediaBar({ onOpenVideo }) {
   };
 
   return (
-    <div className="w-full px-2 py-1.5 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/30 shrink-0">
+    <div className="w-full px-2 py-1 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/25 shrink-0 flex items-center justify-center">
       {/* Hidden audio tag wired to /audio.mp3 for when you upload your audio file */}
       <audio
         ref={audioRef}
@@ -154,69 +158,51 @@ function DevotionalMediaBar({ onOpenVideo }) {
           // If audio.mp3 is not found yet, fails silently
         }}
       />
-      <div className="flex items-center gap-1.5 w-full">
-        {/* 1. Left: Speaker Button for Devotional Audio */}
+      <div className="flex items-center justify-center gap-3 sm:gap-4 max-w-full">
+        {/* 1. Left: Compact Reduced-Width Speaker Button for Devotional Audio */}
         <motion.button
           onClick={handleToggleAudio}
           whileTap={{ scale: 0.94 }}
           aria-label={isPlaying ? 'Mute Devotional Audio' : 'Play Devotional Audio'}
-          className={`relative flex-1 min-w-0 h-[42px] sm:h-[46px] rounded-lg flex flex-col items-center justify-center px-1 py-0.5 border transition-all cursor-pointer shadow-sm ${
+          className={`relative w-[76px] sm:w-[82px] h-[30px] sm:h-[32px] shrink-0 rounded-lg flex items-center justify-center gap-1 px-1 py-0.5 border transition-all cursor-pointer shadow-sm ${
             isPlaying
-              ? 'bg-gradient-to-b from-amber-500/25 via-amber-900/30 to-black/90 border-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)]'
-              : 'bg-stone-900/90 hover:bg-stone-800/90 border-amber-400/40 text-stone-300'
+              ? 'bg-gradient-to-b from-amber-500/25 via-amber-900/30 to-black/90 border-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.25)]'
+              : 'bg-stone-900/90 hover:bg-stone-800/90 border-amber-400/35 text-stone-300'
           }`}
         >
           {/* Animated Glow Halo when active */}
           {isPlaying && (
             <motion.span
-              animate={{ opacity: [0.3, 0.7, 0.3] }}
+              animate={{ opacity: [0.25, 0.6, 0.25] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
               className="absolute inset-0 rounded-lg bg-amber-400/15 pointer-events-none"
             />
           )}
 
           {/* Speaker Icon + Sound Wave equalizer */}
-          <div className="relative flex items-center justify-center gap-1">
+          <div className="relative flex items-center justify-center shrink-0">
             {isPlaying ? (
-              <>
-                <Volume2 className="w-3.5 h-3.5 text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.8)] animate-pulse shrink-0" />
-                {/* 3 Animated Equalizer Wave Bars */}
-                <div className="flex items-end gap-0.5 h-2.5">
-                  <motion.span
-                    animate={{ height: ['2px', '9px', '3px', '7px', '2px'] }}
-                    transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
-                    className="w-0.5 rounded-full bg-amber-300"
-                  />
-                  <motion.span
-                    animate={{ height: ['6px', '2px', '10px', '4px', '6px'] }}
-                    transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut', delay: 0.15 }}
-                    className="w-0.5 rounded-full bg-amber-200"
-                  />
-                  <motion.span
-                    animate={{ height: ['3px', '10px', '4px', '8px', '3px'] }}
-                    transition={{ duration: 1.3, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
-                    className="w-0.5 rounded-full bg-amber-400"
-                  />
-                </div>
-              </>
+              <Volume2 className="w-3 h-3 text-amber-300 drop-shadow-[0_0_4px_rgba(251,191,36,0.8)] animate-pulse" />
             ) : (
-              <VolumeX className="w-3.5 h-3.5 text-amber-200/60 shrink-0" />
+              <VolumeX className="w-3 h-3 text-amber-200/60" />
             )}
           </div>
 
-          <p className="font-malayalam text-[8px] font-bold text-amber-100 leading-tight truncate w-full text-center mt-0.5">
-            മന്ത്ര ധ്വനി
-          </p>
-          <span className={`text-[6px] uppercase tracking-wider font-semibold leading-none ${isPlaying ? 'text-amber-300 animate-pulse' : 'text-amber-200/50'}`}>
-            {isPlaying ? 'Playing' : 'Chants'}
-          </span>
+          <div className="min-w-0 flex flex-col items-start leading-none text-left">
+            <span className="font-malayalam text-[7.5px] font-bold text-amber-100 truncate w-full">
+              മന്ത്ര ധ്വനി
+            </span>
+            <span className={`text-[5.5px] uppercase tracking-wider font-semibold mt-0.5 ${isPlaying ? 'text-amber-300 animate-pulse' : 'text-amber-200/50'}`}>
+              {isPlaying ? 'Playing' : 'Audio'}
+            </span>
+          </div>
         </motion.button>
 
-        {/* 2. Center: Silent Video Player (Aarti Darshan) */}
+        {/* 2. Center: Reduced-Width Silent Video Player (Aarti Darshan) */}
         <SilentDarshanVideo
           src="https://assets.mixkit.co/videos/preview/mixkit-oil-lamp-burning-in-the-dark-42475-large.mp4"
           titleMalayalam="ദർശനം"
-          tag="Aarti Video"
+          tag="Aarti"
           fallbackTitle="Temple Aarti Darshan"
           onExpand={() =>
             onOpenVideo({
@@ -227,11 +213,11 @@ function DevotionalMediaBar({ onOpenVideo }) {
           }
         />
 
-        {/* 3. Right: Silent Video Player (Sanctum Deeparadhana) */}
+        {/* 3. Right: Reduced-Width Silent Video Player (Sanctum Deeparadhana) */}
         <SilentDarshanVideo
           src="https://assets.mixkit.co/videos/preview/mixkit-flame-of-a-burning-candle-close-up-41551-large.mp4"
           titleMalayalam="ദീപാരാധന"
-          tag="Sanctum Video"
+          tag="Sanctum"
           fallbackTitle="Sanctum Deeparadhana"
           onExpand={() =>
             onOpenVideo({
