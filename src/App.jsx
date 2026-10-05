@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import First from './Home/First';
 import Second from './Home/Second';
 import Third from './Home/Third';

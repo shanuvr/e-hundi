@@ -277,3 +277,125 @@ export const playNoteDrop = () => {
     console.error('Note audio error:', e);
   }
 };
+
+// 🕉️ Devotional Chant & Om Drone Synthesizer
+// Generates a deep, soothing meditative Om chant + Tanpura drone + gentle sacred harmonics
+let chantNodes = null;
+let chantInterval = null;
+
+export const startDevotionalChant = () => {
+  try {
+    const audio = getContext();
+    if (!audio) return false;
+    if (chantNodes) return true; // already active
+
+    const now = audio.currentTime;
+    const chantMaster = audio.createGain();
+    chantMaster.gain.setValueAtTime(0.0001, now);
+    chantMaster.gain.linearRampToValueAtTime(0.45, now + 1.2);
+    chantMaster.connect(master);
+
+    // Send to reverb for divine sanctum echo
+    const reverbSend = audio.createGain();
+    reverbSend.gain.value = 0.55;
+    chantMaster.connect(reverbSend);
+    reverbSend.connect(reverbIn);
+
+    const activeOscs = [];
+
+    // Sacred Vedic Om fundamental frequency (136.1 Hz - Earth Year frequency / Sadja)
+    const baseFreq = 136.1;
+    // Harmonic series creating rich vocal vowel "Ommm" timbre
+    const harmonics = [
+      { f: baseFreq * 0.5, type: 'sine', g: 0.35, detune: -4 },
+      { f: baseFreq, type: 'sine', g: 0.65, detune: 0 },
+      { f: baseFreq * 1.5, type: 'sine', g: 0.38, detune: 3 }, // Pancham (Fifth)
+      { f: baseFreq * 2.0, type: 'sine', g: 0.3, detune: -2 },  // Tar Shadja
+      { f: baseFreq * 3.0, type: 'triangle', g: 0.18, detune: 2 },
+    ];
+
+    harmonics.forEach(({ f, type, g, detune }) => {
+      const osc = audio.createOscillator();
+      const oscGain = audio.createGain();
+      osc.type = type;
+      osc.frequency.value = f;
+      osc.detune.value = detune;
+      oscGain.gain.value = g;
+
+      // Vocal formant filter (O/U vowel throat resonance)
+      const formant = audio.createBiquadFilter();
+      formant.type = 'bandpass';
+      formant.frequency.value = Math.min(800, f * 2.2);
+      formant.Q.value = 3.5;
+
+      osc.connect(formant);
+      formant.connect(oscGain);
+      oscGain.connect(chantMaster);
+      osc.start(now);
+      activeOscs.push(osc);
+    });
+
+    // Breathing swell LFO (creates rhythmic meditative wave)
+    const lfo = audio.createOscillator();
+    const lfoGain = audio.createGain();
+    lfo.frequency.value = 0.18; // ~5.5 second breath cycle
+    lfoGain.gain.value = 0.14;
+    lfo.connect(lfoGain);
+    lfoGain.connect(chantMaster.gain);
+    lfo.start(now);
+    activeOscs.push(lfo);
+
+    // Occasional gentle sacred bell chime while chanting
+    chantInterval = setInterval(() => {
+      if (chantNodes && ctx && ctx.state === 'running') {
+        bellStrike(ctx.currentTime + 0.1, 0.28);
+      }
+    }, 7500);
+
+    // Initial soft bell chime to start
+    bellStrike(now + 0.3, 0.45);
+
+    chantNodes = {
+      master: chantMaster,
+      oscs: activeOscs,
+    };
+    return true;
+  } catch (err) {
+    console.error('Error starting devotional chant:', err);
+    return false;
+  }
+};
+
+export const stopDevotionalChant = () => {
+  if (chantInterval) {
+    clearInterval(chantInterval);
+    chantInterval = null;
+  }
+  if (!chantNodes || !ctx) return;
+
+  try {
+    const now = ctx.currentTime;
+    chantNodes.master.gain.linearRampToValueAtTime(0.0001, now + 0.8);
+    setTimeout(() => {
+      if (chantNodes) {
+        chantNodes.oscs.forEach((o) => {
+          try {
+            o.stop();
+            o.disconnect();
+          } catch (e) {
+            void e;
+          }
+        });
+        chantNodes.master.disconnect();
+        chantNodes = null;
+      }
+    }, 850);
+  } catch (err) {
+    console.error('Error stopping chant:', err);
+    chantNodes = null;
+  }
+};
+
+export const isDevotionalChantPlaying = () => {
+  return chantNodes !== null;
+};

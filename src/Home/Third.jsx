@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Unlock, Sparkles, Share2 } from 'lucide-react';
-import Label from '../components/Label';
+import { ArrowLeft, Unlock, Sparkles, Share2, Volume2, VolumeX, Maximize2, X } from 'lucide-react';
+import { startDevotionalChant, stopDevotionalChant, isDevotionalChantPlaying } from '../utils/audio';
 
 /* Where offerings are collected. Surfaces on the receipt; admin-configurable. */
 const UPI_ID = 'shrimahadeva@upi';
@@ -60,7 +60,231 @@ const SLOKAS = [
   },
 ];
 
-function SloganVerticalTicker() {
+/** Resilient Silent Looping Devotional Video Component with Sacred Animated Flame Canvas */
+function SilentDarshanVideo({ src, fallbackTitle, titleMalayalam, tag, onExpand }) {
+  const [videoError, setVideoError] = useState(false);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {
+        // Autoplay policy fallback (silent videos generally autoplay fine)
+      });
+    }
+  }, [src]);
+
+  return (
+    <div
+      onClick={onExpand}
+      className="group relative flex-1 min-w-0 h-[42px] sm:h-[46px] rounded-lg overflow-hidden border border-amber-400/40 bg-stone-950 shadow-[0_2px_8px_rgba(0,0,0,0.7)] cursor-pointer hover:border-amber-300 transition-all active:scale-[0.97]"
+      title={`Watch ${fallbackTitle}`}
+    >
+      {/* Video stream (Always strictly muted for silent playback) */}
+      {!videoError && src ? (
+        <video
+          ref={videoRef}
+          src={src}
+          autoPlay
+          loop
+          muted
+          playsInline
+          onError={() => setVideoError(true)}
+          className="absolute inset-0 w-full h-full object-cover brightness-95 group-hover:scale-105 transition-transform duration-500"
+        />
+      ) : null}
+
+      {/* Decorative Sacred Golden Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/50 pointer-events-none" />
+
+      {/* Center Sacred Diya Flame icon animation */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <span className="text-amber-300 drop-shadow-[0_0_6px_rgba(245,158,11,0.9)] text-[11px]">
+          🪔
+        </span>
+      </div>
+
+      {/* Top Badge */}
+      <div className="absolute top-0.5 left-1 right-1 flex items-center justify-between pointer-events-none z-10">
+        <span className="px-1 py-0 rounded bg-black/80 border border-amber-400/40 font-malayalam text-[7px] font-bold text-amber-200 truncate">
+          {titleMalayalam}
+        </span>
+        <Maximize2 className="w-2 h-2 text-amber-300/80 group-hover:text-amber-100 transition-colors shrink-0" />
+      </div>
+
+      {/* Bottom Subtitle */}
+      <div className="absolute bottom-0.5 inset-x-1 text-center pointer-events-none z-10">
+        <span className="text-[6.5px] uppercase tracking-wider text-amber-100/90 font-semibold truncate block drop-shadow-md">
+          {tag}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/** Devotional Media Bar: Left Speaker (Chant) + Center Silent Video + Right Silent Video */
+function DevotionalMediaBar({ onOpenVideo }) {
+  const [chanting, setChanting] = useState(() => isDevotionalChantPlaying());
+
+  const handleToggleChant = () => {
+    if (chanting) {
+      stopDevotionalChant();
+      setChanting(false);
+    } else {
+      const started = startDevotionalChant();
+      if (started) setChanting(true);
+    }
+  };
+
+  return (
+    <div className="w-full px-2 py-1.5 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/30 shrink-0">
+      <div className="flex items-center gap-1.5 w-full">
+        {/* 1. Left: Speaker Button for Devotional Chants Audio */}
+        <motion.button
+          onClick={handleToggleChant}
+          whileTap={{ scale: 0.94 }}
+          aria-label={chanting ? 'Mute Devotional Chants' : 'Play Devotional Chants'}
+          className={`relative flex-1 min-w-0 h-[42px] sm:h-[46px] rounded-lg flex flex-col items-center justify-center px-1 py-0.5 border transition-all cursor-pointer shadow-sm ${
+            chanting
+              ? 'bg-gradient-to-b from-amber-500/25 via-amber-900/30 to-black/90 border-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)]'
+              : 'bg-stone-900/90 hover:bg-stone-800/90 border-amber-400/40 text-stone-300'
+          }`}
+        >
+          {/* Animated Glow Halo when chanting */}
+          {chanting && (
+            <motion.span
+              animate={{ opacity: [0.3, 0.7, 0.3] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute inset-0 rounded-lg bg-amber-400/15 pointer-events-none"
+            />
+          )}
+
+          {/* Speaker Icon + Sound Wave equalizer */}
+          <div className="relative flex items-center justify-center gap-1">
+            {chanting ? (
+              <>
+                <Volume2 className="w-3.5 h-3.5 text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.8)] animate-pulse shrink-0" />
+                {/* 3 Animated Equalizer Wave Bars */}
+                <div className="flex items-end gap-0.5 h-2.5">
+                  <motion.span
+                    animate={{ height: ['2px', '9px', '3px', '7px', '2px'] }}
+                    transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
+                    className="w-0.5 rounded-full bg-amber-300"
+                  />
+                  <motion.span
+                    animate={{ height: ['6px', '2px', '10px', '4px', '6px'] }}
+                    transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut', delay: 0.15 }}
+                    className="w-0.5 rounded-full bg-amber-200"
+                  />
+                  <motion.span
+                    animate={{ height: ['3px', '10px', '4px', '8px', '3px'] }}
+                    transition={{ duration: 1.3, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+                    className="w-0.5 rounded-full bg-amber-400"
+                  />
+                </div>
+              </>
+            ) : (
+              <VolumeX className="w-3.5 h-3.5 text-amber-200/60 shrink-0" />
+            )}
+          </div>
+
+          <p className="font-malayalam text-[8px] font-bold text-amber-100 leading-tight truncate w-full text-center mt-0.5">
+            മന്ത്ര ധ്വനി
+          </p>
+          <span className={`text-[6px] uppercase tracking-wider font-semibold leading-none ${chanting ? 'text-amber-300 animate-pulse' : 'text-amber-200/50'}`}>
+            {chanting ? 'Playing' : 'Chants'}
+          </span>
+        </motion.button>
+
+        {/* 2. Center: Silent Video Player (Aarti Darshan) */}
+        <SilentDarshanVideo
+          src="https://assets.mixkit.co/videos/preview/mixkit-oil-lamp-burning-in-the-dark-42475-large.mp4"
+          titleMalayalam="ദർശനം"
+          tag="Aarti Video"
+          fallbackTitle="Temple Aarti Darshan"
+          onExpand={() =>
+            onOpenVideo({
+              title: 'ശ്രീ മഹാദേവ ദർശനം · Aarti Darshan',
+              desc: 'Live sanctum holy Aarti & Deeparadhana visual offering',
+              src: 'https://assets.mixkit.co/videos/preview/mixkit-oil-lamp-burning-in-the-dark-42475-large.mp4',
+            })
+          }
+        />
+
+        {/* 3. Right: Silent Video Player (Sanctum Deeparadhana) */}
+        <SilentDarshanVideo
+          src="https://assets.mixkit.co/videos/preview/mixkit-flame-of-a-burning-candle-close-up-41551-large.mp4"
+          titleMalayalam="ദീപാരാധന"
+          tag="Sanctum Video"
+          fallbackTitle="Sanctum Deeparadhana"
+          onExpand={() =>
+            onOpenVideo({
+              title: 'ദീപാരാധന സമർപ്പണം · Sanctum Aarti',
+              desc: 'Divine holy light ceremony & blessing flame',
+              src: 'https://assets.mixkit.co/videos/preview/mixkit-flame-of-a-burning-candle-close-up-41551-large.mp4',
+            })
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
+/** Devotional Expanded Video Modal */
+function VideoModal({ video, onClose }) {
+  if (!video) return null;
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[120] flex items-center justify-center p-3.5 bg-black/90 backdrop-blur-md"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="absolute inset-0" onClick={onClose} />
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="relative w-full max-w-[340px] rounded-3xl overflow-hidden bg-stone-950 border border-amber-400/50 shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(245,158,11,0.3)] p-4 text-center z-10"
+      >
+        <button
+          onClick={onClose}
+          aria-label="Close Video"
+          className="absolute top-3 right-3 p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-stone-300 hover:text-amber-200 transition-colors z-20 cursor-pointer"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden border border-amber-400/30 bg-black relative mb-3">
+          <video
+            src={video.src}
+            autoPlay
+            loop
+            muted
+            playsInline
+            controls
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        <h3 className="font-malayalam text-sm font-bold text-amber-100 leading-tight mb-1">
+          {video.title}
+        </h3>
+        <p className="text-[10px] text-stone-300 leading-normal">{video.desc}</p>
+
+        <button
+          onClick={onClose}
+          className="w-full mt-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold font-malayalam text-xs cursor-pointer active:scale-95 transition-transform"
+        >
+          ശരി / Close
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function SloganVerticalTicker({ onOpenVideo }) {
   // Duplicate for seamless 360-degree continuous loop
   const tickerItems = [...SLOKAS, ...SLOKAS];
 
@@ -94,7 +318,7 @@ function SloganVerticalTicker() {
           {tickerItems.map((item, idx) => (
             <div
               key={`${item.id}-${idx}`}
-              className="flex flex-col items-center text-center px-3 py-2.5 rounded-xl bg-gradient-to-b from-stone-900/80 to-black/90 border border-amber-400/25 shadow-sm"
+              className="flex flex-col items-center text-center px-3 py-2 rounded-xl bg-gradient-to-b from-stone-900/80 to-black/90 border border-amber-400/25 shadow-sm"
             >
               <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/35 mb-1">
                 <span className="font-malayalam text-[9px] font-bold text-amber-200">
@@ -117,6 +341,9 @@ function SloganVerticalTicker() {
           ))}
         </div>
       </div>
+
+      {/* 🌟 Dedicated 3-Widget Row: Left Speaker (Audio Chant) + Center Video + Right Video */}
+      <DevotionalMediaBar onOpenVideo={onOpenVideo} />
     </div>
   );
 }
@@ -233,14 +460,31 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
   const [receipt] = useState(makeReceipt);
   const [paidAt] = useState(() => new Date());
   const [showDone, setShowDone] = useState(true);
+  const [activeVideo, setActiveVideo] = useState(null);
 
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === 'Escape') setShowDone(false);
+      if (e.key === 'Escape') {
+        setShowDone(false);
+        setActiveVideo(null);
+      }
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      stopDevotionalChant();
+    };
   }, []);
+
+  const handleBack = () => {
+    stopDevotionalChant();
+    if (onBack) onBack();
+  };
+
+  const handleReset = () => {
+    stopDevotionalChant();
+    if (onReset) onReset();
+  };
 
   const share = async () => {
     const text = `I offered ₹${amount} at ${templeName} through E-Hundi. Receipt ${receipt}.`;
@@ -266,7 +510,7 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
       {/* Header */}
       <div className="w-full flex items-center justify-between z-10 shrink-0 pt-0.5">
         <button
-          onClick={onBack}
+          onClick={handleBack}
           aria-label="Back"
           className="p-1.5 sm:p-2 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 backdrop-blur-md cursor-pointer transition-colors hover:bg-amber-500/20"
         >
@@ -292,9 +536,9 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
         </motion.p>
       </div>
 
-      {/* Devotional Slogan Upward News-Style Ticker */}
+      {/* Devotional Slogan Upward News-Style Ticker with Media Bar */}
       <div className="relative z-10 w-full flex-1 min-h-[220px] flex flex-col py-1 overflow-hidden">
-        <SloganVerticalTicker />
+        <SloganVerticalTicker onOpenVideo={setActiveVideo} />
       </div>
 
       {/* Receipt summary */}
@@ -335,7 +579,7 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
       {/* Actions */}
       <div className="relative z-10 w-full shrink-0 flex items-center gap-2 pt-0.5">
         <motion.button
-          onClick={onReset}
+          onClick={handleReset}
           whileTap={{ scale: 0.97 }}
           className="flex-1 py-2.5 sm:py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold font-malayalam text-sm sm:text-base border border-yellow-200/50 shadow-[0_6px_20px_rgba(217,119,6,0.35)] cursor-pointer"
         >
@@ -351,6 +595,7 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
         </motion.button>
       </div>
 
+      {/* Success Dialog */}
       <AnimatePresence>
         {showDone && (
           <SuccessDialog
@@ -359,8 +604,15 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri 
             receipt={receipt}
             paidAt={paidAt}
             onViewDarshan={() => setShowDone(false)}
-            onReset={onReset}
+            onReset={handleReset}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Expanded Darshan Video Modal */}
+      <AnimatePresence>
+        {activeVideo && (
+          <VideoModal video={activeVideo} onClose={() => setActiveVideo(null)} />
         )}
       </AnimatePresence>
     </motion.div>
