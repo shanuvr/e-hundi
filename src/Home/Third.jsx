@@ -146,7 +146,7 @@ function DevotionalMediaBar({ onOpenVideo }) {
   };
 
   return (
-    <div className="w-full px-2 py-1 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/25 shrink-0 flex items-center justify-center">
+    <div className="w-full px-2.5 sm:px-3 py-1 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/25 shrink-0">
       {/* Hidden audio tag wired to /audio.mp3 for when you upload your audio file */}
       <audio
         ref={audioRef}
@@ -158,13 +158,13 @@ function DevotionalMediaBar({ onOpenVideo }) {
           // If audio.mp3 is not found yet, fails silently
         }}
       />
-      <div className="flex items-center justify-center gap-3 sm:gap-4 max-w-full">
-        {/* 1. Left: Compact Reduced-Width Speaker Button for Devotional Audio */}
+      <div className="flex items-center justify-between w-full">
+        {/* 1. Left: Speaker Button for Devotional Audio */}
         <motion.button
           onClick={handleToggleAudio}
           whileTap={{ scale: 0.94 }}
           aria-label={isPlaying ? 'Mute Devotional Audio' : 'Play Devotional Audio'}
-          className={`relative w-[76px] sm:w-[82px] h-[30px] sm:h-[32px] shrink-0 rounded-lg flex items-center justify-center gap-1 px-1 py-0.5 border transition-all cursor-pointer shadow-sm ${
+          className={`relative w-[74px] sm:w-[80px] h-[30px] sm:h-[32px] shrink-0 rounded-lg flex items-center justify-center gap-1 px-1 py-0.5 border transition-all cursor-pointer shadow-sm ${
             isPlaying
               ? 'bg-gradient-to-b from-amber-500/25 via-amber-900/30 to-black/90 border-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.25)]'
               : 'bg-stone-900/90 hover:bg-stone-800/90 border-amber-400/35 text-stone-300'
@@ -198,7 +198,7 @@ function DevotionalMediaBar({ onOpenVideo }) {
           </div>
         </motion.button>
 
-        {/* 2. Center: Reduced-Width Silent Video Player (Aarti Darshan) */}
+        {/* 2. Center: Silent Video Player (Aarti Darshan) */}
         <SilentDarshanVideo
           src="https://assets.mixkit.co/videos/preview/mixkit-oil-lamp-burning-in-the-dark-42475-large.mp4"
           titleMalayalam="ദർശനം"
@@ -213,7 +213,7 @@ function DevotionalMediaBar({ onOpenVideo }) {
           }
         />
 
-        {/* 3. Right: Reduced-Width Silent Video Player (Sanctum Deeparadhana) */}
+        {/* 3. Right: Silent Video Player (Sanctum Deeparadhana) */}
         <SilentDarshanVideo
           src="https://assets.mixkit.co/videos/preview/mixkit-flame-of-a-burning-candle-close-up-41551-large.mp4"
           titleMalayalam="ദീപാരാധന"
