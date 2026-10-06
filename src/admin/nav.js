@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 /**
- * Grouped so a temple operator sees the two things they care about
+ * Grouped so a a comment added to an existing comment temple operator sees the two things they care about
  * (customise + payments) grouped away from reporting and system chores.
  */
 export const ADMIN_NAV = [
