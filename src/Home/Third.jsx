@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Unlock, Sparkles, Share2, Volume2, VolumeX, Maximize2, X } from 'lucide-react';
+import { ArrowLeft, Unlock, Sparkles, Share2, Volume2, VolumeX, X, Play } from 'lucide-react';
 
 /* Where offerings are collected. Surfaces on the receipt; admin-configurable. */
 const UPI_ID = 'shrimahadeva@upi';
@@ -59,15 +59,25 @@ const SLOKAS = [
   },
 ];
 
-/** Resilient Silent Looping Devotional Video Component with Sacred Animated Flame Canvas */
-function SilentDarshanVideo({ src, fallbackTitle, titleMalayalam, tag, onExpand }) {
+/* Sacred Devotional Video & Audio Source */
+const SACRED_MEDIA_SRC = '/vedio.mp4';
+
+/** Resilient Looping Devotional Video Preview Tile */
+function DarshanVideoTile({
+  src = SACRED_MEDIA_SRC,
+  fallbackTitle,
+  titleMalayalam,
+  tag,
+  withAudio = false,
+  onExpand,
+}) {
   const [videoError, setVideoError] = useState(false);
   const videoRef = useRef(null);
 
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.play().catch(() => {
-        // Autoplay policy fallback (silent videos generally autoplay fine)
+        // Autoplay silent preview
       });
     }
   }, [src]);
@@ -75,10 +85,14 @@ function SilentDarshanVideo({ src, fallbackTitle, titleMalayalam, tag, onExpand 
   return (
     <div
       onClick={onExpand}
-      className="group relative w-[76px] sm:w-[82px] h-[30px] sm:h-[32px] shrink-0 rounded-lg overflow-hidden border border-amber-400/40 bg-stone-950 shadow-sm cursor-pointer hover:border-amber-300 transition-all active:scale-[0.97]"
+      className={`group relative w-[74px] sm:w-[82px] h-[30px] sm:h-[32px] shrink-0 rounded-lg overflow-hidden border transition-all cursor-pointer shadow-sm active:scale-[0.96] ${
+        withAudio
+          ? 'border-amber-400/60 bg-stone-950 hover:border-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
+          : 'border-amber-400/40 bg-stone-950 hover:border-amber-300'
+      }`}
       title={`Watch ${fallbackTitle}`}
     >
-      {/* Video stream (Always strictly muted for silent playback) */}
+      {/* Mini Video stream preview (Strictly muted in preview tile for seamless looping) */}
       {!videoError && src ? (
         <video
           ref={videoRef}
@@ -88,35 +102,49 @@ function SilentDarshanVideo({ src, fallbackTitle, titleMalayalam, tag, onExpand 
           muted
           playsInline
           onError={() => setVideoError(true)}
-          className="absolute inset-0 w-full h-full object-cover brightness-95 group-hover:scale-105 transition-transform duration-500"
+          className="absolute inset-0 w-full h-full object-cover brightness-90 group-hover:scale-105 transition-transform duration-500"
         />
       ) : null}
 
-      {/* Decorative Sacred Golden Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/60 pointer-events-none" />
+      {/* Golden Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/60 pointer-events-none" />
 
-      {/* Center Sacred Diya icon animation */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <span className="text-amber-300 drop-shadow-[0_0_4px_rgba(245,158,11,0.9)] text-[10px]">
-          🪔
-        </span>
-      </div>
-
-      {/* Left Title Badge */}
+      {/* Top Left Title */}
       <div className="absolute top-0.5 left-1 pointer-events-none z-10">
         <span className="font-malayalam text-[7px] font-bold text-amber-200 drop-shadow-sm truncate block">
           {titleMalayalam}
         </span>
       </div>
 
-      {/* Right Expand Icon */}
-      <div className="absolute top-0.5 right-1 pointer-events-none z-10">
-        <Maximize2 className="w-2 h-2 text-amber-300/80 group-hover:text-amber-100 transition-colors" />
+      {/* Top Right Sound / Expand Icon */}
+      <div className="absolute top-0.5 right-1 pointer-events-none z-10 flex items-center gap-0.5">
+        {withAudio ? (
+          <Volume2 className="w-2.5 h-2.5 text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.8)]" />
+        ) : (
+          <VolumeX className="w-2 h-2 text-stone-400" />
+        )}
       </div>
 
-      {/* Bottom Subtitle */}
+      {/* Center Action Indicator */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        {withAudio ? (
+          <div className="w-4 h-4 rounded-full bg-amber-500/30 border border-amber-300/60 flex items-center justify-center shadow-[0_0_6px_rgba(245,158,11,0.6)]">
+            <Play className="w-2 h-2 text-amber-100 fill-amber-100 ml-0.5" />
+          </div>
+        ) : (
+          <span className="text-amber-300 drop-shadow-[0_0_4px_rgba(245,158,11,0.9)] text-[10px]">
+            🪔
+          </span>
+        )}
+      </div>
+
+      {/* Bottom Subtitle / Tag */}
       <div className="absolute bottom-0.5 inset-x-1 text-center pointer-events-none z-10">
-        <span className="text-[6px] uppercase tracking-wider text-amber-100/90 font-semibold truncate block drop-shadow-md">
+        <span
+          className={`text-[5.5px] sm:text-[6px] uppercase tracking-wider font-semibold truncate block drop-shadow-md ${
+            withAudio ? 'text-amber-300' : 'text-amber-100/80'
+          }`}
+        >
           {tag}
         </span>
       </div>
@@ -124,18 +152,22 @@ function SilentDarshanVideo({ src, fallbackTitle, titleMalayalam, tag, onExpand 
   );
 }
 
-/** Devotional Media Bar: Left Speaker (Audio Ready) + Center Silent Video + Right Silent Video */
+/** Devotional Media Bar: 
+ * 1. Left: Audio Only (Mantra Dhwani from /vedio.mp4)
+ * 2. Center: Video without Audio (Silent Darshan)
+ * 3. Right: Video with Audio (Full Darshan + Chants)
+ */
 function DevotionalMediaBar({ onOpenVideo }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const audioRef = useRef(null);
 
   const handleToggleAudio = () => {
-    setIsPlaying((prev) => {
+    setIsPlayingAudio((prev) => {
       const next = !prev;
       if (audioRef.current) {
         if (next) {
           audioRef.current.play().catch(() => {
-            // Gracefully handled if audio.mp3 has not been uploaded yet
+            // Autoplay policy fallback
           });
         } else {
           audioRef.current.pause();
@@ -145,33 +177,56 @@ function DevotionalMediaBar({ onOpenVideo }) {
     });
   };
 
+  const handleOpenSilentVideo = () => {
+    onOpenVideo({
+      title: 'ശ്രീ മഹാദേവ ദർശനം · Aarti Darshan',
+      desc: 'Live sanctum holy Aarti & Deeparadhana visual offering (Silent Mode)',
+      src: SACRED_MEDIA_SRC,
+      initialMuted: true,
+    });
+  };
+
+  const handleOpenAudioVideo = () => {
+    // Pause standalone background audio if playing, to prevent overlapping sounds
+    if (audioRef.current && isPlayingAudio) {
+      audioRef.current.pause();
+      setIsPlayingAudio(false);
+    }
+    onOpenVideo({
+      title: 'ശ്രീ മഹാദേവ ദർശന ധ്വനി · Aarti & Mantras',
+      desc: 'Divine sanctum Aarti accompanied by sacred devotional chants & mantras',
+      src: SACRED_MEDIA_SRC,
+      initialMuted: false,
+    });
+  };
+
   return (
-    <div className="w-full px-2.5 sm:px-3 py-1 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/25 shrink-0">
-      {/* Hidden audio tag wired to /audio.mp3 for when you upload your audio file */}
+    <div className="w-full px-2 sm:px-3 py-1 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/25 shrink-0">
+      {/* Native HTML5 Audio element playing the soundtrack directly from /vedio.mp4 (Zero redundant bundle size!) */}
       <audio
         ref={audioRef}
-        src="/audio.mp3"
+        src={SACRED_MEDIA_SRC}
         loop
-        preload="none"
-        onEnded={() => setIsPlaying(false)}
+        preload="auto"
+        onEnded={() => setIsPlayingAudio(false)}
         onError={() => {
-          // If audio.mp3 is not found yet, fails silently
+          setIsPlayingAudio(false);
         }}
       />
-      <div className="flex items-center justify-between w-full">
-        {/* 1. Left: Speaker Button for Devotional Audio */}
+
+      <div className="flex items-center justify-between w-full gap-1">
+        {/* 🌟 1. Left Button: Devotional Audio Only */}
         <motion.button
           onClick={handleToggleAudio}
           whileTap={{ scale: 0.94 }}
-          aria-label={isPlaying ? 'Mute Devotional Audio' : 'Play Devotional Audio'}
+          aria-label={isPlayingAudio ? 'Mute Devotional Audio' : 'Play Devotional Audio'}
           className={`relative w-[74px] sm:w-[80px] h-[30px] sm:h-[32px] shrink-0 rounded-lg flex items-center justify-center gap-1 px-1 py-0.5 border transition-all cursor-pointer shadow-sm ${
-            isPlaying
-              ? 'bg-gradient-to-b from-amber-500/25 via-amber-900/30 to-black/90 border-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.25)]'
+            isPlayingAudio
+              ? 'bg-gradient-to-b from-amber-500/30 via-amber-900/35 to-black/95 border-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)]'
               : 'bg-stone-900/90 hover:bg-stone-800/90 border-amber-400/35 text-stone-300'
           }`}
         >
-          {/* Animated Glow Halo when active */}
-          {isPlaying && (
+          {isPlayingAudio && (
             <motion.span
               animate={{ opacity: [0.25, 0.6, 0.25] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
@@ -179,10 +234,14 @@ function DevotionalMediaBar({ onOpenVideo }) {
             />
           )}
 
-          {/* Speaker Icon + Sound Wave equalizer */}
+          {/* Equalizer Animation / Speaker Icon */}
           <div className="relative flex items-center justify-center shrink-0">
-            {isPlaying ? (
-              <Volume2 className="w-3 h-3 text-amber-300 drop-shadow-[0_0_4px_rgba(251,191,36,0.8)] animate-pulse" />
+            {isPlayingAudio ? (
+              <div className="flex items-end gap-[1.5px] h-3 w-3 justify-center">
+                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.6s_ease-in-out_infinite] h-2.5" />
+                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.8s_ease-in-out_infinite_0.2s] h-3" />
+                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.5s_ease-in-out_infinite_0.4s] h-2" />
+              </div>
             ) : (
               <VolumeX className="w-3 h-3 text-amber-200/60" />
             )}
@@ -192,49 +251,66 @@ function DevotionalMediaBar({ onOpenVideo }) {
             <span className="font-malayalam text-[7.5px] font-bold text-amber-100 truncate w-full">
               മന്ത്ര ധ്വനി
             </span>
-            <span className={`text-[5.5px] uppercase tracking-wider font-semibold mt-0.5 ${isPlaying ? 'text-amber-300 animate-pulse' : 'text-amber-200/50'}`}>
-              {isPlaying ? 'Playing' : 'Audio'}
+            <span
+              className={`text-[5.5px] uppercase tracking-wider font-semibold mt-0.5 ${
+                isPlayingAudio ? 'text-amber-300 animate-pulse font-bold' : 'text-amber-200/50'
+              }`}
+            >
+              {isPlayingAudio ? 'Playing' : 'Audio Only'}
             </span>
           </div>
         </motion.button>
 
-        {/* 2. Center: Silent Video Player (Aarti Darshan) */}
-        <SilentDarshanVideo
-          src="https://assets.mixkit.co/videos/preview/mixkit-oil-lamp-burning-in-the-dark-42475-large.mp4"
+        {/* 🌟 2. Center Button: Video Without Audio (Silent Aarti) */}
+        <DarshanVideoTile
+          src={SACRED_MEDIA_SRC}
           titleMalayalam="ദർശനം"
-          tag="Aarti"
-          fallbackTitle="Temple Aarti Darshan"
-          onExpand={() =>
-            onOpenVideo({
-              title: 'ശ്രീ മഹാദേവ ദർശനം · Aarti Darshan',
-              desc: 'Live sanctum holy Aarti & Deeparadhana visual offering',
-              src: 'https://assets.mixkit.co/videos/preview/mixkit-oil-lamp-burning-in-the-dark-42475-large.mp4',
-            })
-          }
+          tag="Silent Video"
+          fallbackTitle="Temple Aarti Darshan (Silent)"
+          withAudio={false}
+          onExpand={handleOpenSilentVideo}
         />
 
-        {/* 3. Right: Silent Video Player (Sanctum Deeparadhana) */}
-        <SilentDarshanVideo
-          src="https://assets.mixkit.co/videos/preview/mixkit-flame-of-a-burning-candle-close-up-41551-large.mp4"
-          titleMalayalam="ദീപാരാധന"
-          tag="Sanctum"
-          fallbackTitle="Sanctum Deeparadhana"
-          onExpand={() =>
-            onOpenVideo({
-              title: 'ദീപാരാധന സമർപ്പണം · Sanctum Aarti',
-              desc: 'Divine holy light ceremony & blessing flame',
-              src: 'https://assets.mixkit.co/videos/preview/mixkit-flame-of-a-burning-candle-close-up-41551-large.mp4',
-            })
-          }
+        {/* 🌟 3. Right Button: Video With Audio (Video + Chanting) */}
+        <DarshanVideoTile
+          src={SACRED_MEDIA_SRC}
+          titleMalayalam="ദർശന ധ്വനി"
+          tag="Video + Sound"
+          fallbackTitle="Sanctum Darshan with Chants"
+          withAudio={true}
+          onExpand={handleOpenAudioVideo}
         />
       </div>
     </div>
   );
 }
 
-/** Devotional Expanded Video Modal */
+/** Devotional Expanded Video Modal with Sound Control */
 function VideoModal({ video, onClose }) {
+  const [isMuted, setIsMuted] = useState(Boolean(video?.initialMuted));
+  const videoRef = useRef(null);
+
+  const toggleSound = () => {
+    setIsMuted((prev) => {
+      const next = !prev;
+      if (videoRef.current) {
+        videoRef.current.muted = next;
+      }
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    if (video && videoRef.current) {
+      videoRef.current.muted = Boolean(video.initialMuted);
+      videoRef.current.play().catch(() => {
+        // Fallback if browser requires user interaction for unmuted playback
+      });
+    }
+  }, [video]);
+
   if (!video) return null;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -251,20 +327,46 @@ function VideoModal({ video, onClose }) {
         exit={{ scale: 0.9, opacity: 0 }}
         className="relative w-full max-w-[340px] rounded-3xl overflow-hidden bg-stone-950 border border-amber-400/50 shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(245,158,11,0.3)] p-4 text-center z-10"
       >
-        <button
-          onClick={onClose}
-          aria-label="Close Video"
-          className="absolute top-3 right-3 p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-stone-300 hover:text-amber-200 transition-colors z-20 cursor-pointer"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        {/* Top Control Bar with Mute/Unmute toggle & Close Button */}
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={toggleSound}
+            aria-label={isMuted ? 'Unmute Video' : 'Mute Video'}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider transition-all cursor-pointer border ${
+              !isMuted
+                ? 'bg-amber-500/25 border-amber-300 text-amber-200 shadow-[0_0_8px_rgba(245,158,11,0.3)]'
+                : 'bg-stone-900 border-amber-400/30 text-stone-400 hover:text-amber-200'
+            }`}
+          >
+            {!isMuted ? (
+              <>
+                <Volume2 className="w-3 h-3 text-amber-300 animate-pulse" />
+                <span>Sound ON</span>
+              </>
+            ) : (
+              <>
+                <VolumeX className="w-3 h-3" />
+                <span>Muted (Silent)</span>
+              </>
+            )}
+          </button>
+
+          <button
+            onClick={onClose}
+            aria-label="Close Video"
+            className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-stone-300 hover:text-amber-200 transition-colors cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
         <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden border border-amber-400/30 bg-black relative mb-3">
           <video
+            ref={videoRef}
             src={video.src}
             autoPlay
             loop
-            muted
+            muted={isMuted}
             playsInline
             controls
             className="w-full h-full object-cover"
