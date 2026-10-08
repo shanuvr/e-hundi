@@ -85,7 +85,7 @@ function DarshanVideoTile({
   return (
     <div
       onClick={onExpand}
-      className={`group relative w-[74px] sm:w-[82px] h-[30px] sm:h-[32px] shrink-0 rounded-lg overflow-hidden border transition-all cursor-pointer shadow-sm active:scale-[0.96] ${
+      className={`group relative flex-1 min-w-0 h-[34px] sm:h-[38px] rounded-lg overflow-hidden border transition-all cursor-pointer shadow-sm active:scale-[0.96] ${
         withAudio
           ? 'border-amber-400/60 bg-stone-950 hover:border-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
           : 'border-amber-400/40 bg-stone-950 hover:border-amber-300'
@@ -107,32 +107,28 @@ function DarshanVideoTile({
       ) : null}
 
       {/* Golden Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/60 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/70 pointer-events-none" />
 
-      {/* Top Left Title */}
-      <div className="absolute top-0.5 left-1 pointer-events-none z-10">
-        <span className="font-malayalam text-[7px] font-bold text-amber-200 drop-shadow-sm truncate block">
+      {/* Top Header Row with Malayalam Title & Sound Icon */}
+      <div className="absolute top-0.5 inset-x-1 flex items-center justify-between pointer-events-none z-10">
+        <span className="font-malayalam text-[9.5px] sm:text-[11px] font-bold text-amber-200 drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] truncate block">
           {titleMalayalam}
         </span>
-      </div>
-
-      {/* Top Right Sound / Expand Icon */}
-      <div className="absolute top-0.5 right-1 pointer-events-none z-10 flex items-center gap-0.5">
         {withAudio ? (
-          <Volume2 className="w-2.5 h-2.5 text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.8)]" />
+          <Volume2 className="w-2.5 h-2.5 text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.8)] shrink-0 ml-0.5" />
         ) : (
-          <VolumeX className="w-2 h-2 text-stone-400" />
+          <VolumeX className="w-2 h-2 text-stone-400 shrink-0 ml-0.5" />
         )}
       </div>
 
       {/* Center Action Indicator */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         {withAudio ? (
-          <div className="w-4 h-4 rounded-full bg-amber-500/30 border border-amber-300/60 flex items-center justify-center shadow-[0_0_6px_rgba(245,158,11,0.6)]">
+          <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-amber-500/35 border border-amber-300/70 flex items-center justify-center shadow-[0_0_6px_rgba(245,158,11,0.6)]">
             <Play className="w-2 h-2 text-amber-100 fill-amber-100 ml-0.5" />
           </div>
         ) : (
-          <span className="text-amber-300 drop-shadow-[0_0_4px_rgba(245,158,11,0.9)] text-[10px]">
+          <span className="text-amber-300 drop-shadow-[0_0_4px_rgba(245,158,11,0.9)] text-[9px] sm:text-[10px]">
             🪔
           </span>
         )}
@@ -141,7 +137,7 @@ function DarshanVideoTile({
       {/* Bottom Subtitle / Tag */}
       <div className="absolute bottom-0.5 inset-x-1 text-center pointer-events-none z-10">
         <span
-          className={`text-[5.5px] sm:text-[6px] uppercase tracking-wider font-semibold truncate block drop-shadow-md ${
+          className={`text-[6px] sm:text-[6.5px] uppercase tracking-wider font-semibold truncate block drop-shadow-md ${
             withAudio ? 'text-amber-300' : 'text-amber-100/80'
           }`}
         >
@@ -201,7 +197,7 @@ function DevotionalMediaBar({ onOpenVideo }) {
   };
 
   return (
-    <div className="w-full px-2 sm:px-3 py-1 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/25 shrink-0">
+    <div className="w-full px-2 sm:px-2.5 py-1.5 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/25 shrink-0">
       {/* Native HTML5 Audio element playing the soundtrack directly from /vedio.mp4 (Zero redundant bundle size!) */}
       <audio
         ref={audioRef}
@@ -214,13 +210,13 @@ function DevotionalMediaBar({ onOpenVideo }) {
         }}
       />
 
-      <div className="flex items-center justify-between w-full gap-1">
+      <div className="flex items-center justify-between w-full gap-1.5">
         {/* 🌟 1. Left Button: Devotional Audio Only */}
         <motion.button
           onClick={handleToggleAudio}
           whileTap={{ scale: 0.94 }}
           aria-label={isPlayingAudio ? 'Mute Devotional Audio' : 'Play Devotional Audio'}
-          className={`relative w-[74px] sm:w-[80px] h-[30px] sm:h-[32px] shrink-0 rounded-lg flex items-center justify-center gap-1 px-1 py-0.5 border transition-all cursor-pointer shadow-sm ${
+          className={`relative flex-1 min-w-0 h-[34px] sm:h-[38px] rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 px-1 py-0.5 border transition-all cursor-pointer shadow-sm ${
             isPlayingAudio
               ? 'bg-gradient-to-b from-amber-500/30 via-amber-900/35 to-black/95 border-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)]'
               : 'bg-stone-900/90 hover:bg-stone-800/90 border-amber-400/35 text-stone-300'
@@ -237,22 +233,22 @@ function DevotionalMediaBar({ onOpenVideo }) {
           {/* Equalizer Animation / Speaker Icon */}
           <div className="relative flex items-center justify-center shrink-0">
             {isPlayingAudio ? (
-              <div className="flex items-end gap-[1.5px] h-3 w-3 justify-center">
-                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.6s_ease-in-out_infinite] h-2.5" />
-                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.8s_ease-in-out_infinite_0.2s] h-3" />
-                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.5s_ease-in-out_infinite_0.4s] h-2" />
+              <div className="flex items-end gap-[1.5px] h-3.5 w-3.5 justify-center">
+                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.6s_ease-in-out_infinite] h-3" />
+                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.8s_ease-in-out_infinite_0.2s] h-3.5" />
+                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.5s_ease-in-out_infinite_0.4s] h-2.5" />
               </div>
             ) : (
-              <VolumeX className="w-3 h-3 text-amber-200/60" />
+              <VolumeX className="w-3.5 h-3.5 text-amber-200/60" />
             )}
           </div>
 
-          <div className="min-w-0 flex flex-col items-start leading-none text-left">
-            <span className="font-malayalam text-[7.5px] font-bold text-amber-100 truncate w-full">
+          <div className="min-w-0 flex flex-col items-start leading-tight text-left">
+            <span className="font-malayalam text-[9.5px] sm:text-[11px] font-bold text-amber-100 truncate w-full tracking-normal">
               മന്ത്ര ധ്വനി
             </span>
             <span
-              className={`text-[5.5px] uppercase tracking-wider font-semibold mt-0.5 ${
+              className={`text-[6px] sm:text-[6.5px] uppercase tracking-wider font-semibold ${
                 isPlayingAudio ? 'text-amber-300 animate-pulse font-bold' : 'text-amber-200/50'
               }`}
             >
