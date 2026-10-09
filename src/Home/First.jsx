@@ -33,7 +33,7 @@ function Kalasham({ className = '' }) {
   );
 }
 
-export default function First({ templeName = "ശ്രീ മഹാദേവ ക്ഷേത്രം", onComplete }) {
+export default function First({ templeName = "ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം", onComplete }) {
   useEffect(() => {
     const timer = setTimeout(onComplete, FIRST_SCREEN_DURATION);
     return () => clearTimeout(timer);

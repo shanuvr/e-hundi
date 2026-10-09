@@ -39,7 +39,7 @@ export default function AdminTopBar({ onOpenMenu }) {
       {/* Temple switcher */}
       <button className="hidden sm:flex items-center gap-2 h-8 pl-2 pr-2.5 rounded-lg bg-stone-50 border border-stone-200 hover:border-stone-300 hover:bg-stone-100 transition-all shadow-sm cursor-pointer">
         <div className="w-4 h-4 rounded-md bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-[8px] text-amber-800 font-bold" />
-        <span className="text-[11px] font-semibold text-stone-800 max-w-[8rem] truncate">Shri Mahadeva</span>
+        <span className="text-[11px] font-semibold text-stone-800 max-w-[10rem] truncate">Chinmaya Sri Bhuvaneswari</span>
         <ChevronDown className="w-3 h-3 text-stone-400" />
       </button>
 

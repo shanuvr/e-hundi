@@ -67,7 +67,7 @@ function TempleInfoModal({ onClose, templeName }) {
           <h3 className="font-cinzel text-sm sm:text-base font-bold text-amber-100 leading-tight">
             {templeName}
           </h3>
-          <p className="font-malayalam text-xs text-amber-300/80 mt-0.5">ശ്രീ മഹാദേവ ക്ഷേത്രം</p>
+          <p className="font-malayalam text-xs text-amber-300/80 mt-0.5">ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം</p>
           <p className="text-[8.5px] uppercase tracking-[0.2em] text-stone-500 mt-0.5">
             Thiruvananthapuram, Kerala
           </p>
@@ -108,7 +108,7 @@ function TempleInfoModal({ onClose, templeName }) {
             <Mail className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <div className="min-w-0 flex-1">
               <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Email</p>
-              <p className="text-[9.5px] font-medium text-stone-200 truncate">office@shrimahadeva.temple</p>
+              <p className="text-[9.5px] font-medium text-stone-200 truncate">office@chinmayabhuvaneswari.temple</p>
             </div>
           </div>
 
@@ -140,7 +140,7 @@ function TempleInfoModal({ onClose, templeName }) {
   );
 }
 
-export default function Second({ onBack, onNext, amount = 0, onAmountChange, templeName = 'Shri Mahadeva Temple' }) {
+export default function Second({ onBack, onNext, amount = 0, onAmountChange, templeName = 'Chinmaya Sri Bhuvaneswari Navagraha Temple' }) {
   const [showInfo, setShowInfo] = useState(false);
   const bandaramRef = useRef(null);
   const lastGlowTimer = useRef(null);
@@ -327,13 +327,13 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
           onClick={() => setShowInfo(true)}
           whileTap={{ scale: 0.96 }}
           aria-label="View temple details"
-          className="flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/25 transition-all cursor-pointer max-w-[220px] sm:max-w-[250px]"
+          className="flex-1 mx-2 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/25 transition-all cursor-pointer text-center"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-          <span className="font-malayalam text-xs sm:text-[12.5px] text-amber-100 font-semibold truncate">
-            {templeName || "ശ്രീ മഹാദേവ ക്ഷേത്രം"}
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0 self-center" />
+          <span className="font-malayalam text-[11px] sm:text-[12px] text-amber-100 font-semibold leading-tight text-center">
+            {templeName || "ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം"}
           </span>
-          <Info className="w-3 h-3 text-amber-300/80 shrink-0" />
+          <Info className="w-3 h-3 text-amber-300/80 shrink-0 self-center ml-0.5" />
         </motion.button>
         <motion.button
           onClick={ringBell}
@@ -361,22 +361,14 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
       </div>
 
       {/* Slogan */}
-      <div className="relative z-10 w-full flex flex-col items-center pt-0.5 px-2 shrink-0">
+      <div className="relative z-10 w-full flex flex-col items-center pt-1 px-2 shrink-0">
         <motion.p
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="font-malayalam font-medium text-amber-50 text-center text-[13.5px] sm:text-[13.5px] leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] max-w-[340px]"
+          className="font-malayalam font-medium text-amber-50 text-center text-xs sm:text-[13px] leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] max-w-[340px]"
         >
           ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു
-        </motion.p>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.65 }}
-          transition={{ delay: 0.25, duration: 0.5 }}
-          className="text-[8.5px] uppercase tracking-[0.25em] text-amber-200/80 mt-0.5 font-medium"
-        >
-          Every Sacred Offering Brings Divine Blessings
         </motion.p>
       </div>
 

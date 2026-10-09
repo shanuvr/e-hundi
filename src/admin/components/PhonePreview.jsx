@@ -2,8 +2,8 @@ import Mandala from '../../components/Mandala';
 import { MONEY } from '../../data/money';
 
 const SAMPLE = {
-  templeName: 'Shri Mahadeva Temple',
-  upiId: 'shrimahadeva@upi',
+  templeName: 'Chinmaya Sri Bhuvaneswari Navagraha Temple',
+  upiId: 'chinmayabhuvaneswari@upi',
   receipt: 'EH-K3M9QW2',
   amount: 340,
 };
@@ -60,9 +60,6 @@ function HundiMock() {
       <div className="pt-1.5 text-center shrink-0">
         <p className="font-malayalam text-[8.5px] leading-tight text-amber-50">
           ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു
-        </p>
-        <p className="mt-0.5 text-[5.5px] uppercase tracking-[0.2em] text-amber-200/60">
-          Every Sacred Offering Brings Divine Blessings
         </p>
       </div>
 

@@ -76,7 +76,7 @@ export default function Darshan() {
 
             <TextArea
               label="Message template"
-              defaultValue="Namaste! Your offering of ₹{amount} to Shri Mahadeva Temple is received. May the Lord bless you and your family. Watch your darshan: {link}"
+              defaultValue="Namaste! Your offering of ₹{amount} to Chinmaya Sri Bhuvaneswari Navagraha Temple is received. May the Lord bless you and your family. Watch your darshan: {link}"
               rows={3}
               max={220}
               current={145}

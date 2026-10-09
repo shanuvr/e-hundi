@@ -106,11 +106,11 @@ export default function AdminSideBar({ open, onClose, collapsed, onToggleCollaps
             }`}
           >
             <div className="w-6 h-6 shrink-0 rounded-md bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-[9px] text-amber-800 font-bold">
-              SM
+              CB
             </div>
             <div className={`min-w-0 flex-1 ${collapsed ? 'lg:hidden' : ''}`}>
-              <p className="truncate text-[11px] font-semibold text-stone-800 leading-tight">Shri Mahadeva Temple</p>
-              <p className="text-[9px] text-stone-500 leading-tight mt-0.5 font-medium">Thiruvananthapuram</p>
+              <p className="truncate text-[11px] font-semibold text-stone-800 leading-tight">Chinmaya Sri Bhuvaneswari</p>
+              <p className="text-[9px] text-stone-500 leading-tight mt-0.5 font-medium">Navagraha Temple</p>
             </div>
           </div>
 

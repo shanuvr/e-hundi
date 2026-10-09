@@ -29,15 +29,15 @@ export default function TempleProfile() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
             <TextInput
               label="Temple name (English)"
-              defaultValue="Shri Mahadeva Temple"
+              defaultValue="Chinmaya Sri Bhuvaneswari Navagraha Temple"
               hint="Appears in the kiosk header and on every receipt."
             />
             <TextInput
               label="Temple name (Malayalam)"
-              defaultValue="ശ്രീ മഹാദേവ ക്ഷേത്രം"
+              defaultValue="ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം"
               className="sm:[&_input]:font-malayalam"
             />
-            <TextInput label="Short name" defaultValue="Shri Mahadeva" hint="Used where space is tight." />
+            <TextInput label="Short name" defaultValue="Chinmaya Sri Bhuvaneswari" hint="Used where space is tight." />
             <Select label="Primary language" options={LANGUAGES} />
           </div>
         </SectionCard>
@@ -53,7 +53,7 @@ export default function TempleProfile() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
             <TextInput label="Phone number" defaultValue="+91 471 234 5678" />
             <TextInput label="WhatsApp number" defaultValue="+91 98470 12345" hint="Darshan is sent to this number." />
-            <TextInput label="Email" defaultValue="office@shrimahadeva.temple" className="sm:col-span-2" />
+            <TextInput label="Email" defaultValue="office@chinmayabhuvaneswari.temple" className="sm:col-span-2" />
           </div>
         </SectionCard>
 

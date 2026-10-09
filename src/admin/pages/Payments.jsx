@@ -14,7 +14,7 @@ const APPS = [
 
 /** Mirrors the deep link a scan/QR tap opens. Static sample, per design-only scope. */
 const DEEP_LINK =
-  'upi://pay?pa=shrimahadeva@upi&pn=Shri%20Mahadeva%20Temple&am=340&cu=INR&tn=Devotional%20Offering';
+  'upi://pay?pa=chinmayabhuvaneswari@upi&pn=Chinmaya%20Sri%20Bhuvaneswari%20Navagraha%20Temple&am=340&cu=INR&tn=Devotional%20Offering';
 
 export default function Payments() {
   return (
@@ -34,12 +34,12 @@ export default function Payments() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
             <TextInput
               label="Temple UPI ID"
-              defaultValue="shrimahadeva@upi"
+              defaultValue="chinmayabhuvaneswari@upi"
               hint="The handle donors approve in their UPI app."
             />
             <TextInput
               label="Registered payee name"
-              defaultValue="Shri Mahadeva Temple Trust"
+              defaultValue="Chinmaya Sri Bhuvaneswari Navagraha Temple Trust"
               hint="Must match the name registered with your bank."
             />
             <Select label="Preferred UPI app" options={APPS} />

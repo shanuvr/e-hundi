@@ -82,8 +82,8 @@ function App() {
           <AnimatePresence mode="wait">
             <Current
               key={STEPS[step].key}
-              templeName="ശ്രീ മഹാദേവ ക്ഷേത്രം"
-              templeNameEn="Shri Mahadeva Temple"
+              templeName="ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം"
+              templeNameEn="Chinmaya Sri Bhuvaneswari Navagraha Temple"
               amount={amount}
               onAmountChange={setAmount}
               onComplete={goNext}

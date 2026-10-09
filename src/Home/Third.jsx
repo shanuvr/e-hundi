@@ -175,7 +175,7 @@ function DevotionalMediaBar({ onOpenVideo }) {
 
   const handleOpenSilentVideo = () => {
     onOpenVideo({
-      title: 'ശ്രീ മഹാദേവ ദർശനം · Aarti Darshan',
+      title: 'ചിന്മയ ശ്രീ ഭുവനേശ്വരി ദർശനം · Aarti Darshan',
       desc: 'Live sanctum holy Aarti & Deeparadhana visual offering (Silent Mode)',
       src: SACRED_MEDIA_SRC,
       initialMuted: true,
@@ -189,7 +189,7 @@ function DevotionalMediaBar({ onOpenVideo }) {
       setIsPlayingAudio(false);
     }
     onOpenVideo({
-      title: 'ശ്രീ മഹാദേവ ദർശന ധ്വനി · Aarti & Mantras',
+      title: 'ചിന്മയ ശ്രീ ഭുവനേശ്വരി ദർശന ധ്വനി · Aarti & Mantras',
       desc: 'Divine sanctum Aarti accompanied by sacred devotional chants & mantras',
       src: SACRED_MEDIA_SRC,
       initialMuted: false,
@@ -530,7 +530,7 @@ function SuccessDialog({ amount, templeName, receipt, paidAt, onViewDarshan, onR
           <span className="text-base opacity-55">₹</span>
           {amount}
         </div>
-        <p className="relative mt-1 px-2 text-[10px] leading-snug text-amber-200/60">{templeName}</p>
+        <p className="relative mt-1 px-2 font-malayalam text-[11px] leading-snug text-amber-200/80">{templeName}</p>
 
         <div className="relative mt-3 rounded-xl bg-black/45 border border-amber-400/25 px-3 py-2">
           <p className="text-[8.5px] uppercase tracking-[0.2em] text-amber-200/50 font-medium">Receipt No.</p>
@@ -548,9 +548,9 @@ function SuccessDialog({ amount, templeName, receipt, paidAt, onViewDarshan, onR
           </motion.button>
           <button
             onClick={onReset}
-            className="w-full py-2 rounded-xl bg-amber-400/10 border border-amber-300/20 text-amber-200/85 text-[11px] font-semibold uppercase tracking-[0.15em] cursor-pointer transition-colors hover:bg-amber-400/20 active:scale-95"
+            className="w-full py-2.5 rounded-xl bg-amber-400/10 border border-amber-300/25 text-amber-200 font-malayalam font-semibold text-xs sm:text-[13px] cursor-pointer transition-colors hover:bg-amber-400/20 active:scale-95"
           >
-            Make Another Offering
+            മറ്റൊരു സമർപ്പണം
           </button>
         </div>
       </motion.div>
@@ -558,7 +558,7 @@ function SuccessDialog({ amount, templeName, receipt, paidAt, onViewDarshan, onR
   );
 }
 
-export default function Third({ onBack, onReset, amount = 0, templeName = 'Shri Mahadeva Temple' }) {
+export default function Third({ onBack, onReset, amount = 0, templeName = 'Chinmaya Sri Bhuvaneswari Navagraha Temple' }) {
   // The offering is already settled by the time this screen plays, so the receipt
   // is fixed for the lifetime of the screen and the success pop is up front.
   const [receipt] = useState(makeReceipt);
