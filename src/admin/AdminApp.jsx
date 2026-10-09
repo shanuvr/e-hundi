@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
 
 // Each console page is its own chunk, so opening Slogans doesn't pull the
@@ -75,30 +75,9 @@ export default function AdminApp() {
             </Suspense>
           }
         />
-        <Route
-          path="darshan"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Darshan />
-            </Suspense>
-          }
-        />
-        <Route
-          path="reports"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Reports />
-            </Suspense>
-          }
-        />
-        <Route
-          path="settings"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Settings />
-            </Suspense>
-          }
-        />
+        <Route path="darshan" element={<Navigate to="/admin/slogans" replace />} />
+        <Route path="reports" element={<Navigate to="/admin" replace />} />
+        <Route path="settings" element={<Navigate to="/admin" replace />} />
         <Route path="*" element={<Reports />} />
       </Route>
     </Routes>

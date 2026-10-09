@@ -1,14 +1,14 @@
 const TONES = {
-  amber: 'bg-amber-400/15 border-amber-400/40 text-amber-200 font-semibold',
-  emerald: 'bg-emerald-400/15 border-emerald-400/40 text-emerald-200 font-semibold',
-  stone: 'bg-stone-800 border-stone-600 text-stone-200 font-medium',
-  rose: 'bg-rose-400/15 border-rose-400/40 text-rose-200 font-semibold',
+  amber: 'bg-amber-50 border-amber-300 text-amber-800 font-semibold',
+  emerald: 'bg-emerald-50 border-emerald-300 text-emerald-800 font-semibold',
+  stone: 'bg-stone-100 border-stone-300 text-stone-700 font-medium',
+  rose: 'bg-rose-50 border-rose-300 text-rose-800 font-semibold',
 };
 
 export function Pill({ children, tone = 'stone', className = '' }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] whitespace-nowrap shadow-sm ${TONES[tone]} ${className}`}
+      className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] whitespace-nowrap shadow-2xs ${TONES[tone]} ${className}`}
     >
       {children}
     </span>
@@ -17,9 +17,9 @@ export function Pill({ children, tone = 'stone', className = '' }) {
 
 export function Dot({ tone = 'emerald' }) {
   const map = {
-    emerald: 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]',
-    amber: 'bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.9)]',
-    rose: 'bg-rose-400 shadow-[0_0_6px_rgba(251,113,133,0.9)]',
+    emerald: 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.7)]',
+    amber: 'bg-amber-500 shadow-[0_0_5px_rgba(245,158,11,0.7)]',
+    rose: 'bg-rose-500 shadow-[0_0_5px_rgba(244,63,94,0.7)]',
     stone: 'bg-stone-400',
   };
   return <span className={`w-1.5 h-1.5 rounded-full ${map[tone]}`} />;
@@ -30,15 +30,15 @@ export function Dot({ tone = 'emerald' }) {
  */
 export function DataTable({ head, rows, className = '' }) {
   return (
-    <div className={`-mx-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${className}`}>
-      <div className="inline-block min-w-full align-middle px-4">
+    <div className={`-mx-3 sm:-mx-3.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${className}`}>
+      <div className="inline-block min-w-full align-middle px-3 sm:px-3.5">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-amber-500/20 bg-stone-950/40">
+            <tr className="border-b border-stone-200 bg-stone-50/80">
               {head.map((h, idx) => (
                 <th
                   key={h}
-                  className={`whitespace-nowrap py-2.5 px-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-amber-200/90 ${
+                  className={`whitespace-nowrap py-2 px-2.5 text-[10px] font-bold uppercase tracking-[0.14em] text-stone-500 ${
                     idx === 0 ? 'pl-2' : ''
                   }`}
                 >
@@ -47,18 +47,18 @@ export function DataTable({ head, rows, className = '' }) {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-800/80">
+          <tbody className="divide-y divide-stone-100">
             {rows.map((row, i) => (
-              <tr key={i} className="transition-colors hover:bg-amber-500/[0.06]">
+              <tr key={i} className="transition-colors hover:bg-amber-500/[0.04]">
                 {row.map((cell, j) => (
                   <td
                     key={j}
-                    className={`whitespace-nowrap py-2.5 px-2.5 ${
+                    className={`whitespace-nowrap py-2 px-2.5 ${
                       j === 0
-                        ? 'text-stone-100 font-semibold text-xs pl-2 font-mono'
+                        ? 'text-stone-900 font-semibold text-[11px] pl-2 font-mono'
                         : j === 2
-                        ? 'text-amber-300 font-bold text-xs'
-                        : 'text-stone-200 text-xs'
+                        ? 'text-amber-800 font-bold text-[11.5px]'
+                        : 'text-stone-700 text-[11px]'
                     }`}
                   >
                     {cell}

@@ -22,7 +22,7 @@ export const ADMIN_NAV = [
     group: 'Customise',
     items: [
       { to: '/admin/temple', label: 'Temple Profile', icon: Landmark },
-      { to: '/admin/slogans', label: 'Slogans & Text', icon: MessageSquareQuote },
+      { to: '/admin/slogans', label: 'Slogans & Darshan', icon: MessageSquareQuote },
       { to: '/admin/branding', label: 'Branding & Motion', icon: Palette },
     ],
   },
@@ -30,16 +30,7 @@ export const ADMIN_NAV = [
     group: 'Payments',
     items: [
       { to: '/admin/payments', label: 'Payments / UPI', icon: Wallet },
-      { to: '/admin/darshan', label: 'Darshan', icon: CirclePlay },
     ],
-  },
-  {
-    group: 'Insights',
-    items: [{ to: '/admin/reports', label: 'Donations & Reports', icon: BarChart3 }],
-  },
-  {
-    group: 'System',
-    items: [{ to: '/admin/settings', label: 'Settings', icon: Settings }],
   },
 ];
 
