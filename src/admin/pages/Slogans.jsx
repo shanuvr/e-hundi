@@ -18,8 +18,8 @@ import { Button } from '../components/Controls';
 import { TextInput, TextArea, Toggle } from '../components/Field';
 
 const ML = 'sm:[&_input]:font-malayalam sm:[&_textarea]:font-malayalam';
-const DEFAULT_VIDEO_SRC = '/vedio.mp4';
-const DEFAULT_VIDEO_NAME = 'vedio.mp4 (Sacred Temple Darshan)';
+const DEFAULT_VIDEO_SRC = '/video.mp4';
+const DEFAULT_VIDEO_NAME = 'video.mp4 (Sacred Temple Darshan)';
 const DEFAULT_VIDEO_SIZE = '14.8 MB';
 
 const INITIAL_SLOKAS = [
@@ -88,7 +88,7 @@ export default function Slogans() {
     setVideoName(DEFAULT_VIDEO_NAME);
     setVideoSize(DEFAULT_VIDEO_SIZE);
     setDirectUrl(DEFAULT_VIDEO_SRC);
-    setSavedToast('Reset to default video (/vedio.mp4)!');
+    setSavedToast('Reset to default video (/video.mp4)!');
     setTimeout(() => setSavedToast(''), 3000);
   };
 
@@ -237,7 +237,7 @@ export default function Slogans() {
                     src={videoSrc}
                     controls
                     playsInline
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
 

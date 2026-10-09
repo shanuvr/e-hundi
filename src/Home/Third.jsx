@@ -60,7 +60,7 @@ const SLOKAS = [
 ];
 
 /* Sacred Devotional Video & Audio Source */
-const SACRED_MEDIA_SRC = '/vedio.mp4';
+const SACRED_MEDIA_SRC = '/video.mp4';
 
 /** Resilient Looping Devotional Video Preview Tile */
 function DarshanVideoTile({
@@ -102,7 +102,7 @@ function DarshanVideoTile({
           muted
           playsInline
           onError={() => setVideoError(true)}
-          className="absolute inset-0 w-full h-full object-cover brightness-90 group-hover:scale-105 transition-transform duration-500"
+          className="absolute inset-0 w-full h-full object-cover object-top brightness-90 group-hover:scale-105 transition-transform duration-500"
         />
       ) : null}
 
@@ -149,7 +149,7 @@ function DarshanVideoTile({
 }
 
 /** Devotional Media Bar: 
- * 1. Left: Audio Only (Mantra Dhwani from /vedio.mp4)
+ * 1. Left: Audio Only (Mantra Dhwani from /video.mp4)
  * 2. Center: Video without Audio (Silent Darshan)
  * 3. Right: Video with Audio (Full Darshan + Chants)
  */
@@ -198,7 +198,7 @@ function DevotionalMediaBar({ onOpenVideo }) {
 
   return (
     <div className="w-full px-2 sm:px-2.5 py-1.5 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/25 shrink-0">
-      {/* Native HTML5 Audio element playing the soundtrack directly from /vedio.mp4 (Zero redundant bundle size!) */}
+      {/* Native HTML5 Audio element playing the soundtrack directly from /video.mp4 (Zero redundant bundle size!) */}
       <audio
         ref={audioRef}
         src={SACRED_MEDIA_SRC}
@@ -321,10 +321,10 @@ function VideoModal({ video, onClose }) {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="relative w-full max-w-[340px] rounded-3xl overflow-hidden bg-stone-950 border border-amber-400/50 shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(245,158,11,0.3)] p-4 text-center z-10"
+        className="relative w-full max-w-[360px] max-h-[90vh] flex flex-col rounded-3xl overflow-hidden bg-stone-950 border border-amber-400/50 shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(245,158,11,0.3)] p-3.5 sm:p-4 text-center z-10"
       >
         {/* Top Control Bar with Mute/Unmute toggle & Close Button */}
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2 shrink-0">
           <button
             onClick={toggleSound}
             aria-label={isMuted ? 'Unmute Video' : 'Mute Video'}
@@ -356,7 +356,8 @@ function VideoModal({ video, onClose }) {
           </button>
         </div>
 
-        <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden border border-amber-400/30 bg-black relative mb-3">
+        {/* Video Player Box - object-contain ensures full divine frame without cropping */}
+        <div className="w-full flex-1 min-h-[220px] max-h-[55vh] rounded-2xl overflow-hidden border border-amber-400/30 bg-black flex items-center justify-center relative mb-2.5">
           <video
             ref={videoRef}
             src={video.src}
@@ -365,21 +366,23 @@ function VideoModal({ video, onClose }) {
             muted={isMuted}
             playsInline
             controls
-            className="w-full h-full object-cover"
+            className="w-full h-full max-h-[55vh] object-contain rounded-xl"
           />
         </div>
 
-        <h3 className="font-malayalam text-sm font-bold text-amber-100 leading-tight mb-1">
-          {video.title}
-        </h3>
-        <p className="text-[10px] text-stone-300 leading-normal">{video.desc}</p>
+        <div className="shrink-0">
+          <h3 className="font-malayalam text-sm font-bold text-amber-100 leading-tight mb-1">
+            {video.title}
+          </h3>
+          <p className="text-[10px] text-stone-300 leading-normal">{video.desc}</p>
 
-        <button
-          onClick={onClose}
-          className="w-full mt-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold font-malayalam text-xs cursor-pointer active:scale-95 transition-transform"
-        >
-          ശരി / Close
-        </button>
+          <button
+            onClick={onClose}
+            className="w-full mt-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold font-malayalam text-xs cursor-pointer active:scale-95 transition-transform"
+          >
+            ശരി / Close
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   );
