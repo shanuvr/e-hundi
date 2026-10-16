@@ -7,7 +7,7 @@ import Mandala from './components/Mandala';
 import Sparkle from './components/Sparkle';
 import { preloadAssets } from './utils/preload';
 import './App.css';
-
+//comment
 const STEPS = [
   { key: 'welcome', component: First },
   { key: 'hundi', component: Second },
