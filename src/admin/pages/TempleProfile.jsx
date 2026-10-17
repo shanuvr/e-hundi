@@ -42,10 +42,9 @@ export default function TempleProfile() {
           </div>
         </SectionCard>
 
-        <SectionCard title="Assets" description="Logo and imagery used across the kiosk." icon={Image}>
+        <SectionCard title="Assets" description="Logo used on receipts and kiosk header." icon={Image}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
             <UploadBox label="Temple logo" hint="PNG or SVG · max 2 MB" />
-            <UploadBox label="Temple photograph" hint="Shown behind the mandala" />
           </div>
         </SectionCard>
 

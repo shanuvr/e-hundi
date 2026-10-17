@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { 
-  MessageSquareQuote, 
   Save, 
   Sparkles, 
   Video, 
@@ -8,9 +7,7 @@ import {
   CheckCircle2, 
   RefreshCw, 
   Film,
-  FileVideo,
-  Plus,
-  Trash2
+  FileVideo
 } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import SectionCard from '../components/SectionCard';
@@ -22,30 +19,6 @@ const DEFAULT_VIDEO_SRC = '/video.mp4';
 const DEFAULT_VIDEO_NAME = 'video.mp4 (Sacred Temple Darshan)';
 const DEFAULT_VIDEO_SIZE = '14.8 MB';
 
-const INITIAL_SLOKAS = [
-  {
-    id: 1,
-    tag: 'മഹാമൃത്യുഞ്ജയ മന്ത്രം',
-    badge: 'Maha Mrityunjaya',
-    text: '॥ ഓം ത്ര്യംബകം യജാമഹേ സുഗന്ധിം പുഷ്ടിവർധനം । ഉർവ്വാരുകമിവ ബന്ധനാന്മൃത്യോർമുക്ഷീയ മാഽമൃതാത് ॥',
-    translation: 'ദീർഘായുസ്സും സർവ്വ ദുരിതമുക്തിയും നൽകി ഭഗവാൻ അനുഗ്രഹിക്കട്ടെ',
-  },
-  {
-    id: 2,
-    tag: 'ശിവ സ്തോത്രം',
-    badge: 'Karpura Gauram',
-    text: '॥ കർപ്പൂര ഗൗരം കരുണാവതാരം സംസാരാസാരം ഭുജഗേന്ദ്രഹാരം । സദാ വസന്തം ഹൃദയാരവിന്ദേ ഭവം ഭവാനീ സഹിതം നമാമി ॥',
-    translation: 'ഭഗവാന്റെ ദിവ്യ സാന്നിധ്യവും കരുണയും സദാ കൂടെയുണ്ടാകട്ടെ',
-  },
-  {
-    id: 3,
-    tag: 'ശാന്തി മന്ത്രം',
-    badge: 'Universal Peace',
-    text: '॥ സർവ്വേ ഭവന്തു സുഖിനഃ സർവ്വേ സന്തു നിരാമയാഃ । സർവ്വേ ഭദ്രാനി പശ്യന്തു മാ കശ്ചിദ് ദുഃഖ ഭാഗ്ഭവേത് ॥',
-    translation: 'കുടുംബത്തിൽ സർവ്വ ഐശ്വര്യങ്ങളും ശാന്തിയും സമാധാനവും നിറയട്ടെ',
-  },
-];
-
 export default function Slogans() {
   const fileInputRef = useRef(null);
   const [videoSrc, setVideoSrc] = useState(DEFAULT_VIDEO_SRC);
@@ -54,7 +27,6 @@ export default function Slogans() {
   const [isDragging, setIsDragging] = useState(false);
   const [savedToast, setSavedToast] = useState('');
   const [directUrl, setDirectUrl] = useState(DEFAULT_VIDEO_SRC);
-  const [slokas, setSlokas] = useState(INITIAL_SLOKAS);
 
   const handleFileChange = (file) => {
     if (!file) return;
@@ -106,25 +78,6 @@ export default function Slogans() {
     setTimeout(() => setSavedToast(''), 3000);
   };
 
-  const handleAddSloka = () => {
-    const newSloka = {
-      id: Date.now(),
-      tag: 'മന്ത്ര ധ്വനി',
-      badge: 'Chant',
-      text: '॥ ഓം നമഃ ശിവായ ശുഭായ സദാശിവായ । ഹര ഹര മഹാദേവ ॥',
-      translation: 'ഭഗവാന്റെ ദിവ്യ കടാക്ഷവും അനുഗ്രഹങ്ങളും ഉണ്ടാകട്ടെ',
-    };
-    setSlokas([...slokas, newSloka]);
-  };
-
-  const handleDeleteSloka = (id) => {
-    setSlokas(slokas.filter((s) => s.id !== id));
-  };
-
-  const handleUpdateSloka = (id, field, value) => {
-    setSlokas(slokas.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
-  };
-
   return (
     <div className="max-w-5xl space-y-4">
       {/* Toast Notification */}
@@ -137,7 +90,7 @@ export default function Slogans() {
 
       <PageHeader
         title="Slogans & Darshan Video"
-        subtitle="Manage the sacred Darshan video stream, temple blessing quotes, and devotional mantras."
+        subtitle="Manage the sacred Darshan video stream and temple blessing quotes."
         actions={
           <Button variant="primary" icon={Save} onClick={handleSaveAll}>
             Save changes
@@ -316,82 +269,6 @@ export default function Slogans() {
                 hint="Subtitle under the temple title."
               />
             </div>
-          </div>
-        </SectionCard>
-
-        {/* 🌟 3. Devotional Slokas & Mantras Manager */}
-        <SectionCard
-          title="Devotional Mantras & Slokas (Screen 3 Ticker)"
-          description="Sacred chants displayed on the live upward ticker on the Darshan screen."
-          icon={MessageSquareQuote}
-          footer={
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] text-stone-500 font-medium">
-                {slokas.length} active slokas in rotation
-              </span>
-              <Button variant="outline" icon={Plus} onClick={handleAddSloka} className="py-1 text-xs">
-                Add Sloka
-              </Button>
-            </div>
-          }
-        >
-          <div className="space-y-3">
-            {slokas.map((sloka, index) => (
-              <div
-                key={sloka.id}
-                className="p-3 rounded-xl bg-stone-50/80 border border-stone-200/90 space-y-2.5 relative group"
-              >
-                <div className="flex items-center justify-between gap-2 border-b border-stone-200 pb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-amber-500/15 border border-amber-300 flex items-center justify-center text-[10px] font-bold text-amber-800">
-                      {index + 1}
-                    </span>
-                    <span className="text-xs font-bold text-stone-800">{sloka.tag}</span>
-                    <span className="text-[10px] uppercase tracking-wider text-amber-700 font-semibold">
-                      ({sloka.badge})
-                    </span>
-                  </div>
-                  {slokas.length > 1 && (
-                    <button
-                      onClick={() => handleDeleteSloka(sloka.id)}
-                      className="p-1 rounded-md text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                      title="Remove Sloka"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  <TextInput
-                    label="Mantra Name (Malayalam)"
-                    value={sloka.tag}
-                    onChange={(e) => handleUpdateSloka(sloka.id, 'tag', e.target.value)}
-                    className={ML}
-                  />
-                  <TextInput
-                    label="Badge Label (English)"
-                    value={sloka.badge}
-                    onChange={(e) => handleUpdateSloka(sloka.id, 'badge', e.target.value)}
-                  />
-                </div>
-
-                <TextArea
-                  label="Sacred Mantra / Sloka Text"
-                  value={sloka.text}
-                  rows={2}
-                  onChange={(e) => handleUpdateSloka(sloka.id, 'text', e.target.value)}
-                  className={ML}
-                />
-
-                <TextInput
-                  label="Blessing Meaning / Translation (Malayalam)"
-                  value={sloka.translation}
-                  onChange={(e) => handleUpdateSloka(sloka.id, 'translation', e.target.value)}
-                  className={ML}
-                />
-              </div>
-            ))}
           </div>
         </SectionCard>
       </div>

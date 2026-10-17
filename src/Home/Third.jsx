@@ -484,7 +484,7 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Chinm
           transition={{ delay: 0.1, duration: 0.5 }}
           className="font-malayalam font-medium text-center text-xs sm:text-[13.5px] leading-tight text-amber-50 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] max-w-[320px]"
         >
-          നിങ്ങളുടെ സമർപ്പണം ദൈവം സ്വീകരിച്ചു
+          നിങ്ങളുടെ കാണിക്ക ദൈവം സ്വീകരിച്ചു
         </motion.p>
       </div>
 

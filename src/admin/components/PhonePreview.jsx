@@ -107,7 +107,7 @@ function ReceiptMock() {
       </div>
 
       <div className="pt-1.5 text-center shrink-0">
-        <p className="font-malayalam text-[8.5px] leading-tight text-amber-50">നിങ്ങളുടെ സമർപ്പണം ദൈവം സ്വീകരിച്ചു</p>
+        <p className="font-malayalam text-[8.5px] leading-tight text-amber-50">നിങ്ങളുടെ കാണിക്ക ദൈവം സ്വീകരിച്ചു</p>
         <p className="mt-0.5 text-[5.5px] uppercase tracking-[0.2em] text-amber-200/60">Your Offering Has Been Received</p>
       </div>
 

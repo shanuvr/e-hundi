@@ -1,4 +1,15 @@
-import { BarChart3, Calendar, Download, FileText, IndianRupee, Search, Users } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { 
+  BarChart3, 
+  Calendar, 
+  Download, 
+  FileText, 
+  IndianRupee, 
+  Search, 
+  Users, 
+  Filter, 
+  ChevronDown 
+} from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import SectionCard from '../components/SectionCard';
 import StatCard from '../components/StatCard';
@@ -6,15 +17,30 @@ import { DataTable, Pill, Dot } from '../components/DataTable';
 import { Button } from '../components/Controls';
 
 const ROWS = [
-  ['#4821', 'Ramesh Pillai', '₹500', '02 Oct, 10:42', 'Success'],
-  ['#4820', 'Anjali Nair', '₹200', '02 Oct, 10:31', 'Success'],
-  ['#4819', 'Suresh Menon', '₹1,000', '02 Oct, 10:18', 'Success'],
-  ['#4818', 'Lakshmi Iyer', '₹100', '02 Oct, 09:57', 'Success'],
-  ['#4817', 'Vinod Kumar', '₹2,000', '02 Oct, 09:44', 'Pending'],
-  ['#4816', 'Krishna Das', '₹50', '02 Oct, 09:12', 'Success'],
-  ['#4815', 'Meera Krishnan', '₹500', '02 Oct, 08:50', 'Success'],
-  ['#4814', 'Ravi Shankar', '₹250', '02 Oct, 08:22', 'Refunded'],
+  ['#4821', '₹500', '02 Oct, 10:42', 'Success'],
+  ['#4820', '₹200', '02 Oct, 10:31', 'Success'],
+  ['#4819', '₹1,000', '02 Oct, 10:18', 'Success'],
+  ['#4818', '₹100', '02 Oct, 09:57', 'Success'],
+  ['#4817', '₹2,000', '02 Oct, 09:44', 'Pending'],
+  ['#4816', '₹50', '02 Oct, 09:12', 'Failed'],
+  ['#4815', '₹500', '02 Oct, 08:50', 'Success'],
+  ['#4813', '₹100', '02 Oct, 07:15', 'Failed'],
 ];
+
+const STATUS_OPTIONS = ['All', 'Success', 'Pending', 'Failed'];
+
+const getStatusTone = (status) => {
+  switch (status) {
+    case 'Success':
+      return 'emerald';
+    case 'Pending':
+      return 'amber';
+    case 'Failed':
+      return 'rose';
+    default:
+      return 'stone';
+  }
+};
 
 const DENOM = [
   { label: '₹10', pct: 82 },
@@ -26,6 +52,20 @@ const DENOM = [
 ];
 
 export default function Reports() {
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredRows = useMemo(() => {
+    return ROWS.filter((row) => {
+      const matchesStatus = statusFilter === 'All' || row[3] === statusFilter;
+      const matchesSearch =
+        !searchQuery.trim() ||
+        row[0].toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
+        row[1].toLowerCase().includes(searchQuery.toLowerCase().trim());
+      return matchesStatus && matchesSearch;
+    });
+  }, [statusFilter, searchQuery]);
+
   return (
     <div className="space-y-3">
       <PageHeader
@@ -54,14 +94,37 @@ export default function Reports() {
           icon={Calendar}
           action={
             <div className="flex flex-wrap items-center gap-1.5">
+              {/* Status Filter Dropdown */}
+              <div className="relative flex items-center">
+                <Filter className="w-3 h-3 text-stone-400 absolute left-2 pointer-events-none" />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="pl-6 pr-6 py-0.5 text-[10.5px] font-medium rounded-md bg-white border border-stone-200 focus:outline-none focus:border-amber-500 text-stone-800 shadow-2xs appearance-none cursor-pointer"
+                  aria-label="Filter offerings by status"
+                >
+                  {STATUS_OPTIONS.map((s) => (
+                    <option key={s} value={s}>
+                      {s === 'All' ? 'All Status' : s}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3 h-3 text-stone-400 absolute right-1.5 pointer-events-none" />
+              </div>
+
+              {/* Search by receipt */}
               <div className="relative">
                 <Search className="w-3 h-3 text-stone-400 absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Search donor / #..."
-                  className="pl-6 pr-2 py-0.5 text-[10.5px] rounded-md bg-white border border-stone-200 focus:outline-none focus:border-amber-500 w-32 sm:w-40 text-stone-800 placeholder:text-stone-400 shadow-2xs"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search receipt / #..."
+                  className="pl-6 pr-2 py-0.5 text-[10.5px] rounded-md bg-white border border-stone-200 focus:outline-none focus:border-amber-500 w-28 sm:w-36 text-stone-800 placeholder:text-stone-400 shadow-2xs"
                 />
               </div>
+
+              {/* Date pickers */}
               <div className="flex items-center gap-1">
                 <input
                   type="date"
@@ -79,7 +142,9 @@ export default function Reports() {
           }
           footer={
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[10.5px] text-stone-500 font-medium">Showing 8 of 2,418 records</p>
+              <p className="text-[10.5px] text-stone-500 font-medium">
+                Showing {filteredRows.length} of {ROWS.length} offerings {statusFilter !== 'All' ? `(${statusFilter})` : ''}
+              </p>
               <div className="flex items-center gap-1.5">
                 <button className="px-2 py-0.5 rounded text-[11px] font-medium border border-stone-200 bg-white text-stone-700 hover:border-stone-300 hover:bg-stone-50 transition-colors cursor-pointer shadow-2xs">
                   Previous
@@ -91,22 +156,55 @@ export default function Reports() {
             </div>
           }
         >
-          <DataTable
-            head={['Receipt Ref', 'Donor Name', 'Amount', 'Timestamp', 'Status']}
-            rows={ROWS.map((row) => [
-              row[0],
-              row[1],
-              row[2],
-              row[3],
-              <Pill
-                key={row[0]}
-                tone={row[4] === 'Success' ? 'emerald' : row[4] === 'Pending' ? 'amber' : 'rose'}
-              >
-                <Dot tone={row[4] === 'Success' ? 'emerald' : row[4] === 'Pending' ? 'amber' : 'rose'} />
-                {row[4]}
-              </Pill>,
-            ])}
-          />
+          {/* Status Quick Filter Tabs */}
+          <div className="flex items-center gap-1 pb-2 mb-1.5 overflow-x-auto border-b border-stone-200/70 [scrollbar-width:none]">
+            {STATUS_OPTIONS.map((status) => {
+              const isSelected = statusFilter === status;
+              const count = status === 'All' ? ROWS.length : ROWS.filter((r) => r[3] === status).length;
+              return (
+                <button
+                  key={status}
+                  onClick={() => setStatusFilter(status)}
+                  className={`px-2 py-0.5 rounded-lg text-[10px] sm:text-[10.5px] font-semibold transition-all cursor-pointer flex items-center gap-1 shrink-0 ${
+                    isSelected
+                      ? 'bg-amber-500/15 border border-amber-400 text-amber-900 shadow-xs'
+                      : 'bg-stone-50 hover:bg-stone-100 border border-stone-200 text-stone-600 hover:text-stone-900'
+                  }`}
+                >
+                  <span>{status}</span>
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[9px] font-mono ${
+                      isSelected
+                        ? 'bg-amber-500/30 text-amber-950 font-bold'
+                        : 'bg-stone-200/80 text-stone-600'
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {filteredRows.length > 0 ? (
+            <DataTable
+              head={['Receipt Ref', 'Amount', 'Timestamp', 'Status']}
+              colWidths={['w-[26%]', 'w-[22%]', 'w-[32%]', 'w-[20%]']}
+              rows={filteredRows.map((row) => [
+                row[0],
+                row[1],
+                row[2],
+                <Pill key={row[0]} tone={getStatusTone(row[3])}>
+                  <Dot tone={getStatusTone(row[3])} />
+                  {row[3]}
+                </Pill>,
+              ])}
+            />
+          ) : (
+            <div className="py-8 text-center text-stone-500 text-xs">
+              No transactions match the selected filter &ldquo;{statusFilter}&rdquo;.
+            </div>
+          )}
         </SectionCard>
 
         <div className="space-y-3">

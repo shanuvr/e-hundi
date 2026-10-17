@@ -8,7 +8,7 @@ const TONES = {
 export function Pill({ children, tone = 'stone', className = '' }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] whitespace-nowrap shadow-2xs ${TONES[tone]} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] sm:text-[10.5px] font-semibold leading-tight whitespace-nowrap shadow-2xs ${TONES[tone]} ${className}`}
     >
       {children}
     </span>
@@ -26,44 +26,56 @@ export function Dot({ tone = 'emerald' }) {
 }
 
 /**
- * Compact Data Table without ugly scrollbars.
+ * Compact Data Table with balanced spacing and responsive alignment.
  */
-export function DataTable({ head, rows, className = '' }) {
+export function DataTable({ head, rows, className = '', colWidths = [], alignRightLast = true }) {
   return (
     <div className={`-mx-3 sm:-mx-3.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${className}`}>
       <div className="inline-block min-w-full align-middle px-3 sm:px-3.5">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-stone-200 bg-stone-50/80">
-              {head.map((h, idx) => (
-                <th
-                  key={h}
-                  className={`whitespace-nowrap py-2 px-2.5 text-[10px] font-bold uppercase tracking-[0.14em] text-stone-500 ${
-                    idx === 0 ? 'pl-2' : ''
-                  }`}
-                >
-                  {h}
-                </th>
-              ))}
+              {head.map((h, idx) => {
+                const isLast = idx === head.length - 1;
+                return (
+                  <th
+                    key={h}
+                    className={`whitespace-nowrap py-2 px-3 text-[10px] sm:text-[10.5px] font-bold uppercase tracking-[0.13em] text-stone-500 ${
+                      colWidths[idx] || ''
+                    } ${idx === 0 ? 'pl-2.5' : ''} ${
+                      isLast && alignRightLast ? 'text-right pr-3.5 sm:pr-4' : 'text-left'
+                    }`}
+                  >
+                    {h}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
             {rows.map((row, i) => (
               <tr key={i} className="transition-colors hover:bg-amber-500/[0.04]">
-                {row.map((cell, j) => (
-                  <td
-                    key={j}
-                    className={`whitespace-nowrap py-2 px-2.5 ${
-                      j === 0
-                        ? 'text-stone-900 font-semibold text-[11px] pl-2 font-mono'
-                        : j === 2
-                        ? 'text-amber-800 font-bold text-[11.5px]'
-                        : 'text-stone-700 text-[11px]'
-                    }`}
-                  >
-                    {cell}
-                  </td>
-                ))}
+                {row.map((cell, j) => {
+                  const isLast = j === row.length - 1;
+                  return (
+                    <td
+                      key={j}
+                      className={`whitespace-nowrap py-2 sm:py-2.5 px-3 ${
+                        colWidths[j] || ''
+                      } ${
+                        j === 0
+                          ? 'text-stone-900 font-semibold text-[11.5px] sm:text-xs pl-2.5 font-mono'
+                          : j === 1
+                          ? 'text-amber-800 font-bold text-[12px] sm:text-[12.5px]'
+                          : 'text-stone-700 text-[11px] sm:text-[11.5px]'
+                      } ${
+                        isLast && alignRightLast ? 'text-right pr-3.5 sm:pr-4' : 'text-left'
+                      }`}
+                    >
+                      {cell}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
