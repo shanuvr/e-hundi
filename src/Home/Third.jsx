@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Unlock, Sparkles, Share2, Volume2, VolumeX, X, Play } from 'lucide-react';
+import { ArrowLeft, Unlock, Sparkles, Share2, Volume2, VolumeX, Maximize2, X, Play } from 'lucide-react';
 
 /* Where offerings are collected. Surfaces on the receipt; admin-configurable. */
 const UPI_ID = 'shrimahadeva@upi';
@@ -21,261 +21,168 @@ const formatStamp = (d) =>
     hour12: true,
   });
 
-const SLOKAS = [
-  {
-    id: 1,
-    tag: 'മഹാമൃത്യുഞ്ജയ മന്ത്രം',
-    badge: 'Maha Mrityunjaya',
-    text: '॥ ഓം ത്ര്യംബകം യജാമഹേ സുഗന്ധിം പുഷ്ടിവർധനം । ഉർവ്വാരുകമിവ ബന്ധനാന്മൃത്യോർമുക്ഷീയ മാഽമൃതാത് ॥',
-    translation: 'ദീർഘായുസ്സും സർവ്വ ദുരിതമുക്തിയും നൽകി ഭഗവാൻ അനുഗ്രഹിക്കട്ടെ',
-  },
-  {
-    id: 2,
-    tag: 'ശിവ സ്തോത്രം',
-    badge: 'Karpura Gauram',
-    text: '॥ കർപ്പൂര ഗൗരം കരുണാവതാരം സംസാരാസാരം ഭുജഗേന്ദ്രഹാരം । സദാ വസന്തം ഹൃദയാരവിന്ദേ ഭവം ഭവാനീ സഹിതം നമാമി ॥',
-    translation: 'ഭഗവാന്റെ ദിവ്യ സാന്നിധ്യവും കരുണയും സദാ കൂടെയുണ്ടാകട്ടെ',
-  },
-  {
-    id: 3,
-    tag: 'മഹാ ഗായത്രീ മന്ത്രം',
-    badge: 'Gayatri Mantra',
-    text: '॥ ഓം ഭൂർ ഭുവഃ സ്വഃ തത് സവിതുർ വരേണ്യം । ഭർഗോ ദേവസ്യ ധീമഹി ധിയോ യോ നഃ പ്രചോദയാത് ॥',
-    translation: 'ജ്ഞാനവും ആയുരാരോഗ്യ സൗഖ്യവും ഭഗവാൻ പ്രദാനം ചെയ്യട്ടെ',
-  },
-  {
-    id: 4,
-    tag: 'ശാന്തി മന്ത്രം',
-    badge: 'Universal Peace',
-    text: '॥ സർവ്വേ ഭവന്തു സുഖിനഃ സർവ്വേ സന്തു നിരാമയാഃ । സർവ്വേ ഭദ്രാനി പശ്യന്തു മാ കശ്ചിദ് ദുഃഖ ഭാഗ്ഭവേത് ॥',
-    translation: 'കുടുംബത്തിൽ സർവ്വ ഐശ്വര്യങ്ങളും ശാന്തിയും സമാധാനവും നിറയട്ടെ',
-  },
-  {
-    id: 5,
-    tag: 'ഭക്ത സമർപ്പണാനുഗ്രഹം',
-    badge: 'Divine Blessings',
-    text: '॥ ഓം നമഃ ശിവായ ശുഭായ സദാശിവായ । ഹര ഹര മഹാദേവ ॥',
-    translation: 'നിങ്ങളുടെ സമർപ്പണം ഭഗവാൻ സ്വീകരിച്ചിരിക്കുന്നു. പ്രാർത്ഥനകൾ സഫലമാകട്ടെ',
-  },
-];
-
 /* Sacred Devotional Video & Audio Source */
 const SACRED_MEDIA_SRC = '/video.mp4';
 
-/** Resilient Looping Devotional Video Preview Tile */
-function DarshanVideoTile({
-  src = SACRED_MEDIA_SRC,
-  fallbackTitle,
-  titleMalayalam,
-  tag,
-  withAudio = false,
-  onExpand,
-}) {
-  const [videoError, setVideoError] = useState(false);
+/** Live Sanctum Darshan Video Player with Sound Toggle & Blurred Backdrop */
+function DarshanVideoCard({ onExpand }) {
+  const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef(null);
 
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Autoplay silent preview
-      });
-    }
-  }, [src]);
-
-  return (
-    <div
-      onClick={onExpand}
-      className={`group relative flex-1 min-w-0 h-[34px] sm:h-[38px] rounded-lg overflow-hidden border transition-all cursor-pointer shadow-sm active:scale-[0.96] ${
-        withAudio
-          ? 'border-amber-400/60 bg-stone-950 hover:border-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
-          : 'border-amber-400/40 bg-stone-950 hover:border-amber-300'
-      }`}
-      title={`Watch ${fallbackTitle}`}
-    >
-      {/* Mini Video stream preview (Strictly muted in preview tile for seamless looping) */}
-      {!videoError && src ? (
-        <video
-          ref={videoRef}
-          src={src}
-          autoPlay
-          loop
-          muted
-          playsInline
-          onError={() => setVideoError(true)}
-          className="absolute inset-0 w-full h-full object-cover object-top brightness-90 group-hover:scale-105 transition-transform duration-500"
-        />
-      ) : null}
-
-      {/* Golden Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/70 pointer-events-none" />
-
-      {/* Top Header Row with Malayalam Title & Sound Icon */}
-      <div className="absolute top-0.5 inset-x-1 flex items-center justify-between pointer-events-none z-10">
-        <span className="font-malayalam text-[9.5px] sm:text-[11px] font-bold text-amber-200 drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] truncate block">
-          {titleMalayalam}
-        </span>
-        {withAudio ? (
-          <Volume2 className="w-2.5 h-2.5 text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.8)] shrink-0 ml-0.5" />
-        ) : (
-          <VolumeX className="w-2 h-2 text-stone-400 shrink-0 ml-0.5" />
-        )}
-      </div>
-
-      {/* Center Action Indicator */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        {withAudio ? (
-          <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-amber-500/35 border border-amber-300/70 flex items-center justify-center shadow-[0_0_6px_rgba(245,158,11,0.6)]">
-            <Play className="w-2 h-2 text-amber-100 fill-amber-100 ml-0.5" />
-          </div>
-        ) : (
-          <span className="text-amber-300 drop-shadow-[0_0_4px_rgba(245,158,11,0.9)] text-[9px] sm:text-[10px]">
-            🪔
-          </span>
-        )}
-      </div>
-
-      {/* Bottom Subtitle / Tag */}
-      <div className="absolute bottom-0.5 inset-x-1 text-center pointer-events-none z-10">
-        <span
-          className={`text-[6px] sm:text-[6.5px] uppercase tracking-wider font-semibold truncate block drop-shadow-md ${
-            withAudio ? 'text-amber-300' : 'text-amber-100/80'
-          }`}
-        >
-          {tag}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-/** Devotional Media Bar: 
- * 1. Left: Audio Only (Mantra Dhwani from /video.mp4)
- * 2. Center: Video without Audio (Silent Darshan)
- * 3. Right: Video with Audio (Full Darshan + Chants)
- */
-function DevotionalMediaBar({ onOpenVideo }) {
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const audioRef = useRef(null);
-
-  const handleToggleAudio = () => {
-    setIsPlayingAudio((prev) => {
+  const toggleSound = (e) => {
+    e?.stopPropagation();
+    setIsMuted((prev) => {
       const next = !prev;
-      if (audioRef.current) {
-        if (next) {
-          audioRef.current.play().catch(() => {
-            // Autoplay policy fallback
-          });
-        } else {
-          audioRef.current.pause();
-        }
+      if (videoRef.current) {
+        videoRef.current.muted = next;
       }
       return next;
     });
   };
 
-  const handleOpenSilentVideo = () => {
-    onOpenVideo({
-      title: 'ചിന്മയ ശ്രീ ഭുവനേശ്വരി ദർശനം · Aarti Darshan',
-      desc: 'Live sanctum holy Aarti & Deeparadhana visual offering (Silent Mode)',
-      src: SACRED_MEDIA_SRC,
-      initialMuted: true,
-    });
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play().catch(() => {});
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
   };
 
-  const handleOpenAudioVideo = () => {
-    // Pause standalone background audio if playing, to prevent overlapping sounds
-    if (audioRef.current && isPlayingAudio) {
-      audioRef.current.pause();
-      setIsPlayingAudio(false);
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+      videoRef.current.play().catch(() => {});
     }
-    onOpenVideo({
-      title: 'ചിന്മയ ശ്രീ ഭുവനേശ്വരി ദർശന ധ്വനി · Aarti & Mantras',
-      desc: 'Divine sanctum Aarti accompanied by sacred devotional chants & mantras',
-      src: SACRED_MEDIA_SRC,
-      initialMuted: false,
-    });
-  };
+  }, [isMuted]);
 
   return (
-    <div className="w-full px-2 sm:px-2.5 py-1.5 bg-gradient-to-r from-stone-950/98 via-black/95 to-stone-950/98 border-t border-amber-400/25 shrink-0">
-      {/* Native HTML5 Audio element playing the soundtrack directly from /video.mp4 (Zero redundant bundle size!) */}
-      <audio
-        ref={audioRef}
-        src={SACRED_MEDIA_SRC}
-        loop
-        preload="auto"
-        onEnded={() => setIsPlayingAudio(false)}
-        onError={() => {
-          setIsPlayingAudio(false);
-        }}
-      />
+    <div className="relative w-full h-full flex flex-col items-center overflow-hidden rounded-2xl bg-black border border-amber-400/40 shadow-[inset_0_1px_0_rgba(255,240,200,0.25),0_8px_24px_rgba(0,0,0,0.8)] backdrop-blur-md">
+      {/* Top Header Row */}
+      <div className="w-full z-30 flex items-center justify-between px-3 py-1.5 bg-stone-950/95 border-b border-amber-400/30 shrink-0">
+        <div className="flex items-center gap-1.5">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
+          </span>
+          <span className="font-malayalam text-[10.5px] sm:text-[11.5px] font-bold text-amber-200 tracking-wide">
+            ലൈവ് ദർശനം
+          </span>
+          <span className="text-[8px] uppercase tracking-wider text-amber-300/80 font-medium">
+            · Live Sanctum
+          </span>
+        </div>
 
-      <div className="flex items-center justify-between w-full gap-1.5">
-        {/* 🌟 1. Left Button: Devotional Audio Only */}
-        <motion.button
-          onClick={handleToggleAudio}
-          whileTap={{ scale: 0.94 }}
-          aria-label={isPlayingAudio ? 'Mute Devotional Audio' : 'Play Devotional Audio'}
-          className={`relative flex-1 min-w-0 h-[34px] sm:h-[38px] rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 px-1 py-0.5 border transition-all cursor-pointer shadow-sm ${
-            isPlayingAudio
-              ? 'bg-gradient-to-b from-amber-500/30 via-amber-900/35 to-black/95 border-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)]'
-              : 'bg-stone-900/90 hover:bg-stone-800/90 border-amber-400/35 text-stone-300'
+        {/* Top Sound Toggle Pill */}
+        <button
+          onClick={toggleSound}
+          type="button"
+          aria-label={isMuted ? 'Turn Sound On' : 'Turn Sound Off'}
+          className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-semibold border transition-all cursor-pointer ${
+            !isMuted
+              ? 'bg-amber-500/25 border-amber-300 text-amber-200 shadow-[0_0_8px_rgba(245,158,11,0.4)]'
+              : 'bg-stone-900/90 border-amber-400/40 text-stone-300 hover:text-amber-200'
           }`}
         >
-          {isPlayingAudio && (
-            <motion.span
-              animate={{ opacity: [0.25, 0.6, 0.25] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute inset-0 rounded-lg bg-amber-400/15 pointer-events-none"
-            />
+          {!isMuted ? (
+            <>
+              <Volume2 className="w-2.5 h-2.5 text-amber-300" />
+              <span>Sound ON</span>
+            </>
+          ) : (
+            <>
+              <VolumeX className="w-2.5 h-2.5 text-stone-400" />
+              <span>Sound OFF</span>
+            </>
           )}
+        </button>
+      </div>
 
-          {/* Equalizer Animation / Speaker Icon */}
-          <div className="relative flex items-center justify-center shrink-0">
-            {isPlayingAudio ? (
-              <div className="flex items-end gap-[1.5px] h-3.5 w-3.5 justify-center">
-                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.6s_ease-in-out_infinite] h-3" />
-                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.8s_ease-in-out_infinite_0.2s] h-3.5" />
-                <span className="w-[2px] bg-amber-300 rounded-full animate-[bounce_0.5s_ease-in-out_infinite_0.4s] h-2.5" />
-              </div>
+      {/* Main Video Viewport */}
+      <div
+        onClick={togglePlay}
+        className="relative w-full flex-1 min-h-0 overflow-hidden bg-black flex items-center justify-center cursor-pointer select-none"
+      >
+        {/* Layer 1: Blurred Backdrop Video (smooth fill for side bars, zero extra download, strictly static no zoom) */}
+        <video
+          src={SACRED_MEDIA_SRC}
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-hidden="true"
+          tabIndex={-1}
+          className="absolute inset-0 w-full h-full object-cover blur-md brightness-[0.35] pointer-events-none"
+        />
+
+        {/* Layer 2: Main Deity Video (Full frame visible, never cropped, no zoom animations) */}
+        <video
+          ref={videoRef}
+          src={SACRED_MEDIA_SRC}
+          autoPlay
+          loop
+          muted={isMuted}
+          playsInline
+          className="relative z-10 h-full w-auto max-w-full object-contain"
+        />
+
+        {/* Vignette Gradients */}
+        <div className="absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-stone-950/70 to-transparent pointer-events-none z-20" />
+        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/75 to-transparent pointer-events-none z-20" />
+
+        {/* Play/Pause Overlay indicator when paused */}
+        {!isPlaying && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 pointer-events-none">
+            <div className="w-10 h-10 rounded-full bg-amber-500/30 border border-amber-300 flex items-center justify-center backdrop-blur-sm shadow-[0_0_16px_rgba(245,158,11,0.5)]">
+              <Play className="w-5 h-5 text-amber-100 fill-amber-100 ml-0.5" />
+            </div>
+          </div>
+        )}
+
+        {/* Floating Bottom Bar over Video */}
+        <div className="absolute bottom-2 inset-x-2 z-30 flex items-center justify-between pointer-events-none">
+          {/* Audio Tap Pill Button */}
+          <button
+            onClick={toggleSound}
+            type="button"
+            className="pointer-events-auto flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/80 border border-amber-400/60 text-amber-200 text-[10px] font-malayalam font-semibold backdrop-blur-md shadow-lg active:scale-95 transition-all cursor-pointer"
+          >
+            {!isMuted ? (
+              <>
+                <Volume2 className="w-3.5 h-3.5 text-amber-300" />
+                <span>ശബ്ദം ഓഫ് ചെയ്യുക</span>
+              </>
             ) : (
-              <VolumeX className="w-3.5 h-3.5 text-amber-200/60" />
+              <>
+                <VolumeX className="w-3.5 h-3.5 text-amber-300" />
+                <span>ശബ്ദം ഓൺ ചെയ്യുക</span>
+              </>
             )}
-          </div>
+          </button>
 
-          <div className="min-w-0 flex flex-col items-start leading-tight text-left">
-            <span className="font-malayalam text-[9.5px] sm:text-[11px] font-bold text-amber-100 truncate w-full tracking-normal">
-              മന്ത്ര ധ്വനി
-            </span>
-            <span
-              className={`text-[6px] sm:text-[6.5px] uppercase tracking-wider font-semibold ${
-                isPlayingAudio ? 'text-amber-300 animate-pulse font-bold' : 'text-amber-200/50'
-              }`}
+          {/* Fullscreen Expand Button */}
+          {onExpand && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onExpand({
+                  title: 'ചിന്മയ ശ്രീ ഭുവനേശ്വരി ദർശനം · Aarti Darshan',
+                  desc: 'Live sanctum holy Aarti & Deeparadhana visual offering',
+                  src: SACRED_MEDIA_SRC,
+                  initialMuted: isMuted,
+                });
+              }}
+              type="button"
+              aria-label="Expand Darshan"
+              className="pointer-events-auto p-1.5 rounded-full bg-black/80 border border-amber-400/60 text-amber-200 hover:text-amber-100 backdrop-blur-md shadow-lg active:scale-95 transition-all cursor-pointer"
             >
-              {isPlayingAudio ? 'Playing' : 'Audio Only'}
-            </span>
-          </div>
-        </motion.button>
-
-        {/* 🌟 2. Center Button: Video Without Audio (Silent Aarti) */}
-        <DarshanVideoTile
-          src={SACRED_MEDIA_SRC}
-          titleMalayalam="ദർശനം"
-          tag="Silent Video"
-          fallbackTitle="Temple Aarti Darshan (Silent)"
-          withAudio={false}
-          onExpand={handleOpenSilentVideo}
-        />
-
-        {/* 🌟 3. Right Button: Video With Audio (Video + Chanting) */}
-        <DarshanVideoTile
-          src={SACRED_MEDIA_SRC}
-          titleMalayalam="ദർശന ധ്വനി"
-          tag="Video + Sound"
-          fallbackTitle="Sanctum Darshan with Chants"
-          withAudio={true}
-          onExpand={handleOpenAudioVideo}
-        />
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -283,7 +190,7 @@ function DevotionalMediaBar({ onOpenVideo }) {
 
 /** Devotional Expanded Video Modal with Sound Control */
 function VideoModal({ video, onClose }) {
-  const [isMuted, setIsMuted] = useState(Boolean(video?.initialMuted));
+  const [isMuted, setIsMuted] = useState(Boolean(video?.initialMuted ?? true));
   const videoRef = useRef(null);
 
   const toggleSound = () => {
@@ -298,12 +205,10 @@ function VideoModal({ video, onClose }) {
 
   useEffect(() => {
     if (video && videoRef.current) {
-      videoRef.current.muted = Boolean(video.initialMuted);
-      videoRef.current.play().catch(() => {
-        // Fallback if browser requires user interaction for unmuted playback
-      });
+      videoRef.current.muted = isMuted;
+      videoRef.current.play().catch(() => {});
     }
-  }, [video]);
+  }, [video, isMuted]);
 
   if (!video) return null;
 
@@ -318,17 +223,17 @@ function VideoModal({ video, onClose }) {
     >
       <div className="absolute inset-0" onClick={onClose} />
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
+        initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="relative w-full max-w-[360px] max-h-[90vh] flex flex-col rounded-3xl overflow-hidden bg-stone-950 border border-amber-400/50 shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(245,158,11,0.3)] p-3.5 sm:p-4 text-center z-10"
+        exit={{ scale: 0.95, opacity: 0 }}
+        className="relative w-full max-w-[380px] max-h-[90vh] flex flex-col rounded-3xl overflow-hidden bg-stone-950 border border-amber-400/50 shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(245,158,11,0.3)] p-3.5 sm:p-4 text-center z-10"
       >
-        {/* Top Control Bar with Mute/Unmute toggle & Close Button */}
+        {/* Top Control Bar */}
         <div className="flex items-center justify-between mb-2 shrink-0">
           <button
             onClick={toggleSound}
             aria-label={isMuted ? 'Unmute Video' : 'Mute Video'}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider transition-all cursor-pointer border ${
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider transition-all cursor-pointer border ${
               !isMuted
                 ? 'bg-amber-500/25 border-amber-300 text-amber-200 shadow-[0_0_8px_rgba(245,158,11,0.3)]'
                 : 'bg-stone-900 border-amber-400/30 text-stone-400 hover:text-amber-200'
@@ -336,13 +241,13 @@ function VideoModal({ video, onClose }) {
           >
             {!isMuted ? (
               <>
-                <Volume2 className="w-3 h-3 text-amber-300 animate-pulse" />
+                <Volume2 className="w-3.5 h-3.5 text-amber-300" />
                 <span>Sound ON</span>
               </>
             ) : (
               <>
-                <VolumeX className="w-3 h-3" />
-                <span>Muted (Silent)</span>
+                <VolumeX className="w-3.5 h-3.5 text-stone-400" />
+                <span>Sound OFF</span>
               </>
             )}
           </button>
@@ -356,8 +261,21 @@ function VideoModal({ video, onClose }) {
           </button>
         </div>
 
-        {/* Video Player Box - object-contain ensures full divine frame without cropping */}
-        <div className="w-full flex-1 min-h-[220px] max-h-[55vh] rounded-2xl overflow-hidden border border-amber-400/30 bg-black flex items-center justify-center relative mb-2.5">
+        {/* Video Player Box with Blurred Backdrop */}
+        <div className="w-full flex-1 min-h-[240px] max-h-[58vh] rounded-2xl overflow-hidden border border-amber-400/30 bg-black flex items-center justify-center relative mb-2.5">
+          {/* Layer 1: Blurred fill */}
+          <video
+            src={video.src}
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden="true"
+            tabIndex={-1}
+            className="absolute inset-0 w-full h-full object-cover blur-md brightness-[0.35] pointer-events-none"
+          />
+
+          {/* Layer 2: Main Video */}
           <video
             ref={videoRef}
             src={video.src}
@@ -365,8 +283,7 @@ function VideoModal({ video, onClose }) {
             loop
             muted={isMuted}
             playsInline
-            controls
-            className="w-full h-full max-h-[55vh] object-contain rounded-xl"
+            className="relative z-10 h-full w-auto max-w-full object-contain"
           />
         </div>
 
@@ -374,7 +291,7 @@ function VideoModal({ video, onClose }) {
           <h3 className="font-malayalam text-sm font-bold text-amber-100 leading-tight mb-1">
             {video.title}
           </h3>
-          <p className="text-[10px] text-stone-300 leading-normal">{video.desc}</p>
+          <p className="text-[10.5px] text-stone-300 leading-normal">{video.desc}</p>
 
           <button
             onClick={onClose}
@@ -385,70 +302,6 @@ function VideoModal({ video, onClose }) {
         </div>
       </motion.div>
     </motion.div>
-  );
-}
-
-function SloganVerticalTicker({ onOpenVideo }) {
-  // Duplicate for seamless 360-degree continuous loop
-  const tickerItems = [...SLOKAS, ...SLOKAS];
-
-  return (
-    <div className="relative w-full h-full flex flex-col items-center overflow-hidden rounded-2xl bg-black/75 border border-amber-400/40 shadow-[inset_0_1px_0_rgba(255,240,200,0.25),0_8px_24px_rgba(0,0,0,0.8)] backdrop-blur-md">
-      {/* Top Live Ticker Header */}
-      <div className="w-full z-20 flex items-center justify-between px-3 py-1.5 bg-stone-950/95 border-b border-amber-400/30 shrink-0">
-        <div className="flex items-center gap-1.5">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
-          </span>
-          <span className="font-malayalam text-[10.5px] sm:text-[11.5px] font-bold text-amber-200 tracking-wide">
-            ദിവ്യ മന്ത്ര ധ്വനി
-          </span>
-        </div>
-        <span className="text-[8px] sm:text-[8.5px] uppercase tracking-[0.2em] font-semibold text-amber-300/85">
-          Devotional Chants
-        </span>
-      </div>
-
-      {/* Upward Scrolling News-Style Viewport with Soft Vertical Fade Masks */}
-      <div
-        className="relative w-full flex-1 min-h-0 overflow-hidden px-3"
-        style={{
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
-        }}
-      >
-        <div className="slogan-ticker-scroll flex flex-col gap-2.5 py-2">
-          {tickerItems.map((item, idx) => (
-            <div
-              key={`${item.id}-${idx}`}
-              className="flex flex-col items-center text-center px-3 py-2 rounded-xl bg-gradient-to-b from-stone-900/80 to-black/90 border border-amber-400/25 shadow-sm"
-            >
-              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/35 mb-1">
-                <span className="font-malayalam text-[9px] font-bold text-amber-200">
-                  {item.tag}
-                </span>
-                <span className="text-amber-400/60 font-bold">&middot;</span>
-                <span className="text-[7.5px] uppercase tracking-wider text-amber-100 font-semibold">
-                  {item.badge}
-                </span>
-              </div>
-
-              <p className="font-malayalam text-xs sm:text-[13px] font-bold text-amber-100 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] px-1">
-                {item.text}
-              </p>
-
-              <p className="font-malayalam text-[10px] sm:text-[11px] font-medium text-amber-300/90 mt-0.5 leading-normal">
-                {item.translation}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 🌟 Dedicated 3-Widget Row: Left Speaker (Audio Chant) + Center Video + Right Video */}
-      <DevotionalMediaBar onOpenVideo={onOpenVideo} />
-    </div>
   );
 }
 
@@ -635,9 +488,9 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Chinm
         </motion.p>
       </div>
 
-      {/* Devotional Slogan Upward News-Style Ticker with Media Bar */}
-      <div className="relative z-10 w-full flex-1 min-h-[220px] flex flex-col py-1 overflow-hidden">
-        <SloganVerticalTicker onOpenVideo={setActiveVideo} />
+      {/* Sanctum Live Darshan Video Card */}
+      <div className="relative z-10 w-full flex-1 min-h-[180px] sm:min-h-[220px] flex flex-col py-1 overflow-hidden">
+        <DarshanVideoCard onExpand={setActiveVideo} />
       </div>
 
       {/* Receipt summary */}
