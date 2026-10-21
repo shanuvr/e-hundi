@@ -3,7 +3,7 @@ import { MONEY } from '../../data/money';
 
 const SAMPLE = {
   templeName: 'Chinmaya Sri Bhuvaneswari Navagraha Temple',
-  upiId: 'chinmayabhuvaneswari@upi',
+  upiId: 'programers.ibz@icici',
   receipt: 'EH-K3M9QW2',
   amount: 340,
 };

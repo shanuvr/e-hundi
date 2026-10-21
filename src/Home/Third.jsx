@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Unlock, Sparkles, Share2, Volume2, VolumeX, Maximize2, X, Play } from 'lucide-react';
 
 /* Where offerings are collected. Surfaces on the receipt; admin-configurable. */
-const UPI_ID = 'shrimahadeva@upi';
+const UPI_ID = 'programers.ibz@icici';
 
 const makeReceipt = () =>
   `EH-${Date.now().toString(36).slice(-4).toUpperCase()}${Math.random()

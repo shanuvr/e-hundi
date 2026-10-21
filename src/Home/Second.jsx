@@ -4,6 +4,9 @@ import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { ArrowLeft, Bell, Loader2, Info, X, Phone, MessageCircle, Mail, MapPin, ShieldCheck, Clock } from 'lucide-react';
 import Money from '../components/Money';
 import Label from '../components/Label';
+
+const UPI_ID = 'programers.ibz@icici';
+const PAYEE_NAME = 'PROGRAMERS';
 import { moneyKind, moneySrc } from '../data/money';
 import { playTempleBell, playCoinDrop, playNoteDrop } from '../utils/audio';
 import { celebrateOffering } from '../utils/confetti';
@@ -144,7 +147,7 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
   const [showInfo, setShowInfo] = useState(false);
   const bandaramRef = useRef(null);
   const lastGlowTimer = useRef(null);
-  const submitTimer = useRef(null);
+  const hasLeftTab = useRef(false);
   const bandAnim = useAnimationControls();
   const [flights, setFlights] = useState([]);
   const [ripples, setRipples] = useState([]);
@@ -162,23 +165,86 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
   useEffect(
     () => () => {
       clearTimeout(lastGlowTimer.current);
-      clearTimeout(submitTimer.current);
     },
     []
   );
 
-  /** Offer button: hold on a spinner while the offering settles, celebrate, then play screen 3. */
+  const buildUpiUrl = (amt) =>
+    `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${Number(amt).toFixed(2)}&cu=INR&tn=${encodeURIComponent('Devotional Offering')}`;
+
   const submitOffering = useCallback(() => {
-    if (paying || amount <= 0) return;
-    setPaying(true);
-    triggerHaptic([30, 40, 60]);
-    submitTimer.current = setTimeout(() => {
+    const amt = Number(amount);
+    if (!Number.isFinite(amt) || amt <= 0) return;
+
+    // Second tap while "paying" = user confirms they returned
+    if (paying) {
+      setPaying(false);
+      hasLeftTab.current = false;
       celebrateOffering();
       playTempleBell();
       triggerHaptic([25, 30, 25, 30, 80]);
       onNext();
-    }, 2000);
-  }, [paying, amount, onNext]);
+      return;
+    }
+
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!isMobile) {
+      navigator.clipboard?.writeText(UPI_ID).catch(() => {});
+      alert(`Open this page on your phone, or pay ₹${amt} to UPI ID: ${UPI_ID} (copied)`);
+      return;
+    }
+
+    setPaying(true);
+    hasLeftTab.current = false;
+    triggerHaptic([30, 40, 60]);
+    window.location.href = buildUpiUrl(amt); // single launch only
+  }, [amount, paying, onNext]);
+
+  // When donor completes payment in UPI app and returns to the browser tab
+  useEffect(() => {
+    if (!paying) return;
+
+    const handleVisibilityChange = () => {
+      // 1. User switches from browser to UPI app -> document becomes hidden
+      if (document.visibilityState === 'hidden') {
+        hasLeftTab.current = true;
+      }
+      // 2. User returns back to this website -> document becomes visible
+      else if (document.visibilityState === 'visible' && hasLeftTab.current) {
+        hasLeftTab.current = false;
+        setPaying(false);
+        celebrateOffering();
+        playTempleBell();
+        triggerHaptic([25, 30, 25, 30, 80]);
+        onNext();
+      }
+    };
+
+    const handleWindowBlur = () => {
+      hasLeftTab.current = true;
+    };
+
+    const handleWindowFocus = () => {
+      if (hasLeftTab.current) {
+        hasLeftTab.current = false;
+        setPaying(false);
+        celebrateOffering();
+        playTempleBell();
+        triggerHaptic([25, 30, 25, 30, 80]);
+        onNext();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleWindowBlur);
+    window.addEventListener('focus', handleWindowFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleWindowBlur);
+      window.removeEventListener('focus', handleWindowFocus);
+    };
+  }, [paying, onNext]);
 
   const dropRipple = useCallback((id) => {
     setRipples((r) => r.filter((x) => x.id !== id));
@@ -486,15 +552,16 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
         </div>
       </div>
 
-      {/* Offer button */}
+      {/* Offer button: single launch to default UPI app */}
       <div className="relative z-10 w-full mt-auto pt-1 pb-1 sm:pb-0.5 shrink-0">
         <motion.button
+          type="button"
           onClick={submitOffering}
-          disabled={amount === 0 || paying}
+          disabled={amount <= 0}
           whileTap={amount === 0 || paying ? undefined : { scale: 0.97 }}
-          className={`w-full py-2.5 sm:py-2.5 px-6 rounded-2xl font-malayalam text-base sm:text-base border transition-all duration-300 flex items-center justify-center gap-2 ${
+          className={`w-full py-2.5 sm:py-2.5 px-6 rounded-2xl font-malayalam text-base sm:text-base border transition-all duration-300 flex items-center justify-center gap-2 select-none ${
             paying
-              ? 'bg-gradient-to-r from-amber-500/75 via-amber-400/75 to-amber-600/75 text-stone-950 font-semibold border-yellow-200/30 cursor-wait'
+              ? 'bg-gradient-to-r from-amber-500/75 via-amber-400/75 to-amber-600/75 text-stone-950 font-semibold border-yellow-200/30 cursor-pointer'
               : amount > 0
                 ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold shadow-[0_8px_25px_rgba(217,119,6,0.35)] border-yellow-200/50 cursor-pointer'
                 : 'bg-amber-400/15 text-amber-200/45 border-amber-200/10 cursor-not-allowed'
@@ -503,14 +570,14 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
           {paying ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>സമർപ്പിക്കുക</span>
+              <span>ദർശനം കാണുക / View Darshan</span>
             </>
           ) : (
             <span className={amount > 0 ? '' : 'opacity-70'}>സമർപ്പിക്കുക</span>
           )}
         </motion.button>
 
-        {/* Status line under the button, only while the offering is settling */}
+        {/* Status line under the button, only while opening UPI */}
         <div className="h-4 mt-1 flex items-center justify-center">
           <AnimatePresence mode="wait" initial={false}>
             {paying && (
@@ -519,9 +586,9 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="text-[9.5px] uppercase tracking-[0.2em] text-amber-200/55 font-medium"
+                className="text-[9.5px] uppercase tracking-[0.2em] text-amber-200/65 font-medium"
               >
-                Completing your offering
+                UPI app opened · Tap to view Darshan
               </motion.p>
             )}
           </AnimatePresence>
