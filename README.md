@@ -55,17 +55,17 @@ Backend
 ```
 cd $root
 git archive HEAD backend -o backend.zip
-scp backend.zip leads:/home/newleadsprograme/
-ssh leads "cd /home/newleadsprograme && unzip -o backend.zip && rm backend.zip"
-ssh leads "source /home/newleadsprograme/virtualenv/backend/3.13/bin/activate && cd /home/newleadsprograme/backend && python manage.py migrate"
+scp backend.zip hundi:/home/kanikkavanji/
+ssh hundi "cd /home/kanikkavanji && unzip -o backend.zip && rm backend.zip"
+ssh hundi "source /home/kanikkavanji/virtualenv/backend/3.13/bin/activate && cd /home/kanikkavanji/backend && python manage.py migrate"
 ```
 
 Frontend
 ```
 cd $root/frontend
 npm run build -- --mode prod
-ssh leads "rm -rf ~/public_html/assets"
-scp -r .\dist\* leads:/home/newleadsprograme/public_html/
-scp .\dist\.htaccess leads:/home/newleadsprograme/public_html/
-ssh leads "chmod -R 755 ~/public_html/assets && chmod 755 ~/public_html/v1"
+ssh hundi "rm -rf ~/public_html/assets"
+scp -r .\dist\* hundi:/home/kanikkavanji/public_html/
+scp .\dist\.htaccess hundi:/home/kanikkavanji/public_html/
+ssh hundi "chmod -R 755 ~/public_html/assets && chmod 755 ~/public_html/v1"
 ```
