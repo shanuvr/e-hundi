@@ -250,18 +250,7 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
         },
         config: {
           display: {
-            blocks: {
-              upi: {
-                name: 'Pay using UPI',
-                instruments: [
-                  {
-                    method: 'upi',
-                    flows: ['intent', 'qr'],
-                  },
-                ],
-              },
-            },
-            sequence: ['block.upi'],
+            sequence: ['upi'],
             preferences: {
               show_default_blocks: false,
             },
