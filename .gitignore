@@ -7,10 +7,61 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Node / React (Vite or CRA)
 node_modules
 dist
 dist-ssr
+build
+coverage
+.eslintcache
 *.local
+.vite
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+develop-eggs/
+downloads/
+eggs/
+parts/
+sdist/
+var/
+wheels/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.pot
+local_settings.py
+media/
+staticfiles/
+static_root/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Testing / tooling caches
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
 
 # Editor directories and files
 .vscode/*
