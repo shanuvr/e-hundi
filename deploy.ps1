@@ -97,7 +97,7 @@ function Deploy-Frontend {
         scp .\dist\.htaccess "${sshAlias}:$remoteHome/public_html/"
         if ($LASTEXITCODE -ne 0) { throw ".htaccess upload failed" }
 
-        ssh $sshAlias "chmod -R 755 $remoteHome/public_html/assets && chmod 755 $remoteHome/public_html/v1"
+        ssh $sshAlias "chmod -R 755 $remoteHome/public_html/assets $remoteHome/public_html/money && chmod 755 $remoteHome/public_html/v1"
         if ($LASTEXITCODE -ne 0) { throw "Permission update failed" }
     }
 }
