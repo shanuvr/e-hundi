@@ -232,7 +232,7 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
         description: 'Devotional Offering',
         ...(orderId ? { order_id: orderId } : {}),
         prefill: {
-          contact: '9999999999',
+          contact: '9876543210',
           email: 'donor@ehundi.org',
           method: 'upi',
         },
@@ -296,7 +296,7 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
     if (isMobile) {
       window.location.href = buildUpiUrl(amt);
     } else {
-      navigator.clipboard?.writeText(UPI_ID).catch(() => {});
+      navigator.clipboard?.writeText(UPI_ID).catch(() => { });
       alert(`Pay ₹${amt} to UPI ID: ${UPI_ID} (copied). Add active Razorpay key to .env for full gateway checkout.`);
     }
   }, [amount, paying, onNext]);
@@ -371,7 +371,7 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
       ]);
       // Functional update so two quick taps can't clobber each other's amount.
       onAmountChange((t) => t + value);
-      
+
       // Initial tactile tap vibration
       triggerHaptic(isCoin ? 35 : 45);
 
@@ -399,7 +399,7 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
       setFlights((f) => f.filter((x) => x.id !== id));
       if (flight) {
         setRipples((r) => [...r, { id: `${id}-r`, x: flight.target.x, y: flight.target.y }]);
-        
+
         if (flight.isCoin) {
           // 🪙 Real metallic coin clink into brass Hundi + double tap bounce haptic
           playCoinDrop(flight.value);
@@ -484,9 +484,8 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
           onClick={onBack}
           disabled={paying}
           aria-label="Back"
-          className={`p-2 sm:p-2 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 backdrop-blur-md transition-colors ${
-            paying ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-amber-500/20'
-          }`}
+          className={`p-2 sm:p-2 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 backdrop-blur-md transition-colors ${paying ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-amber-500/20'
+            }`}
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -619,9 +618,8 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
               onClick={(e) => placeOffering(value, e)}
               disabled={paying}
               aria-label={`Offer ${value} rupee coin`}
-              className={`mx-auto w-full max-w-[48px] focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-full transition-opacity ${
-                paying ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
-              }`}
+              className={`mx-auto w-full max-w-[48px] focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-full transition-opacity ${paying ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+                }`}
             >
               <Money value={value} className="w-full h-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.65)] hover:scale-105 active:scale-95 transition-transform" />
             </motion.button>
@@ -643,9 +641,8 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
               onClick={(e) => placeOffering(value, e)}
               disabled={paying}
               aria-label={`Offer ${value} rupee note`}
-              className={`mx-auto w-full max-w-[125px] flex items-center justify-center focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-md transition-opacity ${
-                paying ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
-              }`}
+              className={`mx-auto w-full max-w-[125px] flex items-center justify-center focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-300/60 rounded-md transition-opacity ${paying ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+                }`}
             >
               <Money value={value} className="w-full h-auto drop-shadow-[0_4px_10px_rgba(0,0,0,0.65)] hover:scale-[1.03] active:scale-95 transition-transform" />
             </motion.button>
@@ -660,13 +657,12 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
           onClick={submitOffering}
           disabled={amount <= 0}
           whileTap={amount === 0 || paying ? undefined : { scale: 0.97 }}
-          className={`w-full py-2.5 sm:py-2.5 px-6 rounded-2xl font-malayalam text-base sm:text-base border transition-all duration-300 flex items-center justify-center gap-2 select-none ${
-            paying
+          className={`w-full py-2.5 sm:py-2.5 px-6 rounded-2xl font-malayalam text-base sm:text-base border transition-all duration-300 flex items-center justify-center gap-2 select-none ${paying
               ? 'bg-gradient-to-r from-amber-500/75 via-amber-400/75 to-amber-600/75 text-stone-950 font-semibold border-yellow-200/30 cursor-pointer'
               : amount > 0
                 ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold shadow-[0_8px_25px_rgba(217,119,6,0.35)] border-yellow-200/50 cursor-pointer'
                 : 'bg-amber-400/15 text-amber-200/45 border-amber-200/10 cursor-not-allowed'
-          }`}
+            }`}
         >
           {paying ? (
             <>
