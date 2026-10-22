@@ -232,8 +232,13 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
         description: 'Devotional Offering',
         ...(orderId ? { order_id: orderId } : {}),
         prefill: {
-          contact: '',
-          email: '',
+          contact: '9999999999',
+          email: 'donor@ehundi.org',
+          method: 'upi',
+        },
+        readonly: {
+          contact: true,
+          email: true,
         },
         method: {
           netbanking: false,
