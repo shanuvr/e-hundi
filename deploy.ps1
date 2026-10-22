@@ -1,7 +1,7 @@
 $rootFile = ".hundi_root"
 
-$sshAlias = "leads"
-$remoteHome = "/home/newleadsprograme"
+$sshAlias = "hundi"
+$remoteHome = "/home/kanikkavanji"
 $pythonVersion = "3.13"
 $backendPort = 8004
 
