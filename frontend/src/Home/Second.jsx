@@ -5,8 +5,8 @@ import { ArrowLeft, Bell, Loader2, Info, X, Phone, MessageCircle, Mail, MapPin, 
 import Money from '../components/Money';
 import Label from '../components/Label';
 
-const UPI_ID = 'programers.ibz@icici';
-const PAYEE_NAME = 'PROGRAMERS';
+const UPI_ID = 'programers@icici';
+const PAYEE_NAME = 'programers';
 import { moneyKind, moneySrc } from '../data/money';
 import { playTempleBell, playCoinDrop, playNoteDrop } from '../utils/audio';
 import { celebrateOffering } from '../utils/confetti';
@@ -172,7 +172,7 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
   const buildUpiUrl = (amt) =>
     `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${Number(amt).toFixed(2)}&cu=INR&tn=${encodeURIComponent('Devotional Offering')}`;
 
-  const submitOffering = useCallback(() => {
+  const submitOffering = useCallback(async () => {
     const amt = Number(amount);
     if (!Number.isFinite(amt) || amt <= 0) return;
 
@@ -187,17 +187,113 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
       return;
     }
 
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if (!isMobile) {
-      navigator.clipboard?.writeText(UPI_ID).catch(() => {});
-      alert(`Open this page on your phone, or pay ₹${amt} to UPI ID: ${UPI_ID} (copied)`);
-      return;
-    }
-
     setPaying(true);
     hasLeftTab.current = false;
     triggerHaptic([30, 40, 60]);
-    window.location.href = buildUpiUrl(amt); // single launch only
+
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    let orderData = null;
+
+    try {
+      const res = await fetch(`${apiUrl}/api/create-order/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: amt }),
+      });
+      if (res.ok) {
+        orderData = await res.json();
+      }
+    } catch (err) {
+      console.warn('Backend order creation offline or unreachable:', err);
+    }
+
+    const keyId = orderData?.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder';
+    const merchantName = orderData?.merchant_name || PAYEE_NAME;
+    const orderId = orderData?.order_id;
+    const amountInPaise = Math.round(amt * 100);
+
+    const handleSuccess = () => {
+      setPaying(false);
+      hasLeftTab.current = false;
+      celebrateOffering();
+      playTempleBell();
+      triggerHaptic([25, 30, 25, 30, 80]);
+      onNext();
+    };
+
+    // If Razorpay SDK is loaded and credentials are provided
+    if (typeof window !== 'undefined' && window.Razorpay && keyId && !keyId.startsWith('rzp_test_placeholder')) {
+      const options = {
+        key: keyId,
+        amount: amountInPaise,
+        currency: 'INR',
+        name: merchantName,
+        description: 'Devotional Offering',
+        ...(orderId ? { order_id: orderId } : {}),
+        prefill: {
+          contact: '',
+          email: '',
+        },
+        method: {
+          netbanking: false,
+          card: false,
+          wallet: false,
+          upi: true,
+          emi: false,
+          paylater: false,
+        },
+        config: {
+          display: {
+            blocks: {
+              upi: {
+                name: 'Pay using UPI',
+                instruments: [
+                  {
+                    method: 'upi',
+                    flows: ['intent', 'qr'],
+                  },
+                ],
+              },
+            },
+            sequence: ['block.upi'],
+            preferences: {
+              show_default_blocks: false,
+            },
+          },
+        },
+        theme: {
+          color: '#d97706',
+        },
+        handler: function () {
+          handleSuccess();
+        },
+        modal: {
+          ondismiss: function () {
+            setPaying(false);
+          },
+        },
+      };
+
+      try {
+        const rzp = new window.Razorpay(options);
+        rzp.on('payment.failed', function () {
+          setPaying(false);
+        });
+        rzp.open();
+        return;
+      } catch (e) {
+        console.error('Failed to open Razorpay modal:', e);
+      }
+    }
+
+    // Direct mobile UPI launch fallback (instant testing before entering keys)
+    if (isMobile) {
+      window.location.href = buildUpiUrl(amt);
+    } else {
+      navigator.clipboard?.writeText(UPI_ID).catch(() => {});
+      alert(`Pay ₹${amt} to UPI ID: ${UPI_ID} (copied). Add active Razorpay key to .env for full gateway checkout.`);
+    }
   }, [amount, paying, onNext]);
 
   // When donor completes payment in UPI app and returns to the browser tab
