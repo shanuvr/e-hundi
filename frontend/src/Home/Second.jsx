@@ -647,10 +647,10 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
           disabled={amount <= 0}
           whileTap={amount === 0 || paying ? undefined : { scale: 0.97 }}
           className={`w-full py-2.5 sm:py-2.5 px-6 rounded-2xl font-malayalam text-base sm:text-base border transition-all duration-300 flex items-center justify-center gap-2 select-none ${paying
-              ? 'bg-gradient-to-r from-amber-500/75 via-amber-400/75 to-amber-600/75 text-stone-950 font-semibold border-yellow-200/30 cursor-pointer'
-              : amount > 0
-                ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold shadow-[0_8px_25px_rgba(217,119,6,0.35)] border-yellow-200/50 cursor-pointer'
-                : 'bg-amber-400/15 text-amber-200/45 border-amber-200/10 cursor-not-allowed'
+            ? 'bg-gradient-to-r from-amber-500/75 via-amber-400/75 to-amber-600/75 text-stone-950 font-semibold border-yellow-200/30 cursor-pointer'
+            : amount > 0
+              ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold shadow-[0_8px_25px_rgba(217,119,6,0.35)] border-yellow-200/50 cursor-pointer'
+              : 'bg-amber-400/15 text-amber-200/45 border-amber-200/10 cursor-not-allowed'
             }`}
         >
           {paying ? (
