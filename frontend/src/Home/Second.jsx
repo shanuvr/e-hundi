@@ -17,6 +17,8 @@ const NOTES = [50, 100, 200, 500];
 
 let flightId = 0;
 
+import TempleInfoModal from '../components/TempleInfoModal';
+
 const triggerHaptic = (pattern = 40) => {
   if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
     try {
@@ -27,134 +29,7 @@ const triggerHaptic = (pattern = 40) => {
   }
 };
 
-/** Devotional Temple Profile Popup */
-function TempleInfoModal({ onClose, templeName }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="absolute inset-0 z-[100] flex items-center justify-center p-4 transform-gpu"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        className="absolute inset-0 bg-black/85 backdrop-blur-[6px]"
-        onClick={onClose}
-      />
-
-      <motion.div
-        initial={{ scale: 0.88, opacity: 0, y: 18 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 12 }}
-        transition={{ type: 'spring', stiffness: 340, damping: 28, mass: 0.75 }}
-        className="relative w-full max-w-[310px] rounded-3xl p-5 bg-gradient-to-b from-stone-900/98 via-stone-900/95 to-stone-950/98 border border-amber-400/40 shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(245,158,11,0.25)] transform-gpu will-change-transform"
-      >
-        {/* Ambient Top Glow */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-32 h-16 -translate-y-1/2 rounded-full bg-amber-400/20 blur-2xl pointer-events-none" />
-
-        {/* Close Icon */}
-        <button
-          onClick={onClose}
-          aria-label="Close modal"
-          className="absolute top-3.5 right-3.5 p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-stone-400 hover:text-amber-200 transition-colors cursor-pointer"
-        >
-          <X className="w-4 h-4" />
-        </button>
-
-        {/* Temple Brand Badge */}
-        <div className="flex flex-col items-center text-center">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400/30 to-amber-700/20 border border-amber-400/35 flex items-center justify-center font-om text-2xl text-amber-200 shadow-[0_0_20px_rgba(245,158,11,0.3)] mb-2">
-            ॐ
-          </div>
-          <h3 className="font-cinzel text-sm sm:text-base font-bold text-amber-100 leading-tight">
-            {templeName}
-          </h3>
-          <p className="font-malayalam text-xs text-amber-300/80 mt-0.5">ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം</p>
-          <p className="text-[8.5px] uppercase tracking-[0.2em] text-stone-500 mt-0.5">
-            Thiruvananthapuram, Kerala
-          </p>
-        </div>
-
-        {/* Info Rows */}
-        <div className="mt-3.5 space-y-2 text-left">
-          {/* Address */}
-          <div className="flex items-start gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15">
-            <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-            <div className="min-w-0 flex-1">
-              <p className="text-[8.5px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Location</p>
-              <p className="text-[10px] text-stone-200 leading-tight mt-0.5">East Fort, Marine Drive, Kerala - 695001</p>
-            </div>
-          </div>
-
-          {/* Contact Grid */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15">
-              <Phone className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <div className="min-w-0">
-                <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Phone</p>
-                <p className="text-[9.5px] font-medium text-stone-200 truncate">+91 471 2345678</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15">
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <div className="min-w-0">
-                <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">WhatsApp</p>
-                <p className="text-[9.5px] font-medium text-stone-200 truncate">+91 98470 12345</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Email */}
-          <div className="flex items-center gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15">
-            <Mail className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <div className="min-w-0 flex-1">
-              <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Email</p>
-              <p className="text-[9.5px] font-medium text-stone-200 truncate">office@chinmayabhuvaneswari.temple</p>
-            </div>
-          </div>
-
-          {/* Timings */}
-          <div className="flex items-center gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15">
-            <Clock className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-            <div className="min-w-0 flex-1">
-              <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Darshan Timings</p>
-              <p className="text-[9px] text-stone-200 leading-tight">05:30 AM – 12:00 PM · 05:00 PM – 08:30 PM</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Direct Settlement Badge */}
-        <div className="mt-2.5 flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[9px] font-medium">
-          <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-          <span>Razorpay Route Direct Settlement · Voluntary Offering</span>
-        </div>
-
-        <div className="mt-1 text-center">
-          <Link
-            to="/disclaimer"
-            onClick={onClose}
-            className="text-[8.5px] text-amber-300/70 hover:text-amber-200 underline"
-          >
-            Platform Terms, Refund & Disclaimers
-          </Link>
-        </div>
-
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="w-full mt-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold font-malayalam text-xs cursor-pointer shadow-[0_4px_16px_rgba(217,119,6,0.35)] active:scale-95 transition-transform"
-        >
-          ശരി / Close
-        </button>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-export default function Second({ onBack, onNext, amount = 0, onAmountChange, templeName = 'Chinmaya Sri Bhuvaneswari Navagraha Temple' }) {
+export default function Second({ onBack, onNext, amount = 0, onAmountChange, onOpenInfo, templeName = 'Chinmaya Sri Bhuvaneswari Navagraha Temple' }) {
   const [showInfo, setShowInfo] = useState(false);
   const bandaramRef = useRef(null);
   const lastGlowTimer = useRef(null);
@@ -401,7 +276,7 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, tem
           <ArrowLeft className="w-4 h-4" />
         </button>
         <motion.button
-          onClick={() => setShowInfo(true)}
+          onClick={onOpenInfo || (() => setShowInfo(true))}
           whileTap={{ scale: 0.96 }}
           aria-label="View temple details"
           className="flex-1 mx-2 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/25 transition-all cursor-pointer text-center"

@@ -34,7 +34,7 @@ function Kalasham({ className = '' }) {
   );
 }
 
-export default function First({ templeName = "ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം", onComplete }) {
+export default function First({ templeName = "ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം", onOpenInfo, onComplete }) {
   useEffect(() => {
     const timer = setTimeout(onComplete, FIRST_SCREEN_DURATION);
     return () => clearTimeout(timer);
@@ -81,8 +81,15 @@ export default function First({ templeName = "ചിന്മയ ശ്രീ �
         className="w-full flex flex-col items-center z-10 pt-0.5 shrink-0 transform-gpu"
       >
         <Kalasham className="w-4 h-4 sm:w-5 sm:h-5 mb-1 drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]" />
-        <div className="px-4 py-1 sm:px-5 sm:py-1.5 rounded-full bg-black/80 border border-amber-400/50 shadow-[0_4px_16px_rgba(0,0,0,0.8)] backdrop-blur-md">
-          <p className="font-malayalam text-[11px] sm:text-[13px] font-bold text-amber-100 drop-shadow-sm">
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onOpenInfo) onOpenInfo();
+          }}
+          className="px-4 py-1 sm:px-5 sm:py-1.5 rounded-full bg-black/80 hover:bg-black/95 border border-amber-400/50 shadow-[0_4px_16px_rgba(0,0,0,0.8)] backdrop-blur-md flex items-center gap-1.5 cursor-pointer transition-all group"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <p className="font-malayalam text-[11px] sm:text-[13px] font-bold text-amber-100 group-hover:text-amber-200 drop-shadow-sm">
             {templeName}
           </p>
         </div>
@@ -214,13 +221,16 @@ export default function First({ templeName = "ചിന്മയ ശ്രീ �
           <div className="flex items-center gap-2 px-3 py-0.5 rounded-full bg-black/50 border border-amber-400/25 shadow-sm transform-gpu">
             <span className="font-malayalam text-[11px] text-amber-200 font-semibold tracking-wide">ഭാണ്ഡാരം</span>
             <span className="text-amber-400/60 font-bold">&middot;</span>
-            <Link
-              to="/about"
-              onClick={(e) => e.stopPropagation()}
-              className="text-[10px] tracking-wider text-amber-100/90 hover:text-amber-300 transition-colors font-medium underline underline-offset-2"
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onOpenInfo) onOpenInfo();
+              }}
+              className="text-[10px] tracking-wider text-amber-100/90 hover:text-amber-300 transition-colors font-medium underline underline-offset-2 cursor-pointer"
             >
               by Programers
-            </Link>
+            </button>
           </div>
           <div className="flex items-center gap-2 text-[9px] text-amber-300/65 font-normal tracking-wide">
             <Link to="/pricing" onClick={(e) => e.stopPropagation()} className="hover:text-amber-200 hover:underline">Pricing</Link>
