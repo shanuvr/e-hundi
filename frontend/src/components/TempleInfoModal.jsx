@@ -151,12 +151,6 @@ export default function TempleInfoModal({ onClose, templeName = 'Chinmaya Sri Bh
               </div>
             </div>
 
-            {/* Direct Settlement Badge */}
-            <div className="mt-2 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[8.5px] font-medium">
-              <ShieldCheck className="w-3 h-3 shrink-0 text-amber-400" />
-              <span>Razorpay Route Direct Settlement · Voluntary Offering</span>
-            </div>
-
             {/* Link to Legal tab */}
             <button
               onClick={() => setActiveTab('legal')}
