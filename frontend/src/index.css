@@ -146,3 +146,71 @@
     animation: none !important;
   }
 }
+
+/* Policy & Legal Pages - Admin Theme Overrides */
+.policy-theme-admin {
+  color: #334155;
+}
+
+.policy-theme-admin .bg-stone-900\/50,
+.policy-theme-admin .bg-stone-900\/60,
+.policy-theme-admin .bg-stone-900\/40,
+.policy-theme-admin .bg-stone-900\/80,
+.policy-theme-admin .bg-stone-900\/30,
+.policy-theme-admin .bg-stone-950 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+.policy-theme-admin .border-stone-800,
+.policy-theme-admin .border-stone-800\/80,
+.policy-theme-admin .border-stone-800\/50 {
+  border-color: #e2e8f0 !important;
+}
+
+.policy-theme-admin .text-stone-100,
+.policy-theme-admin .text-stone-200 {
+  color: #0f172a !important;
+}
+
+.policy-theme-admin .text-stone-300 {
+  color: #334155 !important;
+}
+
+.policy-theme-admin .text-stone-400 {
+  color: #64748b !important;
+}
+
+.policy-theme-admin .text-amber-400 {
+  color: #b45309 !important;
+}
+
+.policy-theme-admin .text-amber-300 {
+  color: #92400e !important;
+}
+
+.policy-theme-admin .bg-amber-500\/10 {
+  background-color: rgba(245, 158, 11, 0.08) !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+.policy-theme-admin .border-amber-500\/30,
+.policy-theme-admin .border-amber-500\/20,
+.policy-theme-admin .border-amber-400\/50,
+.policy-theme-admin .border-amber-500\/40 {
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+.policy-theme-admin input,
+.policy-theme-admin textarea,
+.policy-theme-admin select {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.policy-theme-admin input::placeholder,
+.policy-theme-admin textarea::placeholder {
+  color: #94a3b8 !important;
+}

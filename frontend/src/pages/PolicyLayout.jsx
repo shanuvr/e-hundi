@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Building2, 
   Mail, 
@@ -11,7 +11,8 @@ import {
   IndianRupee, 
   AlertCircle, 
   Info, 
-  ChevronRight 
+  ChevronRight,
+  ExternalLink 
 } from 'lucide-react';
 
 export const POLICY_NAV_LINKS = [
@@ -26,6 +27,78 @@ export const POLICY_NAV_LINKS = [
 ];
 
 export default function PolicyLayout({ title, subtitle, icon: Icon, currentPath, children }) {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/admin') || location.search.includes('theme=admin');
+  const targetPath = (path) => (isAdmin ? `/admin${path}` : path);
+
+  // 1. ADMIN THEME: Rendered inside AdminLayout with Admin aesthetic
+  if (isAdmin) {
+    return (
+      <div className="policy-theme-admin max-w-5xl space-y-4">
+        {/* Admin Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 mb-3.5 sm:mb-4">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/10 text-amber-800 border border-amber-300/40">
+                Compliance & Legal Documentation
+              </span>
+            </div>
+            <h2 className="font-cinzel text-base sm:text-xl font-bold text-stone-900 tracking-wide flex items-center gap-2">
+              {Icon && <Icon className="w-5 h-5 text-amber-700 shrink-0" />}
+              <span>{title}</span>
+            </h2>
+            {subtitle && (
+              <p className="mt-0.5 text-[11px] sm:text-xs text-stone-500 max-w-2xl leading-relaxed font-normal">
+                {subtitle}
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              to={targetPath('/contact')}
+              className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              <span>Contact Support Desk</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Admin Policy Quick Switcher Bar */}
+        <div className="bg-white border border-stone-200/90 rounded-xl p-1.5 shadow-2xs overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-1 min-w-max">
+            {POLICY_NAV_LINKS.map((item) => {
+              const itemPath = targetPath(item.path);
+              const active = location.pathname === itemPath || currentPath === item.path;
+              const ItemIcon = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={itemPath}
+                  className={`text-xs px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 font-medium ${
+                    active
+                      ? 'bg-amber-500/15 text-amber-900 font-semibold border border-amber-400/30 shadow-2xs'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+                  }`}
+                >
+                  <ItemIcon className={`w-3.5 h-3.5 ${active ? 'text-amber-800' : 'text-stone-400'}`} />
+                  <span>{item.name}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Content Area styled with .policy-theme-admin */}
+        <div className="space-y-4 pt-1">
+          {children}
+        </div>
+      </div>
+    );
+  }
+
+  // 2. KIOSK THEME: Rendered outside Admin with sacred dark sanctum aesthetic
   return (
     <div className="min-h-screen bg-stone-950 text-stone-200 antialiased flex flex-col relative selection:bg-amber-500 selection:text-stone-950">
       {/* Ambient background glows */}
@@ -132,10 +205,6 @@ export default function PolicyLayout({ title, subtitle, icon: Icon, currentPath,
               Kanikkavanji is an online digital offering and donation technology platform for temples in India.
               Owned and operated by Programers, Thrissur, Kerala.
             </p>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px]">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Razorpay Route Direct Settlement</span>
-            </div>
           </div>
 
           <div>

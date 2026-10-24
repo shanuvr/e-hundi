@@ -12,6 +12,14 @@ const Branding = lazy(() => import('./pages/Branding'));
 const Payments = lazy(() => import('./pages/Payments'));
 const Darshan = lazy(() => import('./pages/Darshan'));
 const Settings = lazy(() => import('./pages/Settings'));
+const About = lazy(() => import('../pages/About'));
+const Pricing = lazy(() => import('../pages/Pricing'));
+const Contact = lazy(() => import('../pages/Contact'));
+const Terms = lazy(() => import('../pages/Terms'));
+const Privacy = lazy(() => import('../pages/Privacy'));
+const RefundPolicy = lazy(() => import('../pages/RefundPolicy'));
+const ShippingPolicy = lazy(() => import('../pages/ShippingPolicy'));
+const Disclaimer = lazy(() => import('../pages/Disclaimer'));
 
 function PageFallback() {
   return (
@@ -75,6 +83,16 @@ export default function AdminApp() {
             </Suspense>
           }
         />
+        {/* Compliance and Legal Pages with Admin Theme */}
+        <Route path="about" element={<Suspense fallback={<PageFallback />}><About /></Suspense>} />
+        <Route path="pricing" element={<Suspense fallback={<PageFallback />}><Pricing /></Suspense>} />
+        <Route path="contact" element={<Suspense fallback={<PageFallback />}><Contact /></Suspense>} />
+        <Route path="terms" element={<Suspense fallback={<PageFallback />}><Terms /></Suspense>} />
+        <Route path="privacy" element={<Suspense fallback={<PageFallback />}><Privacy /></Suspense>} />
+        <Route path="refund-policy" element={<Suspense fallback={<PageFallback />}><RefundPolicy /></Suspense>} />
+        <Route path="shipping-policy" element={<Suspense fallback={<PageFallback />}><ShippingPolicy /></Suspense>} />
+        <Route path="disclaimer" element={<Suspense fallback={<PageFallback />}><Disclaimer /></Suspense>} />
+
         <Route path="darshan" element={<Navigate to="/admin/slogans" replace />} />
         <Route path="reports" element={<Navigate to="/admin" replace />} />
         <Route path="settings" element={<Navigate to="/admin" replace />} />
