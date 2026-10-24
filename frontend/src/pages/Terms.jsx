@@ -30,8 +30,8 @@ export default function Terms() {
         <p className="text-stone-300 text-sm leading-relaxed">
           Kanikkavanji.com is solely a <strong>technology platform and intermediary</strong> that enables registered temples across India to accept digital voluntary offerings via Unified Payments Interface (UPI).
         </p>
-        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 leading-relaxed">
-          <strong>Important Declaration:</strong> We are not a temple, religious trust, endowment committee, charity, or financial institution. We do not solicit donations for ourselves nor do we manage religious rituals.
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-stone-300 leading-relaxed">
+          <strong className="text-amber-400 font-semibold">Important Declaration:</strong> We are not a temple, religious trust, endowment committee, charity, or financial institution. We do not solicit donations for ourselves nor do we manage religious rituals.
         </div>
       </div>
 
