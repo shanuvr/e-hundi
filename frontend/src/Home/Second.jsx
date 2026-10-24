@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { ArrowLeft, Bell, Loader2, Info, X, Phone, MessageCircle, Mail, MapPin, ShieldCheck, Clock } from 'lucide-react';
 import Money from '../components/Money';
@@ -125,10 +126,20 @@ function TempleInfoModal({ onClose, templeName }) {
           </div>
         </div>
 
-        {/* 80G Tax Badge */}
-        <div className="mt-2.5 flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 text-[9px] font-medium">
-          <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-          <span>Trust ID: TT-KLM-004821 · 80G Tax Exempt</span>
+        {/* Direct Settlement Badge */}
+        <div className="mt-2.5 flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[9px] font-medium">
+          <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+          <span>Razorpay Route Direct Settlement · Voluntary Offering</span>
+        </div>
+
+        <div className="mt-1 text-center">
+          <Link
+            to="/disclaimer"
+            onClick={onClose}
+            className="text-[8.5px] text-amber-300/70 hover:text-amber-200 underline"
+          >
+            Platform Terms, Refund & Disclaimers
+          </Link>
         </div>
 
         {/* Close Button */}

@@ -1,11 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import First from './Home/First';
 import Second from './Home/Second';
 import Third from './Home/Third';
 import Mandala from './components/Mandala';
 import Sparkle from './components/Sparkle';
+import ComplianceModal from './components/ComplianceModal';
+import { ShieldCheck } from 'lucide-react';
 import { preloadAssets } from './utils/preload';
 import './App.css';
 //comment
@@ -17,6 +18,7 @@ const STEPS = [
 
 function App() {
   const [step, setStep] = useState(0);
+  const [showCompliance, setShowCompliance] = useState(false);
   // The offering total is owned here so the Hundi screen and the Darshan screen
   // read from a single source of truth, and a reset clears it in one place.
   const [amount, setAmount] = useState(0);
@@ -46,6 +48,16 @@ function App() {
       {/* Main Devotional Screen Container (Optimized for both mobile and desktop preview) */}
       <div className="relative w-full sm:max-w-[400px] mx-auto h-[100dvh] max-h-[100dvh] sm:h-[min(844px,96vh)] sm:max-h-[860px] flex flex-col justify-between items-center overflow-hidden rounded-none sm:rounded-[32px] border-0 sm:border sm:border-amber-500/30 shadow-none sm:shadow-[0_15px_60px_rgba(0,0,0,0.85),0_0_50px_rgba(245,158,11,0.2)] bg-stone-950 z-10">
         
+        {/* Floating Policies & Legal button (Identical & Seamless on Mobile & Desktop) */}
+        <button
+          onClick={() => setShowCompliance(true)}
+          className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-40 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/65 hover:bg-black/85 border border-amber-400/40 text-amber-300 hover:text-amber-200 text-[10.5px] font-medium backdrop-blur-md shadow-lg shadow-black/40 transition-all cursor-pointer group"
+          aria-label="View legal and compliance policies"
+        >
+          <ShieldCheck className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
+          <span>Policies</span>
+        </button>
+
         {/* 🌟 1. Persistent Background Image & Deep Sacred Overlay */}
         <div
           className="absolute inset-0 pointer-events-none bg-cover bg-center bg-no-repeat z-0"
@@ -94,21 +106,14 @@ function App() {
             />
           </AnimatePresence>
         </div>
-      </div>
 
-      {/* Desktop compliance and info footer */}
-      <footer className="hidden sm:flex items-center justify-center gap-x-4 gap-y-1.5 flex-wrap text-stone-500 text-[11px] mt-2.5 z-20">
-        <span className="font-semibold text-stone-700">കാണിക്കവഞ്ചി by Programers</span>
-        <span>·</span>
-        <Link to="/about" className="hover:text-amber-800 transition-colors">About</Link>
-        <Link to="/pricing" className="hover:text-amber-800 transition-colors">Pricing</Link>
-        <Link to="/terms" className="hover:text-amber-800 transition-colors">Terms</Link>
-        <Link to="/privacy" className="hover:text-amber-800 transition-colors">Privacy</Link>
-        <Link to="/refund-policy" className="hover:text-amber-800 transition-colors">Refund Policy</Link>
-        <Link to="/shipping-policy" className="hover:text-amber-800 transition-colors">Shipping Policy</Link>
-        <Link to="/disclaimer" className="hover:text-amber-800 transition-colors">Disclaimer</Link>
-        <Link to="/contact" className="hover:text-amber-800 transition-colors">Contact</Link>
-      </footer>
+        {/* Compliance Drawer Modal */}
+        <AnimatePresence>
+          {showCompliance && (
+            <ComplianceModal onClose={() => setShowCompliance(false)} />
+          )}
+        </AnimatePresence>
+      </div>
     </main>
   );
 }

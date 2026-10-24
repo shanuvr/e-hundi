@@ -209,17 +209,30 @@ export default function First({ templeName = "ചിന്മയ ശ്രീ �
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45, duration: 0.35 }}
-          className="flex items-center gap-2 px-3 py-0.5 rounded-full bg-black/50 border border-amber-400/25 shadow-sm transform-gpu"
+          className="flex flex-col items-center gap-1 z-20"
         >
-          <span className="font-malayalam text-[11px] text-amber-200 font-semibold tracking-wide">ഭാണ്ഡാരം</span>
-          <span className="text-amber-400/60 font-bold">&middot;</span>
-          <Link
-            to="/about"
-            onClick={(e) => e.stopPropagation()}
-            className="text-[10px] tracking-wider text-amber-100/90 hover:text-amber-300 transition-colors font-medium underline underline-offset-2"
-          >
-            by Programers
-          </Link>
+          <div className="flex items-center gap-2 px-3 py-0.5 rounded-full bg-black/50 border border-amber-400/25 shadow-sm transform-gpu">
+            <span className="font-malayalam text-[11px] text-amber-200 font-semibold tracking-wide">ഭാണ്ഡാരം</span>
+            <span className="text-amber-400/60 font-bold">&middot;</span>
+            <Link
+              to="/about"
+              onClick={(e) => e.stopPropagation()}
+              className="text-[10px] tracking-wider text-amber-100/90 hover:text-amber-300 transition-colors font-medium underline underline-offset-2"
+            >
+              by Programers
+            </Link>
+          </div>
+          <div className="flex items-center gap-2 text-[9px] text-amber-300/65 font-normal tracking-wide">
+            <Link to="/pricing" onClick={(e) => e.stopPropagation()} className="hover:text-amber-200 hover:underline">Pricing</Link>
+            <span>&middot;</span>
+            <Link to="/terms" onClick={(e) => e.stopPropagation()} className="hover:text-amber-200 hover:underline">Terms</Link>
+            <span>&middot;</span>
+            <Link to="/privacy" onClick={(e) => e.stopPropagation()} className="hover:text-amber-200 hover:underline">Privacy</Link>
+            <span>&middot;</span>
+            <Link to="/refund-policy" onClick={(e) => e.stopPropagation()} className="hover:text-amber-200 hover:underline">Refund</Link>
+            <span>&middot;</span>
+            <Link to="/contact" onClick={(e) => e.stopPropagation()} className="hover:text-amber-200 hover:underline">Contact</Link>
+          </div>
         </motion.div>
       </motion.div>
     </motion.div>
