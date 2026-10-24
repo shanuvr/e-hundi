@@ -114,9 +114,7 @@ export default function PolicyLayout({ title, subtitle, icon: Icon, currentPath,
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="font-malayalam font-bold text-amber-400 tracking-wide text-sm">കാണിക്കവഞ്ചി</span>
-                <span className="text-stone-400 text-xs font-cinzel">·</span>
-                <span className="font-cinzel font-semibold text-stone-100 text-sm tracking-wider">Kanikkavanji.com</span>
+                <span className="font-malayalam font-bold text-amber-400 tracking-wide text-base">കാണിക്കവഞ്ചി</span>
               </div>
               <span className="text-[10px] text-stone-400 tracking-tight">By Programers, Thrissur</span>
             </div>
@@ -199,7 +197,6 @@ export default function PolicyLayout({ title, subtitle, icon: Icon, currentPath,
           <div>
             <div className="flex items-center gap-2 text-stone-100 font-semibold mb-2">
               <span className="font-malayalam text-amber-400 text-base">കാണിക്കവഞ്ചി</span>
-              <span className="text-stone-300">Kanikkavanji.com</span>
             </div>
             <p className="text-stone-400 leading-relaxed text-[13px] mb-3">
               Kanikkavanji is an online digital offering and donation technology platform for temples in India.
