@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Diya from '../components/Diya';
 import LotusBase from '../components/LotusBase';
@@ -212,7 +213,13 @@ export default function First({ templeName = "ചിന്മയ ശ്രീ �
         >
           <span className="font-malayalam text-[11px] text-amber-200 font-semibold tracking-wide">ഭാണ്ഡാരം</span>
           <span className="text-amber-400/60 font-bold">&middot;</span>
-          <span className="text-[10px] tracking-wider text-amber-100/90 font-medium">by Programers</span>
+          <Link
+            to="/about"
+            onClick={(e) => e.stopPropagation()}
+            className="text-[10px] tracking-wider text-amber-100/90 hover:text-amber-300 transition-colors font-medium underline underline-offset-2"
+          >
+            by Programers
+          </Link>
         </motion.div>
       </motion.div>
     </motion.div>

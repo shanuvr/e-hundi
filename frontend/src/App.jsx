@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import First from './Home/First';
 import Second from './Home/Second';
 import Third from './Home/Third';
@@ -94,6 +95,20 @@ function App() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Desktop compliance and info footer */}
+      <footer className="hidden sm:flex items-center justify-center gap-x-4 gap-y-1.5 flex-wrap text-stone-500 text-[11px] mt-2.5 z-20">
+        <span className="font-semibold text-stone-700">കാണിക്കവഞ്ചി by Programers</span>
+        <span>·</span>
+        <Link to="/about" className="hover:text-amber-800 transition-colors">About</Link>
+        <Link to="/pricing" className="hover:text-amber-800 transition-colors">Pricing</Link>
+        <Link to="/terms" className="hover:text-amber-800 transition-colors">Terms</Link>
+        <Link to="/privacy" className="hover:text-amber-800 transition-colors">Privacy</Link>
+        <Link to="/refund-policy" className="hover:text-amber-800 transition-colors">Refund Policy</Link>
+        <Link to="/shipping-policy" className="hover:text-amber-800 transition-colors">Shipping Policy</Link>
+        <Link to="/disclaimer" className="hover:text-amber-800 transition-colors">Disclaimer</Link>
+        <Link to="/contact" className="hover:text-amber-800 transition-colors">Contact</Link>
+      </footer>
     </main>
   );
 }
