@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
+import NotFound from './NotFound.jsx'
 
 // The kiosk ships to temple devices, so the console is split out of its bundle.
 const AdminApp = lazy(() => import('./admin/AdminApp.jsx'));
@@ -29,6 +30,8 @@ createRoot(document.getElementById('root')).render(
             </Suspense>
           }
         />
+        {/* 404 — Wildcard route for all unmatched URLs */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
