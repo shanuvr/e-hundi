@@ -19,7 +19,7 @@ import { api } from '../utils/api';
 
 const TABS = [
   { id: 'identity', label: 'Identity & Credentials', icon: KeyRound },
-  { id: 'bank', label: 'Bank & UPI (Mandatory)', icon: Landmark, mandatory: true },
+  { id: 'bank', label: 'Bank Details (Mandatory)', icon: Landmark, mandatory: true },
   { id: 'contact', label: 'Contact & Location', icon: MapPin },
   { id: 'media', label: 'Darshan & Slogans', icon: Sparkles },
 ];
@@ -46,7 +46,6 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
     bank_account_holder: '',
     bank_account_number: '',
     bank_ifsc: '',
-    upi_id: '',
 
     // Contact & Location
     phone: '',
@@ -82,7 +81,6 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
         bank_account_holder: temple.bank_account_holder || '',
         bank_account_number: temple.bank_account_number || '',
         bank_ifsc: temple.bank_ifsc || '',
-        upi_id: temple.upi_id || '',
 
         phone: temple.phone || '',
         whatsapp: temple.whatsapp || '',
@@ -133,11 +131,10 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
       !formData.bank_name.trim() ||
       !formData.bank_account_holder.trim() ||
       !formData.bank_account_number.trim() ||
-      !formData.bank_ifsc.trim() ||
-      !formData.upi_id.trim()
+      !formData.bank_ifsc.trim()
     ) {
       setActiveTab('bank');
-      setError('All bank details (Bank Name, Holder Name, Account Number, IFSC, UPI ID) are mandatory.');
+      setError('All bank details (Bank Name, Holder Name, Account Number, IFSC) are mandatory.');
       return;
     }
 
@@ -339,28 +336,13 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
                     Mandatory & Superadmin-Exclusive Settlement Details
                   </p>
                   <p className="mt-0.5 text-[11px] text-stone-300 leading-relaxed">
-                    Offerings made via the Kiosk QR codes are routed directly to these bank & UPI coordinates.
+                    Offerings made via the Kiosk are routed directly to these bank settlement coordinates.
                     Per system security policy, temple administrators cannot edit these details in their console.
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div>
-                  <label className="block mb-1 text-xs font-semibold text-stone-300">
-                    Temple UPI ID (VPA) <span className="text-amber-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.upi_id}
-                    onChange={(e) => handleChange('upi_id', e.target.value)}
-                    placeholder="temple.ibz@icici or temple@sbi"
-                    className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono transition-all"
-                  />
-                  <span className="text-[11px] text-stone-500 mt-1 block">The UPI address encoded in the Kiosk QR</span>
-                </div>
-
                 <div>
                   <label className="block mb-1 text-xs font-semibold text-stone-300">
                     Registered Payee Name <span className="text-amber-400">*</span>

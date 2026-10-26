@@ -112,8 +112,8 @@ export default function Reports() {
               </span>
             )}
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-stone-600 font-mono">
-            <span>UPI: <strong className="text-amber-900 font-semibold">{temple.upi_id || 'Not configured'}</strong></span>
+          <div className="flex items-center gap-3 text-[11px] text-stone-600">
+            <span className="font-medium text-stone-700">{temple.bank_name || 'Settlement Account Active'}</span>
             <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-sans font-bold text-[10px]">
               Active Console
             </span>
@@ -133,7 +133,7 @@ export default function Reports() {
         <SectionCard
           className="lg:col-span-2"
           title="All recent offerings"
-          description="Real-time UPI transaction stream from temple kiosks."
+          description="Real-time transaction stream from temple kiosks."
           icon={Calendar}
           action={
             <div className="flex flex-wrap items-center gap-1.5">

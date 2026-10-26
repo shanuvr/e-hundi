@@ -44,7 +44,7 @@ class Temple(models.Model):
     bank_account_holder = models.CharField(max_length=255, help_text="Registered Payee / Account Holder Name")
     bank_account_number = models.CharField(max_length=100, help_text="Account Number")
     bank_ifsc = models.CharField(max_length=30, help_text="IFSC Code")
-    upi_id = models.CharField(max_length=150, help_text="Temple UPI ID / VPA")
+    upi_id = models.CharField(max_length=150, blank=True, default='', help_text="Temple UPI ID / VPA")
 
     # System Status & Timestamps
     is_active = models.BooleanField(default=True)

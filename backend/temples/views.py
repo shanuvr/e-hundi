@@ -136,8 +136,6 @@ def temples_list_create_view(request):
             errors['bank_account_number'] = 'Account number is mandatory'
         if not bank_ifsc:
             errors['bank_ifsc'] = 'IFSC code is mandatory'
-        if not upi_id:
-            errors['upi_id'] = 'UPI ID is mandatory'
 
         if errors:
             return JsonResponse({'errors': errors, 'message': 'Please fill all mandatory fields'}, status=400)

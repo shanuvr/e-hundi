@@ -277,14 +277,15 @@ export default function TempleProfile() {
           </div>
           <div className="min-w-0 text-xs">
             <p className="font-semibold text-stone-800">
-              Mandatory Bank & UPI Settings
+              Verified Settlement Bank Account
             </p>
             <p className="mt-0.5 text-stone-600 leading-relaxed text-[11.5px]">
-              Active Payee: <span className="font-semibold text-stone-900">{temple?.bank_account_holder || temple?.name || 'Verified Payee'}</span> · 
-              UPI ID: <span className="font-mono font-semibold text-amber-900 bg-amber-100/80 px-1.5 py-0.5 rounded">{temple?.upi_id || 'Not assigned'}</span>
+              Bank: <span className="font-semibold text-stone-900">{temple?.bank_name || 'Verified Bank'}</span> · 
+              Payee: <span className="font-semibold text-stone-900">{temple?.bank_account_holder || temple?.name || 'Verified Payee'}</span> · 
+              A/C: <span className="font-mono text-stone-700">•••• {temple?.bank_account_number?.slice(-4) || '----'}</span>
             </p>
             <p className="mt-1 text-[11px] text-stone-500">
-              For security compliance, bank account details are exclusive to Superadmin and locked for temple consoles.
+              For security compliance, bank settlement details are exclusive to Superadmin and locked for temple consoles.
             </p>
           </div>
         </div>

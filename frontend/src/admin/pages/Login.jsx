@@ -5,7 +5,7 @@ import { CONTROL } from '../components/Field';
 import { api } from '../../utils/api';
 
 const HIGHLIGHTS = [
-  'Temple profile, bilingual mantras & UPI accounts',
+  'Temple profile, bilingual mantras & settlement accounts',
   'Real-time collection reports & audit tracking',
   'Multi-kiosk device pairing & live darshan video',
 ];

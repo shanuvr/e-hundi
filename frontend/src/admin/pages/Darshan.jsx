@@ -43,7 +43,7 @@ export default function Darshan() {
           <div className="mt-4 space-y-3.5">
             <Toggle
               label="Lock darshan until offering is confirmed"
-              hint="The darshan badge displays a sacred lock until UPI payment settles."
+              hint="The darshan badge displays a sacred lock until payment settles."
               defaultChecked
             />
             <Toggle label="Loop the aarti video continuously on darshan screen" defaultChecked />

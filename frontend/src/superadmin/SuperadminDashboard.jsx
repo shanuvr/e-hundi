@@ -111,8 +111,7 @@ export default function SuperadminDashboard() {
         t.name?.toLowerCase().includes(search.toLowerCase()) ||
         t.name_ml?.toLowerCase().includes(search.toLowerCase()) ||
         t.email?.toLowerCase().includes(search.toLowerCase()) ||
-        t.city?.toLowerCase().includes(search.toLowerCase()) ||
-        t.upi_id?.toLowerCase().includes(search.toLowerCase());
+        t.city?.toLowerCase().includes(search.toLowerCase());
 
       if (statusFilter === 'active') return matchesSearch && t.is_active;
       if (statusFilter === 'inactive') return matchesSearch && !t.is_active;
@@ -123,7 +122,7 @@ export default function SuperadminDashboard() {
   // Metric summaries
   const totalTemples = temples.length;
   const activeTemples = temples.filter((t) => t.is_active).length;
-  const totalUpis = temples.filter((t) => t.upi_id).length;
+  const totalBankAccounts = temples.filter((t) => t.bank_account_number).length;
   const uniqueStates = new Set(temples.map((t) => t.state).filter(Boolean)).size;
 
   return (
@@ -219,7 +218,7 @@ export default function SuperadminDashboard() {
               <Landmark className="w-4 h-4 text-amber-400" />
             </div>
             <p className="font-cinzel text-2xl sm:text-3xl font-bold text-amber-300 mt-2">
-              {totalUpis}
+              {totalBankAccounts}
             </p>
             <p className="text-[11px] text-stone-500 mt-1">Exclusive Superadmin lock</p>
           </div>
@@ -246,7 +245,7 @@ export default function SuperadminDashboard() {
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search temples by name, email, UPI ID, or city…"
+                placeholder="Search temples by name, email, or city…"
                 className="w-full rounded-xl bg-stone-900/90 border border-stone-800 pl-9 pr-4 py-2.5 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-inner"
               />
             </div>
@@ -297,7 +296,7 @@ export default function SuperadminDashboard() {
                   <th className="py-3.5 px-4">
                     <div className="flex items-center gap-1.5 text-amber-300">
                       <Lock className="w-3.5 h-3.5" />
-                      Bank & UPI Details
+                      Bank Details
                     </div>
                   </th>
                   <th className="py-3.5 px-4">Location</th>
@@ -380,35 +379,18 @@ export default function SuperadminDashboard() {
                         </div>
                       </td>
 
-                      {/* Bank & UPI Details */}
+                      {/* Bank Details */}
                       <td className="py-4 px-4 min-w-[240px]">
                         <div className="space-y-1">
-                          <div className="flex items-center gap-1.5">
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-400/10 text-amber-300 border border-amber-500/30">
-                              UPI
-                            </span>
-                            <span className="font-mono font-semibold text-stone-100">
-                              {temple.upi_id}
-                            </span>
-                            <button
-                              onClick={() => copyToClipboard(temple.upi_id, `upi-${temple.id}`)}
-                              title="Copy UPI ID"
-                              className="text-stone-500 hover:text-amber-300 transition-colors cursor-pointer"
-                            >
-                              {copiedId === `upi-${temple.id}` ? (
-                                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                              ) : (
-                                <Copy className="w-3.5 h-3.5" />
-                              )}
-                            </button>
-                          </div>
+                          <p className="text-xs font-semibold text-stone-100">
+                            {temple.bank_account_holder}
+                          </p>
                           <p className="text-[11px] text-stone-400">
-                            {temple.bank_account_holder} ·{' '}
                             <span className="text-stone-300">{temple.bank_name}</span>
                           </p>
                           <p className="text-[10px] text-stone-500 font-mono">
                             A/C: •••• {temple.bank_account_number?.slice(-4) || '----'} · IFSC:{' '}
-                            {temple.bank_ifsc}
+                            <span className="text-stone-400">{temple.bank_ifsc}</span>
                           </p>
                         </div>
                       </td>

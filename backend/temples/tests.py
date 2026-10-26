@@ -27,7 +27,6 @@ class SuperadminAndTempleTests(TestCase):
             bank_account_holder='TEST TRUST',
             bank_account_number='1234567890',
             bank_ifsc='TEST0001234',
-            upi_id='test@upi',
         )
 
     def test_superadmin_login_success(self):
@@ -76,7 +75,9 @@ class SuperadminAndTempleTests(TestCase):
         self.assertEqual(res.status_code, 400)
         data = res.json()
         self.assertIn('bank_name', data['errors'])
-        self.assertIn('upi_id', data['errors'])
+        self.assertIn('bank_account_holder', data['errors'])
+        self.assertIn('bank_account_number', data['errors'])
+        self.assertIn('bank_ifsc', data['errors'])
 
     def test_create_temple_full_success(self):
         res = self.client.post(
@@ -91,7 +92,6 @@ class SuperadminAndTempleTests(TestCase):
                 'bank_account_holder': 'TRAVANCORE DEVASWOM BOARD',
                 'bank_account_number': '570012345678',
                 'bank_ifsc': 'SBIN0070001',
-                'upi_id': 'sabarimala@sbi',
                 'city': 'Pathanamthitta',
                 'state': 'Kerala',
             }),
@@ -129,7 +129,6 @@ class SuperadminAndTempleTests(TestCase):
                 'city': 'Kochi',
                 'slogan_ml': 'പുതിയ സ്ലോഗൻ',
                 'bank_account_number': 'HACKED_ACCOUNT_99999',
-                'upi_id': 'hacked@upi',
             }),
             content_type='application/json',
             HTTP_X_TEMPLE_ID=str(self.temple.id),
@@ -144,7 +143,6 @@ class SuperadminAndTempleTests(TestCase):
         # Verify in DB that bank details were NOT changed
         self.temple.refresh_from_db()
         self.assertEqual(self.temple.bank_account_number, '1234567890')
-        self.assertEqual(self.temple.upi_id, 'test@upi')
 
     def test_admin_logout(self):
         res = self.client.post('/api/admin/logout/')

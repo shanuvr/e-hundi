@@ -26,13 +26,13 @@ const WEEK = [
 ];
 
 const DONATIONS = [
-  ['#4821', '₹500', 'UPI', '10:42', 'Success'],
-  ['#4820', '₹200', 'UPI', '10:31', 'Success'],
-  ['#4819', '₹1,000', 'UPI', '10:18', 'Success'],
+  ['#4821', '₹500', 'Online', '10:42', 'Success'],
+  ['#4820', '₹200', 'Online', '10:31', 'Success'],
+  ['#4819', '₹1,000', 'Online', '10:18', 'Success'],
   ['#4818', '₹100', 'Cash', '09:57', 'Success'],
-  ['#4817', '₹2,000', 'UPI', '09:44', 'Pending'],
-  ['#4816', '₹50', 'UPI', '09:12', 'Success'],
-  ['#4815', '₹500', 'UPI', '08:50', 'Success'],
+  ['#4817', '₹2,000', 'Online', '09:44', 'Pending'],
+  ['#4816', '₹50', 'Online', '09:12', 'Success'],
+  ['#4815', '₹500', 'Online', '08:50', 'Success'],
 ];
 
 const PEAK = Math.max(...WEEK.map((d) => d.value));
