@@ -1,19 +1,40 @@
+import { useState } from 'react';
+
 const CONTROL =
   'w-full rounded-lg bg-white border border-stone-300 px-3 py-2 text-xs text-stone-900 placeholder:text-stone-400 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all shadow-2xs';
 
-function Field({ label, hint, max, current, children, className = '' }) {
+function Field({ label, hint, max, current, limitReached, children, className = '' }) {
+  const isAtLimit = max !== undefined && current !== undefined && current >= max;
+  const isNearLimit =
+    max !== undefined &&
+    current !== undefined &&
+    !isAtLimit &&
+    (current >= Math.floor(max * 0.85) || current >= max - 15);
+
+  const counterColorClass = isAtLimit
+    ? 'text-rose-600 font-bold'
+    : isNearLimit
+    ? 'text-amber-600 font-semibold'
+    : 'text-stone-400';
+
   return (
     <div className={className}>
       <div className="flex items-center justify-between gap-2 mb-1">
         <label className="text-xs font-semibold text-stone-700 tracking-wide">{label}</label>
         {max !== undefined && current !== undefined && (
-          <span className={`text-[11px] tabular-nums font-mono ${current > max ? 'text-rose-600 font-bold' : 'text-stone-400'}`}>
+          <span className={`text-[11px] tabular-nums font-mono transition-colors ${counterColorClass}`}>
             {current}/{max}
           </span>
         )}
       </div>
       {children}
-      {hint && <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">{hint}</p>}
+      {limitReached ? (
+        <p className="mt-1 text-[11px] font-medium text-rose-600 flex items-center gap-1">
+          Character limit reached
+        </p>
+      ) : (
+        hint && <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">{hint}</p>
+      )}
     </div>
   );
 }
@@ -21,18 +42,153 @@ function Field({ label, hint, max, current, children, className = '' }) {
 /**
  * Design-only form primitives with high readability and contrast.
  */
-export function TextInput({ label, hint, max, current, className, ...rest }) {
+export function TextInput({
+  label,
+  hint,
+  max,
+  current,
+  className,
+  onKeyDown,
+  onBeforeInput,
+  onChange,
+  ...rest
+}) {
+  const [limitReached, setLimitReached] = useState(false);
+  const effectiveMax = max ?? rest.maxLength;
+  const effectiveCurrent =
+    current !== undefined ? current : rest.value !== undefined ? String(rest.value).length : undefined;
+
+  const handleKeyDown = (e) => {
+    if (effectiveMax !== undefined && effectiveCurrent !== undefined && effectiveCurrent >= effectiveMax) {
+      const isControlKey = [
+        'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+        'Tab', 'Escape', 'Home', 'End', 'PageUp', 'PageDown', 'Shift', 'Alt', 'Meta', 'CapsLock'
+      ].includes(e.key);
+      const isModifierCombo = (e.ctrlKey || e.metaKey) && ['a', 'c', 'x'].includes(e.key.toLowerCase());
+      const hasSelection = e.target.selectionStart !== e.target.selectionEnd;
+
+      if (!isControlKey && !isModifierCombo && !hasSelection) {
+        setLimitReached(true);
+      }
+    }
+
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      setLimitReached(false);
+    }
+
+    if (onKeyDown) onKeyDown(e);
+  };
+
+  const handleBeforeInput = (e) => {
+    if (effectiveMax !== undefined && effectiveCurrent !== undefined && effectiveCurrent >= effectiveMax) {
+      if (e.target.selectionStart === e.target.selectionEnd) {
+        setLimitReached(true);
+      }
+    }
+    if (onBeforeInput) onBeforeInput(e);
+  };
+
+  const handleChange = (e) => {
+    if (effectiveMax !== undefined && e.target.value.length < effectiveMax) {
+      setLimitReached(false);
+    }
+    if (onChange) onChange(e);
+  };
+
   return (
-    <Field label={label} hint={hint} max={max} current={current} className={className}>
-      <input type="text" className={CONTROL} {...rest} />
+    <Field
+      label={label}
+      hint={hint}
+      max={effectiveMax}
+      current={effectiveCurrent}
+      limitReached={limitReached}
+      className={className}
+    >
+      <input
+        type="text"
+        maxLength={effectiveMax}
+        className={`${CONTROL} ${limitReached ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-500/20' : ''}`}
+        onKeyDown={handleKeyDown}
+        onBeforeInput={handleBeforeInput}
+        onChange={handleChange}
+        {...rest}
+      />
     </Field>
   );
 }
 
-export function TextArea({ label, hint, rows = 3, max, current, className, ...rest }) {
+export function TextArea({
+  label,
+  hint,
+  rows = 3,
+  max,
+  current,
+  className,
+  onKeyDown,
+  onBeforeInput,
+  onChange,
+  ...rest
+}) {
+  const [limitReached, setLimitReached] = useState(false);
+  const effectiveMax = max ?? rest.maxLength;
+  const effectiveCurrent =
+    current !== undefined ? current : rest.value !== undefined ? String(rest.value).length : undefined;
+
+  const handleKeyDown = (e) => {
+    if (effectiveMax !== undefined && effectiveCurrent !== undefined && effectiveCurrent >= effectiveMax) {
+      const isControlKey = [
+        'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+        'Tab', 'Escape', 'Home', 'End', 'PageUp', 'PageDown', 'Shift', 'Alt', 'Meta', 'CapsLock'
+      ].includes(e.key);
+      const isModifierCombo = (e.ctrlKey || e.metaKey) && ['a', 'c', 'x'].includes(e.key.toLowerCase());
+      const hasSelection = e.target.selectionStart !== e.target.selectionEnd;
+
+      if (!isControlKey && !isModifierCombo && !hasSelection) {
+        setLimitReached(true);
+      }
+    }
+
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      setLimitReached(false);
+    }
+
+    if (onKeyDown) onKeyDown(e);
+  };
+
+  const handleBeforeInput = (e) => {
+    if (effectiveMax !== undefined && effectiveCurrent !== undefined && effectiveCurrent >= effectiveMax) {
+      if (e.target.selectionStart === e.target.selectionEnd) {
+        setLimitReached(true);
+      }
+    }
+    if (onBeforeInput) onBeforeInput(e);
+  };
+
+  const handleChange = (e) => {
+    if (effectiveMax !== undefined && e.target.value.length < effectiveMax) {
+      setLimitReached(false);
+    }
+    if (onChange) onChange(e);
+  };
+
   return (
-    <Field label={label} hint={hint} max={max} current={current} className={className}>
-      <textarea rows={rows} className={`${CONTROL} resize-none leading-relaxed`} {...rest} />
+    <Field
+      label={label}
+      hint={hint}
+      max={effectiveMax}
+      current={effectiveCurrent}
+      limitReached={limitReached}
+      className={className}
+    >
+      <textarea
+        rows={rows}
+        maxLength={effectiveMax}
+        className={`${CONTROL} resize-none leading-relaxed ${limitReached ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-500/20' : ''}`}
+        onKeyDown={handleKeyDown}
+        onBeforeInput={handleBeforeInput}
+        onChange={handleChange}
+        {...rest}
+      />
     </Field>
   );
 }

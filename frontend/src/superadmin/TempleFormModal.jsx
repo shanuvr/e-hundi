@@ -37,6 +37,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [videoUploadError, setVideoUploadError] = useState('');
   const [mediaMode, setMediaMode] = useState('upload');
+  const [sloganMlLimitReached, setSloganMlLimitReached] = useState(false);
   const fileInputRef = useRef(null);
 
   // Form State
@@ -545,25 +546,76 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-semibold text-stone-300">
-                      Malayalam Mantra / Slogan
-                    </label>
-                    <span className="text-[10px] text-stone-400 font-mono">
-                      {(formData.slogan_ml || '').length}/121
-                    </span>
-                  </div>
-                  <input
-                    type="text"
-                    maxLength={121}
-                    value={formData.slogan_ml}
-                    onChange={(e) => handleChange('slogan_ml', e.target.value)}
-                    placeholder="നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം"
-                    className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-malayalam transition-all"
-                  />
-                  <span className="text-[10px] text-stone-500 mt-1 block">
-                    Displayed prominently on Devotee Kiosk welcome & offering screens
-                  </span>
+                  {(() => {
+                    const mlLen = (formData.slogan_ml || '').length;
+                    const isAtLimit = mlLen >= 121;
+                    const isNearLimit = !isAtLimit && (mlLen >= 102 || mlLen >= 121 - 15);
+                    const counterColor = isAtLimit
+                      ? 'text-rose-500 font-bold'
+                      : isNearLimit
+                      ? 'text-amber-400 font-semibold'
+                      : 'text-stone-400';
+
+                    return (
+                      <>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="text-xs font-semibold text-stone-300">
+                            Malayalam Mantra / Slogan
+                          </label>
+                          <span className={`text-[10px] font-mono transition-colors ${counterColor}`}>
+                            {mlLen}/121
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          maxLength={121}
+                          value={formData.slogan_ml}
+                          onChange={(e) => {
+                            if (e.target.value.length < 121) {
+                              setSloganMlLimitReached(false);
+                            }
+                            handleChange('slogan_ml', e.target.value);
+                          }}
+                          onKeyDown={(e) => {
+                            if (mlLen >= 121) {
+                              const isControlKey = [
+                                'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+                                'Tab', 'Escape', 'Home', 'End', 'PageUp', 'PageDown', 'Shift', 'Alt', 'Meta', 'CapsLock'
+                              ].includes(e.key);
+                              const isModifierCombo = (e.ctrlKey || e.metaKey) && ['a', 'c', 'x'].includes(e.key.toLowerCase());
+                              const hasSelection = e.target.selectionStart !== e.target.selectionEnd;
+                              if (!isControlKey && !isModifierCombo && !hasSelection) {
+                                setSloganMlLimitReached(true);
+                              }
+                            }
+                            if (e.key === 'Backspace' || e.key === 'Delete') {
+                              setSloganMlLimitReached(false);
+                            }
+                          }}
+                          onBeforeInput={(e) => {
+                            if (mlLen >= 121 && e.target.selectionStart === e.target.selectionEnd) {
+                              setSloganMlLimitReached(true);
+                            }
+                          }}
+                          placeholder="നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം"
+                          className={`w-full rounded-lg bg-stone-950 border px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none font-malayalam transition-all ${
+                            sloganMlLimitReached
+                              ? 'border-rose-500 focus:border-rose-500 focus:ring-1 focus:ring-rose-500'
+                              : 'border-stone-700 focus:border-amber-500 focus:ring-1 focus:ring-amber-500'
+                          }`}
+                        />
+                        {sloganMlLimitReached ? (
+                          <span className="text-[11px] font-medium text-rose-400 mt-1 block">
+                            Character limit reached
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-stone-500 mt-1 block">
+                            Displayed prominently on Devotee Kiosk welcome & offering screens
+                          </span>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
 
                 <div>
