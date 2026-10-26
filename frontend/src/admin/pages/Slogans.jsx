@@ -139,6 +139,12 @@ export default function Slogans() {
   };
 
   const handleSaveAll = async () => {
+    if (sloganMl.trim().length > 121) {
+      setSavedToast({ type: 'error', text: 'Main Hundi Blessing (Malayalam) cannot exceed 121 characters.' });
+      setTimeout(() => setSavedToast(null), 3500);
+      return;
+    }
+
     const res = await saveTemple({
       darshan_video_url: videoSrc === DEFAULT_VIDEO_SRC ? '' : videoSrc,
       slogan_ml: sloganMl.trim(),
@@ -388,6 +394,9 @@ export default function Slogans() {
                 label="Main Hundi Blessing (Malayalam)"
                 value={sloganMl}
                 onChange={(e) => setSloganMl(e.target.value)}
+                maxLength={121}
+                max={121}
+                current={sloganMl.length}
                 rows={3}
                 className={ML}
                 placeholder="ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു"

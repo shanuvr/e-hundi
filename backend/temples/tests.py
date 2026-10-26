@@ -144,6 +144,17 @@ class SuperadminAndTempleTests(TestCase):
         self.temple.refresh_from_db()
         self.assertEqual(self.temple.bank_account_number, '1234567890')
 
+        # Test slogan_ml exceeding 121 characters is rejected
+        too_long_slogan = 'അ' * 122
+        long_res = self.client.put(
+            '/api/admin/temple/',
+            data=json.dumps({'slogan_ml': too_long_slogan}),
+            content_type='application/json',
+            HTTP_X_TEMPLE_ID=str(self.temple.id),
+        )
+        self.assertEqual(long_res.status_code, 400)
+        self.assertIn('121', long_res.json()['message'])
+
     def test_admin_logout(self):
         res = self.client.post('/api/admin/logout/')
         self.assertEqual(res.status_code, 200)

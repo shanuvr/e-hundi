@@ -142,6 +142,9 @@ def temples_list_create_view(request):
         if not bank_ifsc:
             errors['bank_ifsc'] = 'IFSC code is mandatory'
 
+        if len(data.get('slogan_ml', '').strip()) > 121:
+            errors['slogan_ml'] = 'Main Hundi Blessing (Malayalam) cannot exceed 121 characters'
+
         if errors:
             return JsonResponse({'errors': errors, 'message': 'Please fill all mandatory fields'}, status=400)
 
@@ -258,7 +261,10 @@ def temple_detail_update_delete_view(request, pk):
 
         # Slogans & Darshan
         if 'slogan_ml' in data:
-            temple.slogan_ml = data['slogan_ml'].strip()
+            val = data['slogan_ml'].strip()
+            if len(val) > 121:
+                return JsonResponse({'message': 'Main Hundi Blessing (Malayalam) cannot exceed 121 characters'}, status=400)
+            temple.slogan_ml = val
         if 'slogan_en' in data:
             temple.slogan_en = data['slogan_en'].strip()
         if 'darshan_video_url' in data:
@@ -440,7 +446,10 @@ def admin_temple_profile_view(request):
         if 'gstin' in data:
             temple.gstin = data['gstin'].strip()
         if 'slogan_ml' in data:
-            temple.slogan_ml = data['slogan_ml'].strip()
+            val = data['slogan_ml'].strip()
+            if len(val) > 121:
+                return JsonResponse({'message': 'Main Hundi Blessing (Malayalam) cannot exceed 121 characters'}, status=400)
+            temple.slogan_ml = val
         if 'slogan_en' in data:
             temple.slogan_en = data['slogan_en'].strip()
         if 'darshan_video_url' in data:

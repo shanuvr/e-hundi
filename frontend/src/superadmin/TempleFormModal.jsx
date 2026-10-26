@@ -545,11 +545,17 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1 text-xs font-semibold text-stone-300">
-                    Malayalam Mantra / Slogan
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-semibold text-stone-300">
+                      Malayalam Mantra / Slogan
+                    </label>
+                    <span className="text-[10px] text-stone-400 font-mono">
+                      {(formData.slogan_ml || '').length}/121
+                    </span>
+                  </div>
                   <input
                     type="text"
+                    maxLength={121}
                     value={formData.slogan_ml}
                     onChange={(e) => handleChange('slogan_ml', e.target.value)}
                     placeholder="നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം"
