@@ -6,6 +6,8 @@ import LotusBase from '../components/LotusBase';
 import Prabhavali from '../components/Prabhavali';
 import { MONEY } from '../data/money';
 import { playTempleBell } from '../utils/audio';
+import { getLogoUrl } from '../utils/api';
+
 
 export const FIRST_SCREEN_DURATION = 3500;
 
@@ -131,9 +133,25 @@ export default function First({ temple, templeName = "ചിന്മയ ശ്�
                 transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
                 className="absolute inset-0 rounded-full bg-amber-400/20 blur-sm pointer-events-none transform-gpu"
               />
-              {/* Perfectly centered sacred Om symbol */}
-              <div className="relative z-10 flex items-center justify-center w-full h-full select-none pointer-events-none">
-                <span className="font-om font-bold text-[46px] sm:text-[54px] leading-none text-amber-100 drop-shadow-[0_0_18px_rgba(251,191,36,0.95)] translate-y-[11px] sm:translate-y-[13px] translate-x-[1px]">
+              {/* Temple Emblem / Logo or Fallback ॐ symbol */}
+              <div className="relative z-10 flex items-center justify-center w-full h-full select-none pointer-events-none p-2 sm:p-2.5">
+                {temple?.logo_url ? (
+                  <img
+                    src={getLogoUrl(temple.logo_url)}
+                    alt={displayNameMl}
+                    className="w-full h-full object-contain p-2 sm:p-2.5 drop-shadow-[0_0_14px_rgba(251,191,36,0.7)]"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      const fallback = e.target.parentElement?.querySelector('.om-fallback');
+                      if (fallback) fallback.style.display = 'block';
+                    }}
+                  />
+                ) : null}
+                <span
+                  className={`om-fallback font-om font-bold text-[46px] sm:text-[54px] leading-none text-amber-100 drop-shadow-[0_0_18px_rgba(251,191,36,0.95)] translate-y-[11px] sm:translate-y-[13px] translate-x-[1px] ${
+                    temple?.logo_url ? 'hidden' : 'block'
+                  }`}
+                >
                   ॐ
                 </span>
               </div>
