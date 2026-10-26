@@ -72,13 +72,6 @@ function App() {
               name_ml: 'ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം',
               short_name: 'Chinmaya Sri Bhuvaneswari',
               slug: 'chinmaya',
-              city: 'Ernakulam',
-              state: 'Kerala',
-              phone: '+91 471 2345678',
-              whatsapp: '+91 98470 12345',
-              email: 'office@chinmayabhuvaneswari.temple',
-              street_address: 'East Fort, Marine Drive',
-              pin_code: '695001',
               slogan_ml: 'നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം',
               darshan_message_template: 'Namaste! Your offering of ₹{amount} to {temple} is received. Watch your darshan: {link}',
             });

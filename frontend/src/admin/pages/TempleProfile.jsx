@@ -47,6 +47,7 @@ export default function TempleProfile() {
     state: 'Kerala',
     pin_code: '',
     gstin: '',
+    darshan_timings: '',
   });
 
   const [toast, setToast] = useState(null);
@@ -68,6 +69,7 @@ export default function TempleProfile() {
         state: temple.state || 'Kerala',
         pin_code: temple.pin_code || '',
         gstin: temple.gstin || '',
+        darshan_timings: temple.darshan_timings || '',
       });
     }
   }, [temple]);
@@ -438,6 +440,17 @@ export default function TempleProfile() {
                 onChange={(e) => handleChange('gstin', e.target.value)}
                 placeholder="32AAAAA0000A1Z5"
               />
+            </div>
+            <div>
+              <TextInput
+                label="Darshan Timings (Optional)"
+                value={form.darshan_timings}
+                onChange={(e) => handleChange('darshan_timings', e.target.value)}
+                placeholder="e.g. 05:30 AM – 12:00 PM · 05:00 PM – 08:30 PM"
+              />
+              <p className="mt-1 text-[11px] text-stone-500">
+                Shown to devotees on the temple information card only if provided.
+              </p>
             </div>
           </div>
         </SectionCard>

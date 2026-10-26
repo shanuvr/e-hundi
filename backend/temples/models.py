@@ -35,6 +35,12 @@ class Temple(models.Model):
 
     # Slogans & Darshan (optional)
     slogan_ml = models.CharField(max_length=255, blank=True, default='')
+    darshan_timings = models.CharField(
+        max_length=255,
+        blank=True,
+        default='',
+        help_text="Darshan / opening timings (e.g. 05:30 AM – 12:00 PM · 05:00 PM – 08:30 PM)",
+    )
     darshan_video_url = models.TextField(blank=True, default='')
     darshan_thumbnail_url = models.TextField(blank=True, default='')
     darshan_message_template = models.TextField(
@@ -90,6 +96,7 @@ class Temple(models.Model):
             'pin_code': self.pin_code,
             'gstin': self.gstin,
             'slogan_ml': self.slogan_ml,
+            'darshan_timings': self.darshan_timings,
             'darshan_video_url': self.darshan_video_url,
             'darshan_thumbnail_url': self.darshan_thumbnail_url,
             'darshan_message_template': self.darshan_message_template,

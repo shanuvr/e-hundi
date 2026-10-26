@@ -68,6 +68,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
 
     // Slogans & Darshan
     slogan_ml: '',
+    darshan_timings: '',
     darshan_video_url: '',
     darshan_thumbnail_url: '',
     darshan_message_template: '',
@@ -101,6 +102,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
         gstin: temple.gstin || '',
 
         slogan_ml: temple.slogan_ml || '',
+        darshan_timings: temple.darshan_timings || '',
         darshan_video_url: temple.darshan_video_url || '',
         darshan_thumbnail_url: temple.darshan_thumbnail_url || '',
         darshan_message_template: temple.darshan_message_template || '',
@@ -534,6 +536,18 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
                     placeholder="32AAAAA0000A1Z5"
                     className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 uppercase font-mono transition-all"
                   />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block mb-1 text-xs font-semibold text-stone-300">Darshan Timings (Optional)</label>
+                  <input
+                    type="text"
+                    value={formData.darshan_timings}
+                    onChange={(e) => handleChange('darshan_timings', e.target.value)}
+                    placeholder="e.g. 05:30 AM – 12:00 PM · 05:00 PM – 08:30 PM"
+                    className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                  />
+                  <span className="text-[11px] text-stone-500 mt-1 block">Displayed on temple info card only when entered</span>
                 </div>
               </div>
             </div>

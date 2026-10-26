@@ -173,6 +173,7 @@ def temples_list_create_view(request):
                     pin_code=data.get('pin_code', '').strip(),
                     gstin=data.get('gstin', '').strip(),
                     slogan_ml=data.get('slogan_ml', '').strip(),
+                    darshan_timings=data.get('darshan_timings', '').strip(),
                     darshan_video_url=data.get('darshan_video_url', '').strip(),
                     darshan_thumbnail_url=data.get('darshan_thumbnail_url', '').strip(),
                     darshan_message_template=data.get('darshan_message_template', '').strip(),
@@ -264,6 +265,8 @@ def temple_detail_update_delete_view(request, pk):
             if len(val) > 121:
                 return JsonResponse({'message': 'Main Hundi Blessing (Malayalam) cannot exceed 121 characters'}, status=400)
             temple.slogan_ml = val
+        if 'darshan_timings' in data:
+            temple.darshan_timings = data['darshan_timings'].strip()
         if 'darshan_video_url' in data:
             temple.darshan_video_url = data['darshan_video_url'].strip()
         if 'darshan_thumbnail_url' in data:
@@ -447,6 +450,8 @@ def admin_temple_profile_view(request):
             if len(val) > 121:
                 return JsonResponse({'message': 'Main Hundi Blessing (Malayalam) cannot exceed 121 characters'}, status=400)
             temple.slogan_ml = val
+        if 'darshan_timings' in data:
+            temple.darshan_timings = data['darshan_timings'].strip()
         if 'darshan_video_url' in data:
             temple.darshan_video_url = data['darshan_video_url'].strip()
         if 'darshan_message_template' in data:

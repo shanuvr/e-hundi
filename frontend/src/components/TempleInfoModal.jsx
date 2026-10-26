@@ -32,7 +32,7 @@ const POLICIES = [
   { name: 'Platform Disclaimer', path: '/disclaimer', icon: AlertCircle, label: 'Intermediary Status & FCRA' },
 ];
 
-export default function TempleInfoModal({ onClose, temple, templeName = 'Chinmaya Sri Bhuvaneswari Navagraha Temple' }) {
+export default function TempleInfoModal({ onClose, temple, templeName = '' }) {
   const [activeTab, setActiveTab] = useState('temple'); // 'temple' | 'legal'
 
   const tName = temple?.name || templeName || 'Temple';
@@ -44,16 +44,23 @@ export default function TempleInfoModal({ onClose, temple, templeName = 'Chinmay
     temple?.city,
     temple?.state,
     temple?.pin_code,
-  ].filter(Boolean);
-  const locationText = addressParts.length > 0 
-    ? addressParts.join(', ') 
-    : 'East Fort, Marine Drive, Kerala - 695001';
+  ]
+    .map((p) => (typeof p === 'string' ? p.trim() : ''))
+    .filter(Boolean);
+  const locationText = addressParts.length > 0 ? addressParts.join(', ') : null;
 
-  const phoneText = temple?.phone || '+91 471 2345678';
-  const whatsappText = temple?.whatsapp || temple?.phone || '+91 98470 12345';
-  const emailText = temple?.email || 'office@ehundi.org';
-  const cleanPhone = phoneText.replace(/[^\d+]/g, '');
-  const cleanWa = whatsappText.replace(/\D/g, '');
+  const phoneText = temple?.phone?.trim() || null;
+  const whatsappText = temple?.whatsapp?.trim() || null;
+  const emailText = temple?.email?.trim() || null;
+  const darshanTimings = temple?.darshan_timings?.trim() || null;
+  const gstinText = temple?.gstin?.trim() || null;
+
+  const cleanPhone = phoneText ? phoneText.replace(/[^\d+]/g, '') : null;
+  const cleanWa = whatsappText ? whatsappText.replace(/\D/g, '') : null;
+
+  const hasAnyInfo = Boolean(
+    locationText || phoneText || whatsappText || emailText || darshanTimings || gstinText
+  );
 
   return (
     <motion.div
@@ -152,65 +159,83 @@ export default function TempleInfoModal({ onClose, temple, templeName = 'Chinmay
         {/* Tab 1: Temple Details */}
         {activeTab === 'temple' && (
           <div className="flex-1 overflow-y-auto space-y-2 text-left pr-0.5 scrollbar-thin">
-            <div className="flex items-start gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15">
-              <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[8.5px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Location</p>
-                <p className="text-[10px] text-stone-200 leading-tight mt-0.5">{locationText}</p>
+            {!hasAnyInfo && (
+              <div className="p-4 rounded-xl bg-black/40 border border-amber-400/15 text-center text-stone-400 text-[11px] italic my-2">
+                വിവരങ്ങൾ ലഭ്യമല്ല · No contact details published yet.
               </div>
-            </div>
+            )}
 
-            <div className="grid grid-cols-2 gap-2">
+            {locationText && (
+              <div className="flex items-start gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15">
+                <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[8.5px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Location</p>
+                  <p className="text-[10px] text-stone-200 leading-tight mt-0.5">{locationText}</p>
+                </div>
+              </div>
+            )}
+
+            {(phoneText || whatsappText) && (
+              <div className={`grid ${phoneText && whatsappText ? 'grid-cols-2' : 'grid-cols-1'} gap-2`}>
+                {phoneText && (
+                  <a
+                    href={cleanPhone ? `tel:${cleanPhone}` : undefined}
+                    className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15 hover:border-amber-400/35 transition-colors group"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-amber-400 group-hover:text-amber-300 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Phone</p>
+                      <p className="text-[9.5px] font-medium text-stone-200 group-hover:text-amber-200 truncate">{phoneText}</p>
+                    </div>
+                  </a>
+                )}
+
+                {whatsappText && (
+                  <a
+                    href={cleanWa ? `https://wa.me/${cleanWa}` : undefined}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15 hover:border-emerald-400/35 transition-colors group"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">WhatsApp</p>
+                      <p className="text-[9.5px] font-medium text-stone-200 group-hover:text-emerald-300 truncate">{whatsappText}</p>
+                    </div>
+                  </a>
+                )}
+              </div>
+            )}
+
+            {emailText && (
               <a
-                href={cleanPhone ? `tel:${cleanPhone}` : undefined}
-                className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15 hover:border-amber-400/35 transition-colors group"
+                href={`mailto:${emailText}`}
+                className="flex items-center gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15 hover:border-amber-400/35 transition-colors group block"
               >
-                <Phone className="w-3.5 h-3.5 text-amber-400 group-hover:text-amber-300 shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Phone</p>
-                  <p className="text-[9.5px] font-medium text-stone-200 group-hover:text-amber-200 truncate">{phoneText}</p>
+                <Mail className="w-3.5 h-3.5 text-amber-400 group-hover:text-amber-300 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Email</p>
+                  <p className="text-[9.5px] font-medium text-stone-200 group-hover:text-amber-200 truncate">{emailText}</p>
                 </div>
               </a>
+            )}
 
-              <a
-                href={cleanWa ? `https://wa.me/${cleanWa}` : undefined}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15 hover:border-emerald-400/35 transition-colors group"
-              >
-                <MessageCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">WhatsApp</p>
-                  <p className="text-[9.5px] font-medium text-stone-200 group-hover:text-emerald-300 truncate">{whatsappText}</p>
+            {darshanTimings && (
+              <div className="flex items-center gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15">
+                <Clock className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Darshan Timings</p>
+                  <p className="text-[9px] text-stone-200 leading-tight whitespace-pre-line">{darshanTimings}</p>
                 </div>
-              </a>
-            </div>
-
-            <a
-              href={`mailto:${emailText}`}
-              className="flex items-center gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15 hover:border-amber-400/35 transition-colors group block"
-            >
-              <Mail className="w-3.5 h-3.5 text-amber-400 group-hover:text-amber-300 shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Email</p>
-                <p className="text-[9.5px] font-medium text-stone-200 group-hover:text-amber-200 truncate">{emailText}</p>
               </div>
-            </a>
+            )}
 
-            <div className="flex items-center gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15">
-              <Clock className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Darshan Timings</p>
-                <p className="text-[9px] text-stone-200 leading-tight">05:30 AM – 12:00 PM · 05:00 PM – 08:30 PM</p>
-              </div>
-            </div>
-
-            {temple?.gstin && (
+            {gstinText && (
               <div className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15">
                 <ShieldCheck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">GSTIN / Reg No.</p>
-                  <p className="text-[9.5px] font-medium text-stone-200 truncate">{temple.gstin}</p>
+                  <p className="text-[9.5px] font-medium text-stone-200 truncate">{gstinText}</p>
                 </div>
               </div>
             )}
