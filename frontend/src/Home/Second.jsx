@@ -66,9 +66,21 @@ export default function Second({
   const buildUpiUrl = (amt) =>
     `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${Number(amt).toFixed(2)}&cu=INR&tn=${encodeURIComponent('Devotional Offering')}`;
 
+// For testing: bypass payment gateway and take directly as payment received
+const BYPASS_PAYMENT_GATEWAY = true;
+
   const submitOffering = useCallback(async () => {
     const amt = Number(amount);
     if (!Number.isFinite(amt) || amt <= 0) return;
+
+    // Testing mode: bypass payment gateway and take directly as payment received
+    if (BYPASS_PAYMENT_GATEWAY) {
+      celebrateOffering();
+      playTempleBell();
+      triggerHaptic([25, 30, 25, 30, 80]);
+      onNext();
+      return;
+    }
 
     // Second tap while "paying" = user confirms they returned
     if (paying) {
