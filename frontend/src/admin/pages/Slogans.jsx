@@ -9,18 +9,23 @@ import {
   Film,
   FileVideo,
   ShieldAlert,
-  MessageSquare
+  MessageSquare,
+  Loader2,
+  Radio,
+  Link as LinkIcon
 } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import SectionCard from '../components/SectionCard';
 import { Button } from '../components/Controls';
 import { TextInput, TextArea } from '../components/Field';
 import { useAdmin } from '../AdminContext';
+import { api, getDarshanVideoUrl } from '../../utils/api';
 
 const ML = 'sm:[&_input]:font-malayalam sm:[&_textarea]:font-malayalam';
 const DEFAULT_VIDEO_SRC = '/video.mp4';
 const DEFAULT_VIDEO_NAME = 'video.mp4 (Sacred Temple Darshan)';
-const DEFAULT_VIDEO_SIZE = '14.8 MB';
+const DEFAULT_VIDEO_SIZE = 'Default Video';
+const MAX_VIDEO_BYTES = 15 * 1024 * 1024; // 15 MB limit
 
 export default function Slogans() {
   const { temple, saveTemple, saving } = useAdmin();
@@ -30,8 +35,10 @@ export default function Slogans() {
   const [videoName, setVideoName] = useState(DEFAULT_VIDEO_NAME);
   const [videoSize, setVideoSize] = useState(DEFAULT_VIDEO_SIZE);
   const [isDragging, setIsDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [savedToast, setSavedToast] = useState(null);
   const [directUrl, setDirectUrl] = useState('');
+  const [mediaMode, setMediaMode] = useState('upload'); // 'upload' | 'stream'
 
   // Temple Devotional Quotes & Slogans
   const [sloganMl, setSloganMl] = useState('');
@@ -40,11 +47,16 @@ export default function Slogans() {
 
   useEffect(() => {
     if (temple) {
-      if (temple.darshan_video_url) {
+      if (temple.darshan_video_url && temple.darshan_video_url !== DEFAULT_VIDEO_SRC) {
         setVideoSrc(temple.darshan_video_url);
         setDirectUrl(temple.darshan_video_url);
-        setVideoName(temple.darshan_video_url.split('/').pop() || 'Remote Darshan Stream');
-        setVideoSize('Remote Stream');
+        setVideoName(temple.darshan_video_url.split('/').pop() || 'Custom Darshan Video');
+        setVideoSize(temple.darshan_video_url.startsWith('http') ? 'Online Stream' : 'Custom Upload');
+        if (temple.darshan_video_url.startsWith('http')) {
+          setMediaMode('stream');
+        } else {
+          setMediaMode('upload');
+        }
       } else {
         setVideoSrc(DEFAULT_VIDEO_SRC);
         setDirectUrl('');
@@ -65,23 +77,39 @@ export default function Slogans() {
     }
   }, [temple]);
 
-  const handleFileChange = (file) => {
+  const handleFileChange = async (file) => {
     if (!file) return;
     if (!file.type.startsWith('video/')) {
-      alert('Please select a valid video file (MP4, WebM, MOV).');
+      setSavedToast({ type: 'error', text: 'Please select a valid video file (MP4, WebM, MOV, OGG).' });
+      setTimeout(() => setSavedToast(null), 3500);
       return;
     }
 
-    const objectUrl = URL.createObjectURL(file);
-    const sizeStr = `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
-    
-    setVideoSrc(objectUrl);
-    setVideoName(file.name);
-    setVideoSize(sizeStr);
-    setDirectUrl(objectUrl);
+    // 15 MB limit validation
+    if (file.size > MAX_VIDEO_BYTES) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      setSavedToast({
+        type: 'error',
+        text: `Video file size (${sizeMB} MB) exceeds the 15 MB limit. Please choose a video under 15 MB.`,
+      });
+      setTimeout(() => setSavedToast(null), 4000);
+      return;
+    }
 
-    setSavedToast({ type: 'success', text: `“${file.name}” set as active Darshan video!` });
-    setTimeout(() => setSavedToast(null), 3500);
+    try {
+      setUploading(true);
+      const res = await api.uploadDarshanVideo(file, temple?.id);
+      setVideoSrc(res.video_url);
+      setDirectUrl(res.video_url);
+      setVideoName(res.filename || file.name);
+      setVideoSize(`${(file.size / (1024 * 1024)).toFixed(1)} MB`);
+      setSavedToast({ type: 'success', text: `“${file.name}” uploaded successfully (Max 15 MB)!` });
+    } catch (err) {
+      setSavedToast({ type: 'error', text: err.message || 'Failed to upload video' });
+    } finally {
+      setUploading(false);
+      setTimeout(() => setSavedToast(null), 3500);
+    }
   };
 
   const handleDrop = (e) => {
@@ -97,16 +125,16 @@ export default function Slogans() {
     setVideoName(DEFAULT_VIDEO_NAME);
     setVideoSize(DEFAULT_VIDEO_SIZE);
     setDirectUrl('');
-    setSavedToast({ type: 'success', text: 'Reset to default video (/video.mp4)!' });
+    setSavedToast({ type: 'success', text: 'Reset to default darshan video (/video.mp4)!' });
     setTimeout(() => setSavedToast(null), 3000);
   };
 
   const handleDirectUrlApply = () => {
     if (!directUrl.trim()) return;
     setVideoSrc(directUrl.trim());
-    setVideoName('Online Stream Link');
-    setVideoSize('Remote CDN');
-    setSavedToast({ type: 'success', text: 'Video stream link applied to preview!' });
+    setVideoName('Online Darshan Stream');
+    setVideoSize('Remote Stream');
+    setSavedToast({ type: 'success', text: 'Darshan stream link applied to preview!' });
     setTimeout(() => setSavedToast(null), 3000);
   };
 
@@ -154,7 +182,7 @@ export default function Slogans() {
             variant="primary"
             icon={Save}
             onClick={handleSaveAll}
-            disabled={saving}
+            disabled={saving || uploading}
           >
             {saving ? 'Saving…' : 'Save changes'}
           </Button>
@@ -164,8 +192,8 @@ export default function Slogans() {
       <div className="space-y-4">
         {/* 🌟 1. Sacred Darshan Video Manager */}
         <SectionCard
-          title="Sacred Darshan Video & Aarti Media"
-          description="The video stream played on the donor completion screen and Mantra Dhwani audio-video kiosk player."
+          title="Sacred Darshan Video"
+          description="Plays on the donor completion screen and Mantra Dhwani audio-video kiosk player. Either upload a video (max 15 MB) or enter a direct stream link."
           icon={Video}
         >
           <input
@@ -176,58 +204,112 @@ export default function Slogans() {
             onChange={(e) => handleFileChange(e.target.files?.[0])}
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            {/* Upload Box */}
-            <div className="lg:col-span-7 flex flex-col justify-between space-y-3">
-              <div
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setIsDragging(true);
-                }}
-                onDragLeave={() => setIsDragging(false)}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-                className={`group relative rounded-xl border-2 border-dashed p-5 flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-inner ${
-                  isDragging
-                    ? 'border-amber-500 bg-amber-50 scale-[1.01]'
-                    : 'border-stone-300 bg-stone-50/70 hover:border-amber-400 hover:bg-amber-50/30'
-                }`}
+          {/* Mode Switch: Upload Video vs Stream Link */}
+          <div className="flex items-center gap-2 mb-3 border-b border-stone-200 pb-2.5">
+            <button
+              type="button"
+              onClick={() => setMediaMode('upload')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                mediaMode === 'upload'
+                  ? 'bg-amber-500 text-stone-950 shadow-xs'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+              }`}
+            >
+              <UploadCloud className="w-3.5 h-3.5" />
+              Upload Darshan Video (Max 15 MB)
+            </button>
+            <button
+              type="button"
+              onClick={() => setMediaMode('stream')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                mediaMode === 'stream'
+                  ? 'bg-amber-500 text-stone-950 shadow-xs'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+              }`}
+            >
+              <LinkIcon className="w-3.5 h-3.5" />
+              Enter Stream Link
+            </button>
+            {videoSrc !== DEFAULT_VIDEO_SRC && (
+              <button
+                type="button"
+                onClick={handleResetVideo}
+                className="ml-auto text-[11px] text-stone-500 hover:text-amber-800 underline flex items-center gap-1 cursor-pointer"
               >
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-300 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-xs">
-                  <UploadCloud className="w-5 h-5 text-amber-700" />
-                </div>
+                <RefreshCw className="w-3 h-3" />
+                Reset to Default Darshan Video
+              </button>
+            )}
+          </div>
 
-                <p className="text-xs font-bold text-stone-800 group-hover:text-amber-800 transition-colors">
-                  Click to choose or drag & drop Aarti Video
-                </p>
-                <p className="mt-0.5 text-[11px] text-stone-500">
-                  MP4, WebM, MOV · High definition recommended
-                </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            {/* Input Column */}
+            <div className="lg:col-span-7 flex flex-col justify-between space-y-3">
+              {mediaMode === 'upload' ? (
+                /* Upload Box */
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDragging(true);
+                  }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={handleDrop}
+                  onClick={() => !uploading && fileInputRef.current?.click()}
+                  className={`group relative rounded-xl border-2 border-dashed p-5 flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-inner min-h-[170px] ${
+                    isDragging
+                      ? 'border-amber-500 bg-amber-50 scale-[1.01]'
+                      : 'border-stone-300 bg-stone-50/70 hover:border-amber-400 hover:bg-amber-50/30'
+                  }`}
+                >
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-300 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-xs">
+                    {uploading ? (
+                      <Loader2 className="w-5 h-5 text-amber-700 animate-spin" />
+                    ) : (
+                      <UploadCloud className="w-5 h-5 text-amber-700" />
+                    )}
+                  </div>
 
-                <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-300 text-[11px] font-semibold text-amber-900 group-hover:bg-amber-500 group-hover:text-white transition-all">
-                  <Film className="w-3.5 h-3.5" />
-                  <span>Choose Video File</span>
-                </div>
-              </div>
+                  <p className="text-xs font-bold text-stone-800 group-hover:text-amber-800 transition-colors">
+                    {uploading ? 'Uploading Darshan Video…' : 'Click to choose or drag & drop Darshan Video'}
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-stone-500">
+                    MP4, WebM, MOV · <span className="text-amber-700 font-semibold">Strict 15 MB upload limit</span>
+                  </p>
 
-              {/* Direct Stream URL */}
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-stone-600 flex items-center justify-between">
-                  <span>Or enter direct Video Stream / CDN link</span>
-                  <span className="text-[10px] text-stone-400 font-normal">S3 / Cloudinary / URL</span>
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={directUrl}
-                    onChange={(e) => setDirectUrl(e.target.value)}
-                    placeholder="https://cdn.temple.org/sacred-aarti.mp4"
-                    className="flex-1 rounded-lg bg-white border border-stone-300 px-3 py-1.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-500 font-mono shadow-2xs"
-                  />
-                  <Button variant="outline" onClick={handleDirectUrlApply} className="shrink-0 py-1.5 text-xs">
-                    Apply Link
-                  </Button>
+                  <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-300 text-[11px] font-semibold text-amber-900 group-hover:bg-amber-500 group-hover:text-white transition-all">
+                    <Film className="w-3.5 h-3.5" />
+                    <span>{uploading ? 'Uploading…' : 'Choose Video File'}</span>
+                  </div>
                 </div>
+              ) : (
+                /* Direct Stream Link Box */
+                <div className="p-4 rounded-xl border border-stone-300 bg-stone-50/70 space-y-3 min-h-[170px] flex flex-col justify-center">
+                  <label className="text-xs font-semibold text-stone-700 flex items-center justify-between">
+                    <span>Enter Darshan Video Stream Link</span>
+                    <span className="text-[10px] text-stone-500 font-normal">HLS / MP4 / CDN Link</span>
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={directUrl}
+                      onChange={(e) => setDirectUrl(e.target.value)}
+                      placeholder="https://cdn.temple.org/darshan-live.mp4"
+                      className="flex-1 rounded-lg bg-white border border-stone-300 px-3 py-2 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-500 font-mono shadow-2xs"
+                    />
+                    <Button variant="outline" onClick={handleDirectUrlApply} className="shrink-0 py-2 text-xs">
+                      Apply Link
+                    </Button>
+                  </div>
+                  <p className="text-[11px] text-stone-500 leading-relaxed">
+                    Paste a direct HTTPS stream URL for live sanctum darshan or high-bitrate video hosted on an external CDN.
+                  </p>
+                </div>
+              )}
+
+              {/* Status Note */}
+              <div className="flex items-center justify-between text-[11px] text-stone-500 px-1">
+                <span>Default: <strong className="text-stone-700">/video.mp4</strong> (Sacred Temple Darshan)</span>
+                <span className="text-emerald-700 font-medium">Max Limit: 15 MB</span>
               </div>
             </div>
 
@@ -250,7 +332,7 @@ export default function Slogans() {
                 <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-stone-200 bg-black flex items-center justify-center group">
                   <video
                     key={videoSrc}
-                    src={videoSrc}
+                    src={getDarshanVideoUrl(videoSrc)}
                     controls
                     playsInline
                     className="w-full h-full object-contain"
@@ -278,16 +360,16 @@ export default function Slogans() {
                   onClick={() => fileInputRef.current?.click()}
                   className="flex-1 py-1.5 text-xs"
                 >
-                  Change File
+                  Upload New File
                 </Button>
                 <Button
                   variant="ghost"
                   icon={RefreshCw}
                   onClick={handleResetVideo}
-                  title="Reset to default"
+                  title="Reset to default video"
                   className="py-1.5 text-xs text-stone-600 hover:text-stone-900"
                 >
-                  Reset
+                  Reset Default
                 </Button>
               </div>
             </div>

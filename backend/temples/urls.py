@@ -20,4 +20,7 @@ urlpatterns = [
     # Public Temple Portal / Kiosk (/api/temples/public/...)
     path('temples/public/', views.public_default_temple_view, name='public-default-temple'),
     path('temples/public/<str:identifier>/', views.public_temple_detail_view, name='public-temple-detail'),
+
+    # Darshan video upload (15 MB max)
+    path('upload/darshan-video/', views.upload_darshan_video_view, name='upload-darshan-video'),
 ]

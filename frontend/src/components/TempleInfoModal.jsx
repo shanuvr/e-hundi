@@ -116,8 +116,13 @@ export default function TempleInfoModal({ onClose, temple, templeName = 'Chinmay
             </p>
           )}
           {tSlogan && (
-            <p className="font-malayalam text-[10px] text-amber-200/60 italic mt-0.5 max-w-[280px]">
+            <p className="font-malayalam text-[10px] text-amber-200/70 italic mt-0.5 max-w-[280px]">
               &ldquo;{tSlogan}&rdquo;
+            </p>
+          )}
+          {temple?.slogan_ml && temple?.slogan_en && (
+            <p className="text-[9.5px] text-amber-200/50 mt-0.5 max-w-[280px]">
+              &ldquo;{temple.slogan_en}&rdquo;
             </p>
           )}
         </div>

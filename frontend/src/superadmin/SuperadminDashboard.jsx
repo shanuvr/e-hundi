@@ -350,6 +350,23 @@ export default function SuperadminDashboard() {
                                   {temple.short_name}
                                 </span>
                               )}
+                              {temple.darshan_video_url && temple.darshan_video_url !== '/video.mp4' ? (
+                                <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 font-mono">
+                                  Darshan: Custom
+                                </span>
+                              ) : (
+                                <span className="px-1.5 py-0.5 rounded text-[10px] bg-stone-800/80 text-stone-400 font-mono">
+                                  Darshan: Default
+                                </span>
+                              )}
+                              {temple.slogan_ml && (
+                                <span
+                                  className="px-1.5 py-0.5 rounded text-[10px] bg-amber-950/60 border border-amber-500/30 text-amber-300 font-malayalam truncate max-w-[140px]"
+                                  title={temple.slogan_ml}
+                                >
+                                  {temple.slogan_ml}
+                                </span>
+                              )}
                               <a
                                 href={`/${temple.slug || temple.id}`}
                                 target="_blank"

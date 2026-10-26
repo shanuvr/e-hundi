@@ -15,7 +15,7 @@ export default function Darshan() {
   return (
     <div className="max-w-5xl space-y-6">
       <PageHeader
-        title="Darshan & Aarti Video"
+        title="Darshan Video"
         subtitle="The holy darshan video donors receive upon completing their offering, and how it reaches them."
         actions={<Button variant="primary" icon={Save}>Save changes</Button>}
       />
@@ -27,7 +27,7 @@ export default function Darshan() {
           icon={CirclePlay}
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <UploadBox label="Upload Aarti video" hint="MP4 or WebM · up to 25 MB" height="h-32" />
+            <UploadBox label="Upload Darshan video" hint="MP4 or WebM · up to 15 MB" height="h-32" />
             <UploadBox label="Upload Video thumbnail" hint="Shown before playback starts" height="h-32" />
           </div>
 
@@ -46,7 +46,7 @@ export default function Darshan() {
               hint="The darshan badge displays a sacred lock until payment settles."
               defaultChecked
             />
-            <Toggle label="Loop the aarti video continuously on darshan screen" defaultChecked />
+            <Toggle label="Loop the darshan video continuously on darshan screen" defaultChecked />
             <Toggle label="Mute audio by default (recommended for busy temple halls)" defaultChecked />
           </div>
         </SectionCard>
@@ -96,7 +96,7 @@ export default function Darshan() {
           </div>
         </SectionCard>
 
-        <SectionCard title="Aarti time schedule" description="Automatically swap the featured darshan video based on temple time." icon={Clock}>
+        <SectionCard title="Darshan time schedule" description="Automatically swap the featured darshan video based on temple time." icon={Clock}>
           <div className="space-y-3">
             {[
               { slot: 'Morning Nirmalya Darshan', time: '05:30 – 09:30', file: 'morning_darshan.mp4', active: true },

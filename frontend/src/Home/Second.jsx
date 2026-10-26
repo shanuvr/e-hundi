@@ -430,8 +430,13 @@ const BYPASS_PAYMENT_GATEWAY = true;
           transition={{ delay: 0.1, duration: 0.5 }}
           className="font-malayalam font-medium text-amber-50 text-center text-xs sm:text-[13px] leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] max-w-[340px]"
         >
-          ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു
+          {temple?.slogan_ml || temple?.slogan_en || 'ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു'}
         </motion.p>
+        {temple?.slogan_ml && temple?.slogan_en && (
+          <p className="text-[10px] text-amber-200/70 text-center tracking-wide mt-0.5 max-w-[320px] font-medium drop-shadow-sm">
+            {temple.slogan_en}
+          </p>
+        )}
       </div>
 
       {/* Hundi Box */}

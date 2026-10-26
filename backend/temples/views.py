@@ -1,4 +1,8 @@
 import json
+import os
+import uuid
+from django.conf import settings
+from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
@@ -521,4 +525,62 @@ def public_temple_detail_view(request, identifier):
         }, status=403)
 
     return JsonResponse({'success': True, 'temple': temple.to_dict(include_bank=False)})
+
+
+# -------------------------------------------------------------
+# DARSHAN VIDEO UPLOAD (15 MB LIMIT)
+# -------------------------------------------------------------
+
+MAX_VIDEO_SIZE = 15 * 1024 * 1024  # 15 MB in bytes
+ALLOWED_VIDEO_EXTENSIONS = ('.mp4', '.webm', '.mov', '.mkv', '.ogg')
+
+
+@csrf_exempt
+def upload_darshan_video_view(request):
+    """
+    Upload a sacred darshan video with a strict 15 MB limit.
+    Either upload video or enter stream link is supported.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    video_file = request.FILES.get('video') or request.FILES.get('file')
+    if not video_file:
+        return JsonResponse({'error': 'No video file provided.'}, status=400)
+
+    # Enforce 15 MB limit
+    if video_file.size > MAX_VIDEO_SIZE:
+        size_mb = round(video_file.size / (1024 * 1024), 2)
+        return JsonResponse({
+            'error': f'Video file size ({size_mb} MB) exceeds the 15 MB limit. Please select a video under 15 MB.'
+        }, status=400)
+
+    # Extension check
+    ext = os.path.splitext(video_file.name)[1].lower()
+    if ext not in ALLOWED_VIDEO_EXTENSIONS:
+        return JsonResponse({
+            'error': f'Unsupported video format "{ext}". Supported formats are MP4, WebM, MOV, and OGG.'
+        }, status=400)
+
+    try:
+        temple_id = (
+            request.headers.get('X-Temple-ID')
+            or request.POST.get('temple_id')
+            or 'temple'
+        )
+        safe_name = f"darshan_{temple_id}_{uuid.uuid4().hex[:8]}{ext}"
+        relative_path = os.path.join('darshan_videos', safe_name)
+        saved_path = default_storage.save(relative_path, video_file)
+
+        media_url = f"{settings.MEDIA_URL.rstrip('/')}/{saved_path.replace(os.sep, '/')}"
+
+        return JsonResponse({
+            'success': True,
+            'video_url': media_url,
+            'filename': video_file.name,
+            'size': video_file.size,
+            'message': 'Darshan video uploaded successfully'
+        })
+    except Exception as e:
+        return JsonResponse({'error': f'Failed to save video: {str(e)}'}, status=500)
 

@@ -92,5 +92,45 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
+
+  // Darshan Video Upload (15 MB limit enforced by server & client)
+  uploadDarshanVideo: async (file, templeId) => {
+    const formData = new FormData();
+    formData.append('video', file);
+    if (templeId) {
+      formData.append('temple_id', templeId);
+    }
+    const url = `${API_BASE}/api/upload/darshan-video/`;
+    const headers = {};
+    const localId = localStorage.getItem('temple_admin_id');
+    if (templeId || localId) {
+      headers['X-Temple-ID'] = templeId || localId;
+    }
+    const res = await fetch(url, {
+      method: 'POST',
+      body: formData,
+      headers,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to upload video');
+    }
+    return data;
+  },
+};
+
+/**
+ * Resolves Darshan video URL.
+ * Falls back to default sacred darshan video (/video.mp4) if not provided.
+ */
+export const getDarshanVideoUrl = (url) => {
+  if (!url || url === '/video.mp4') return '/video.mp4';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:')) {
+    return url;
+  }
+  if (url.startsWith('/media/')) {
+    return `${API_BASE}${url}`;
+  }
+  return url;
 };
 

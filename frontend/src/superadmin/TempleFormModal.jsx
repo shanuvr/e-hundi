@@ -1,21 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Building2,
   Check,
   CreditCard,
   FileText,
+  Film,
   Image,
   KeyRound,
   Landmark,
+  Loader2,
   Lock,
   Mail,
   MapPin,
   Phone,
+  RefreshCw,
   Sparkles,
+  UploadCloud,
   Video,
   X,
 } from 'lucide-react';
-import { api } from '../utils/api';
+import { api, getDarshanVideoUrl } from '../utils/api';
 
 const TABS = [
   { id: 'identity', label: 'Identity & Credentials', icon: KeyRound },
@@ -30,6 +34,10 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
   const [activeTab, setActiveTab] = useState('identity');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [videoUploadError, setVideoUploadError] = useState('');
+  const [mediaMode, setMediaMode] = useState('upload');
+  const fileInputRef = useRef(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -105,6 +113,34 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleVideoFileChange = async (file) => {
+    if (!file) return;
+    setVideoUploadError('');
+    if (!file.type.startsWith('video/')) {
+      setVideoUploadError('Please select a valid video file (MP4, WebM, MOV, OGG).');
+      return;
+    }
+    if (file.size > 15 * 1024 * 1024) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      setVideoUploadError(`Video file size (${sizeMB} MB) exceeds the 15 MB limit. Please select a video under 15 MB.`);
+      return;
+    }
+    try {
+      setUploadingVideo(true);
+      const res = await api.uploadDarshanVideo(file, temple?.id);
+      handleChange('darshan_video_url', res.video_url);
+    } catch (err) {
+      setVideoUploadError(err.message || 'Failed to upload video');
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
+
+  const handleResetDefaultVideo = () => {
+    handleChange('darshan_video_url', '');
+    setVideoUploadError('');
   };
 
   const handleSubmit = async (e) => {
@@ -516,9 +552,12 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
                     type="text"
                     value={formData.slogan_ml}
                     onChange={(e) => handleChange('slogan_ml', e.target.value)}
-                    placeholder="ഓം നമോ നാരായണായ"
+                    placeholder="നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം"
                     className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-malayalam transition-all"
                   />
+                  <span className="text-[10px] text-stone-500 mt-1 block">
+                    Displayed prominently on Devotee Kiosk welcome & offering screens
+                  </span>
                 </div>
 
                 <div>
@@ -529,22 +568,156 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
                     type="text"
                     value={formData.slogan_en}
                     onChange={(e) => handleChange('slogan_en', e.target.value)}
-                    placeholder="Salutations to the Supreme Divine Preserver"
+                    placeholder="Your Offering, Divine Grace"
                     className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
                   />
+                  <span className="text-[10px] text-stone-500 mt-1 block">
+                    English translation or secondary temple motto
+                  </span>
                 </div>
 
-                <div className="sm:col-span-2">
-                  <label className="block mb-1 text-xs font-semibold text-stone-300">
-                    Darshan Aarti Video Stream URL
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.darshan_video_url}
-                    onChange={(e) => handleChange('darshan_video_url', e.target.value)}
-                    placeholder="https://cdn.temple.org/video/morning_aarti.mp4"
-                    className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono transition-all"
-                  />
+                {/* Darshan Video Section: Either upload video or enter stream link */}
+                <div className="sm:col-span-2 rounded-xl bg-stone-950/80 border border-stone-800 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <label className="text-xs font-bold text-amber-200 flex items-center gap-1.5">
+                        <Video className="w-3.5 h-3.5 text-amber-400" />
+                        Darshan Video
+                      </label>
+                      <p className="text-[11px] text-stone-400 mt-0.5">
+                        Plays on offering completion screen. Either upload video (up to 15 MB) or enter stream link.
+                      </p>
+                    </div>
+
+                    {formData.darshan_video_url && formData.darshan_video_url !== '/video.mp4' && (
+                      <button
+                        type="button"
+                        onClick={handleResetDefaultVideo}
+                        className="text-[11px] text-amber-400 hover:text-amber-300 underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <RefreshCw className="w-3 h-3" />
+                        Use Default Video (/video.mp4)
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Mode switcher: Upload vs Stream Link */}
+                  <div className="flex items-center gap-2 border-b border-stone-800 pb-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setMediaMode('upload')}
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                        mediaMode === 'upload'
+                          ? 'bg-amber-500 text-stone-950 shadow-xs'
+                          : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+                      }`}
+                    >
+                      <UploadCloud className="w-3.5 h-3.5" />
+                      Upload Video (Max 15 MB)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMediaMode('stream')}
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                        mediaMode === 'stream'
+                          ? 'bg-amber-500 text-stone-950 shadow-xs'
+                          : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+                      }`}
+                    >
+                      <Film className="w-3.5 h-3.5" />
+                      Enter Stream Link
+                    </button>
+                  </div>
+
+                  {/* Video upload error notice */}
+                  {videoUploadError && (
+                    <div className="p-2.5 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-medium">
+                      {videoUploadError}
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <div>
+                      {mediaMode === 'upload' ? (
+                        <>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="video/mp4,video/webm,video/ogg,video/quicktime,video/*"
+                            className="hidden"
+                            onChange={(e) => handleVideoFileChange(e.target.files?.[0])}
+                          />
+                          <div
+                            onClick={() => !uploadingVideo && fileInputRef.current?.click()}
+                            className="border-2 border-dashed border-stone-700 hover:border-amber-500/60 rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-stone-900/40 hover:bg-stone-900/80 min-h-[140px]"
+                          >
+                            {uploadingVideo ? (
+                              <Loader2 className="w-6 h-6 text-amber-400 animate-spin mb-1.5" />
+                            ) : (
+                              <UploadCloud className="w-6 h-6 text-amber-400 mb-1.5" />
+                            )}
+                            <p className="text-xs font-bold text-stone-200">
+                              {uploadingVideo ? 'Uploading Darshan Video…' : 'Click to Upload Darshan Video'}
+                            </p>
+                            <p className="text-[10px] text-stone-400 mt-0.5">
+                              MP4, WebM, MOV · <span className="text-amber-400 font-semibold">Strict 15 MB upload limit</span>
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="space-y-2">
+                          <label className="block text-[11px] font-semibold text-stone-300">
+                            Darshan Video Stream Link
+                          </label>
+                          <input
+                            type="url"
+                            value={formData.darshan_video_url}
+                            onChange={(e) => handleChange('darshan_video_url', e.target.value)}
+                            placeholder="https://cdn.temple.org/video/darshan.mp4"
+                            className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono transition-all"
+                          />
+                          <p className="text-[10px] text-stone-500">
+                            Paste an HTTPS direct MP4/WebM or HLS stream link.
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="mt-2.5 flex items-center justify-between text-[10px] text-stone-400">
+                        <span>
+                          Current:{' '}
+                          {formData.darshan_video_url && formData.darshan_video_url !== '/video.mp4' ? (
+                            <span className="text-amber-300 font-mono truncate inline-block max-w-[160px] align-bottom">
+                              {formData.darshan_video_url.split('/').pop()}
+                            </span>
+                          ) : (
+                            <span className="text-emerald-400 font-medium">Default (/video.mp4)</span>
+                          )}
+                        </span>
+                        <span className="text-stone-500 font-medium">15 MB max limit</span>
+                      </div>
+                    </div>
+
+                    {/* Live Preview Player */}
+                    <div className="rounded-xl border border-stone-800 bg-black/60 p-2.5 flex flex-col justify-between">
+                      <div className="flex items-center justify-between mb-1.5 px-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-200/80">
+                          Darshan Video Preview
+                        </span>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-stone-800 text-stone-300 font-mono">
+                          {formData.darshan_video_url && formData.darshan_video_url !== '/video.mp4' ? 'Custom' : 'Default'}
+                        </span>
+                      </div>
+                      <div className="w-full aspect-video rounded-lg overflow-hidden bg-black border border-stone-800 flex items-center justify-center">
+                        <video
+                          key={formData.darshan_video_url || 'default'}
+                          src={getDarshanVideoUrl(formData.darshan_video_url)}
+                          controls
+                          playsInline
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="sm:col-span-2">
@@ -558,6 +731,9 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
                     placeholder="Namaste! Your offering of ₹{amount} to {temple} is received. Watch your darshan: {link}"
                     className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 leading-relaxed resize-none transition-all"
                   />
+                  <span className="text-[10px] text-stone-500 mt-1 block">
+                    Use tokens: &#123;amount&#125;, &#123;temple&#125;, &#123;receipt&#125;, &#123;link&#125;
+                  </span>
                 </div>
 
                 <div className="sm:col-span-2">

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Unlock, Sparkles, Share2, Volume2, VolumeX, Maximize2, X, Play } from 'lucide-react';
+import { getDarshanVideoUrl } from '../utils/api';
 
 /* Where offerings are collected. Surfaces on the receipt; admin-configurable. */
 const UPI_ID = 'programers@icici';
@@ -170,7 +171,7 @@ function DarshanVideoCard({ onExpand, videoSrc = SACRED_MEDIA_SRC, templeTitle =
                 e.stopPropagation();
                 onExpand({
                   title: `${templeTitle} · Darshan`,
-                  desc: 'Live sanctum holy Aarti & Deeparadhana visual offering',
+                  desc: 'Live sanctum holy Darshan & Deeparadhana visual offering',
                   src: videoSrc,
                   initialMuted: isMuted,
                 });
@@ -421,7 +422,7 @@ export default function Third({
   const tNameEn = temple?.name || templeName;
   const tNameMl = temple?.name_ml || '';
   const displayTitle = tNameMl || tNameEn;
-  const videoSrc = temple?.darshan_video_url || SACRED_MEDIA_SRC;
+  const videoSrc = getDarshanVideoUrl(temple?.darshan_video_url) || SACRED_MEDIA_SRC;
   const upiId = temple?.upi_id || UPI_ID;
 
   // The offering is already settled by the time this screen plays, so the receipt
@@ -503,8 +504,13 @@ export default function Third({
           transition={{ delay: 0.1, duration: 0.5 }}
           className="font-malayalam font-medium text-center text-xs sm:text-[13.5px] leading-tight text-amber-50 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] max-w-[320px]"
         >
-          നിങ്ങളുടെ കാണിക്ക ദൈവം സ്വീകരിച്ചു
+          {temple?.slogan_ml || "നിങ്ങളുടെ കാണിക്ക ദൈവം സ്വീകരിച്ചു"}
         </motion.p>
+        {temple?.slogan_en && (
+          <p className="text-[10px] text-amber-200/70 text-center tracking-wide mt-0.5 max-w-[320px] font-medium drop-shadow-sm">
+            {temple.slogan_en}
+          </p>
+        )}
       </div>
 
       {/* Sanctum Live Darshan Video Card */}
