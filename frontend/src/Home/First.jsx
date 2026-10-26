@@ -36,8 +36,7 @@ function Kalasham({ className = '' }) {
 
 export default function First({ temple, templeName = "ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം", onOpenInfo, onComplete }) {
   const displayNameMl = temple?.name_ml || templeName || temple?.name;
-  const displayNameEn = temple?.name || '';
-  const displaySlogan = temple?.slogan_ml || temple?.slogan_en || "നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം";
+  const displaySlogan = temple?.slogan_ml || "നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം";
 
   useEffect(() => {
     const timer = setTimeout(onComplete, FIRST_SCREEN_DURATION);
@@ -195,11 +194,6 @@ export default function First({ temple, templeName = "ചിന്മയ ശ്�
           <h2 className="relative font-malayalam text-xs sm:text-sm font-bold text-amber-100 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
             &ldquo;{displaySlogan}&rdquo;
           </h2>
-          {temple?.slogan_ml && temple?.slogan_en && (
-            <p className="relative text-[10.5px] text-amber-200/75 tracking-wide mt-1 drop-shadow-sm font-medium">
-              &ldquo;{temple.slogan_en}&rdquo;
-            </p>
-          )}
 
           <div className="relative mt-2 flex justify-center">
             <motion.span
