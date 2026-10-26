@@ -41,7 +41,6 @@ export default function Slogans() {
 
   // Temple Devotional Quotes & Slogans
   const [sloganMl, setSloganMl] = useState('');
-  const [sloganEn, setSloganEn] = useState('');
 
   useEffect(() => {
     if (temple) {
@@ -64,9 +63,6 @@ export default function Slogans() {
 
       setSloganMl(
         temple.slogan_ml || 'ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു'
-      );
-      setSloganEn(
-        temple.slogan_en || 'May the divine grace illuminate your life with peace and prosperity.'
       );
     }
   }, [temple]);
@@ -142,7 +138,6 @@ export default function Slogans() {
     const res = await saveTemple({
       darshan_video_url: videoSrc === DEFAULT_VIDEO_SRC ? '' : videoSrc,
       slogan_ml: sloganMl.trim(),
-      slogan_en: sloganEn.trim(),
     });
 
     if (res.success) {
@@ -382,28 +377,18 @@ export default function Slogans() {
           icon={Sparkles}
         >
           <div className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <TextArea
-                label="Main Hundi Blessing (Malayalam)"
-                value={sloganMl}
-                onChange={(e) => setSloganMl(e.target.value)}
-                maxLength={121}
-                max={121}
-                current={sloganMl.length}
-                rows={3}
-                className={ML}
-                placeholder="ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു"
-                hint="Main devotional quote displayed on the kiosk offering screen."
-              />
-              <TextArea
-                label="Devotional Tagline / Blessing (English)"
-                value={sloganEn}
-                onChange={(e) => setSloganEn(e.target.value)}
-                rows={3}
-                placeholder="May the divine grace illuminate your life with peace and prosperity."
-                hint="English translation or secondary devotional motto."
-              />
-            </div>
+            <TextArea
+              label="Main Hundi Blessing (Malayalam)"
+              value={sloganMl}
+              onChange={(e) => setSloganMl(e.target.value)}
+              maxLength={121}
+              max={121}
+              current={sloganMl.length}
+              rows={3}
+              className={ML}
+              placeholder="ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു"
+              hint="Main devotional quote displayed on the kiosk offering screen."
+            />
           </div>
         </SectionCard>
 
