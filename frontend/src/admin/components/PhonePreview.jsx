@@ -28,9 +28,6 @@ function WelcomeMock() {
           <p className="font-cinzel text-base font-black tracking-[0.18em] text-amber-100">E-HUNDI</p>
           <p className="mt-1 text-[6.5px] uppercase tracking-[0.28em] text-amber-200/70">Digital Temple Offering</p>
         </div>
-        <div className="px-3 py-2.5 rounded-xl bg-black/40 border border-amber-400/30 backdrop-blur-md">
-          <p className="font-philosopher text-[10px] italic text-amber-100">“Your Offering, A Blessing.”</p>
-        </div>
       </div>
 
       <div className="flex flex-col items-center gap-1.5 shrink-0">
@@ -107,7 +104,6 @@ function ReceiptMock() {
 
       <div className="pt-1.5 text-center shrink-0">
         <p className="font-malayalam text-[8.5px] leading-tight text-amber-50">നിങ്ങളുടെ കാണിക്ക ദൈവം സ്വീകരിച്ചു</p>
-        <p className="mt-0.5 text-[5.5px] uppercase tracking-[0.2em] text-amber-200/60">Your Offering Has Been Received</p>
       </div>
 
       <div className="flex-1 min-h-0 flex items-center justify-center">

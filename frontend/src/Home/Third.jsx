@@ -522,11 +522,6 @@ export default function Third({
         >
           {temple?.slogan_ml || "നിങ്ങളുടെ കാണിക്ക ദൈവം സ്വീകരിച്ചു"}
         </motion.p>
-        {temple?.slogan_en && (
-          <p className="text-[10px] text-amber-200/70 text-center tracking-wide mt-0.5 max-w-[320px] font-medium drop-shadow-sm">
-            {temple.slogan_en}
-          </p>
-        )}
       </div>
 
       {/* Sanctum Live Darshan Video Card */}

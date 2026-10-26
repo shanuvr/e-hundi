@@ -80,7 +80,6 @@ function App() {
               street_address: 'East Fort, Marine Drive',
               pin_code: '695001',
               slogan_ml: 'നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം',
-              slogan_en: 'Your Offering, Divine Grace',
               darshan_message_template: 'Namaste! Your offering of ₹{amount} to {temple} is received. Watch your darshan: {link}',
             });
             setLoading(false);

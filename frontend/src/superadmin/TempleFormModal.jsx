@@ -68,7 +68,6 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
 
     // Slogans & Darshan
     slogan_ml: '',
-    slogan_en: '',
     darshan_video_url: '',
     darshan_thumbnail_url: '',
     darshan_message_template: '',
@@ -102,7 +101,6 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
         gstin: temple.gstin || '',
 
         slogan_ml: temple.slogan_ml || '',
-        slogan_en: temple.slogan_en || '',
         darshan_video_url: temple.darshan_video_url || '',
         darshan_thumbnail_url: temple.darshan_thumbnail_url || '',
         darshan_message_template: temple.darshan_message_template || '',
@@ -545,7 +543,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
           {activeTab === 'media' && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
+                <div className="sm:col-span-2">
                   {(() => {
                     const mlLen = (formData.slogan_ml || '').length;
                     const isAtLimit = mlLen >= 121;
@@ -616,22 +614,6 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
                       </>
                     );
                   })()}
-                </div>
-
-                <div>
-                  <label className="block mb-1 text-xs font-semibold text-stone-300">
-                    English Mantra / Meaning
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.slogan_en}
-                    onChange={(e) => handleChange('slogan_en', e.target.value)}
-                    placeholder="Your Offering, Divine Grace"
-                    className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
-                  />
-                  <span className="text-[10px] text-stone-500 mt-1 block">
-                    English translation or secondary temple motto
-                  </span>
                 </div>
 
                 {/* Darshan Video Section: Either upload video or enter stream link */}

@@ -37,7 +37,7 @@ export default function TempleInfoModal({ onClose, temple, templeName = 'Chinmay
 
   const tName = temple?.name || templeName || 'Temple';
   const tNameMl = temple?.name_ml || '';
-  const tSlogan = temple?.slogan_ml || temple?.slogan_en || '';
+  const tSlogan = temple?.slogan_ml || '';
   
   const addressParts = [
     temple?.street_address,
@@ -120,11 +120,6 @@ export default function TempleInfoModal({ onClose, temple, templeName = 'Chinmay
           {tSlogan && (
             <p className="font-malayalam text-[10px] text-amber-200/70 italic mt-0.5 max-w-[280px]">
               &ldquo;{tSlogan}&rdquo;
-            </p>
-          )}
-          {temple?.slogan_ml && temple?.slogan_en && (
-            <p className="text-[9.5px] text-amber-200/50 mt-0.5 max-w-[280px]">
-              &ldquo;{temple.slogan_en}&rdquo;
             </p>
           )}
         </div>
