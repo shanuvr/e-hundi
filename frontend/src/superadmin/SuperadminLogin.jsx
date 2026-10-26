@@ -5,8 +5,8 @@ import { api } from '../utils/api';
 
 export default function SuperadminLogin() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState('superadmin');
-  const [password, setPassword] = useState('superadmin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -72,7 +72,7 @@ export default function SuperadminLogin() {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="superadmin or admin@hundi.org"
+                  placeholder="Django superuser credentials"
                   className="w-full rounded-lg bg-stone-950/80 border border-stone-700/80 pl-9 pr-3 py-2.5 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all shadow-inner"
                 />
               </div>
