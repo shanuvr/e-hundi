@@ -107,39 +107,41 @@ export default function First({ temple, templeName = "ചിന്മയ ശ്�
       {/* Center Sacred Hero: ॐ on a lotus, lit by diyas */}
       <div className="flex flex-col items-center justify-center flex-1 min-h-0 z-10 py-1 sm:py-2 w-full">
         <div className="relative flex flex-col items-center mb-2 sm:mb-3">
-          {/* Prabhavali + Radiant Sanctum Halo */}
-          <Prabhavali className="absolute w-[200px] h-[200px] sm:w-[225px] sm:h-[225px] opacity-70 drop-shadow-[0_0_24px_rgba(245,158,11,0.28)] transform-gpu" />
-          <motion.div
-            initial={{ scale: 1, opacity: 0.35 }}
-            animate={{ scale: [1, 1.15, 1], opacity: [0.35, 0.65, 0.35] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-tr from-amber-500/35 via-orange-500/28 to-yellow-300/38 blur-2xl pointer-events-none transform-gpu will-change-transform"
-          />
-
-          {/* Golden Medallion */}
-          <motion.div
-            initial={{ scale: 0, rotate: -45 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: 'spring', stiffness: 220, damping: 20, delay: 0.05 }}
-            className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-b from-amber-400/35 via-amber-700/25 to-black/90 border-2 border-amber-400/80 flex items-center justify-center shadow-[0_0_40px_rgba(245,158,11,0.6)] backdrop-blur-md transform-gpu will-change-transform"
-          >
-            {/* Pulsing divine aura inside medallion for smooth 120 FPS */}
+          <div className="relative w-[200px] h-[200px] sm:w-[225px] sm:h-[225px] flex items-center justify-center">
+            {/* Prabhavali + Radiant Sanctum Halo */}
+            <Prabhavali className="absolute inset-0 w-full h-full opacity-70 drop-shadow-[0_0_24px_rgba(245,158,11,0.28)] transform-gpu" />
             <motion.div
-              initial={{ opacity: 0.7, scale: 0.95 }}
-              animate={{ opacity: [0.7, 1, 0.7], scale: [0.95, 1.05, 0.95] }}
-              transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute inset-0 rounded-full bg-amber-400/20 blur-sm pointer-events-none transform-gpu"
+              initial={{ scale: 1, opacity: 0.35 }}
+              animate={{ scale: [1, 1.15, 1], opacity: [0.35, 0.65, 0.35] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-tr from-amber-500/35 via-orange-500/28 to-yellow-300/38 blur-2xl pointer-events-none transform-gpu will-change-transform"
             />
-            {/* Perfectly centered sacred Om symbol */}
-            <div className="relative z-10 flex items-center justify-center w-full h-full select-none pointer-events-none">
-              <span className="font-om font-bold text-[46px] sm:text-[54px] leading-none text-amber-100 drop-shadow-[0_0_18px_rgba(251,191,36,0.95)] translate-y-[11px] sm:translate-y-[13px] translate-x-[1px]">
-                ॐ
-              </span>
-            </div>
-          </motion.div>
 
-          {/* Lotus plinth — seats the ॐ instead of leaving it floating */}
-          <LotusBase className="relative w-[145px] sm:w-[170px] h-auto -mt-1 drop-shadow-[0_0_18px_rgba(245,158,11,0.35)] transform-gpu" />
+            {/* Golden Medallion */}
+            <motion.div
+              initial={{ scale: 0, rotate: -45 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 20, delay: 0.05 }}
+              className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-b from-amber-400/35 via-amber-700/25 to-black/90 border-2 border-amber-400/80 flex items-center justify-center shadow-[0_0_40px_rgba(245,158,11,0.6)] backdrop-blur-md transform-gpu will-change-transform z-10"
+            >
+              {/* Pulsing divine aura inside medallion for smooth 120 FPS */}
+              <motion.div
+                initial={{ opacity: 0.7, scale: 0.95 }}
+                animate={{ opacity: [0.7, 1, 0.7], scale: [0.95, 1.05, 0.95] }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute inset-0 rounded-full bg-amber-400/20 blur-sm pointer-events-none transform-gpu"
+              />
+              {/* Perfectly centered sacred Om symbol */}
+              <div className="relative z-10 flex items-center justify-center w-full h-full select-none pointer-events-none">
+                <span className="font-om font-bold text-[46px] sm:text-[54px] leading-none text-amber-100 drop-shadow-[0_0_18px_rgba(251,191,36,0.95)] translate-y-[11px] sm:translate-y-[13px] translate-x-[1px]">
+                  ॐ
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Lotus plinth — seats the ॐ instead of leaving it floating */}
+            <LotusBase className="absolute bottom-1 sm:bottom-1.5 w-[145px] sm:w-[170px] h-auto drop-shadow-[0_0_18px_rgba(245,158,11,0.35)] transform-gpu z-20 pointer-events-none" />
+          </div>
         </div>
 
         {/* Lit diyas flanking the mantra with a high-contrast dark badge */}
