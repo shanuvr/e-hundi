@@ -85,7 +85,7 @@ function Deploy-Frontend {
 
         Set-Location "$root/frontend"
 
-        npm run build -- --mode prod
+        npm run build
         if ($LASTEXITCODE -ne 0) { throw "Frontend build failed" }
 
         ssh $sshAlias "rm -rf $remoteHome/public_html/assets"

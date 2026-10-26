@@ -24,8 +24,8 @@ $root = $dir.FullName
 
 Backend
 ```
-$env:ENV = "dev"
 cd $root/backend
+$env:ENV = "dev"
 venv\Scripts\activate
 Python manage.py runserver 8004
 ```
@@ -63,9 +63,9 @@ ssh hundi "source /home/kanikkavanji/virtualenv/backend/3.13/bin/activate && cd 
 Frontend
 ```
 cd $root/frontend
-npm run build -- --mode prod
+npm run build
 ssh hundi "rm -rf ~/public_html/assets"
 scp -r .\dist\* hundi:/home/kanikkavanji/public_html/
 scp .\dist\.htaccess hundi:/home/kanikkavanji/public_html/
-ssh hundi "chmod -R 755 ~/public_html/assets && chmod 755 ~/public_html/v1"
+ssh hundi "chmod -R 755 ~/public_html/assets ~/public_html/money && chmod 755 ~/public_html/v1"
 ```
