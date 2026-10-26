@@ -9,7 +9,6 @@ import {
   Film,
   FileVideo,
   ShieldAlert,
-  MessageSquare,
   Loader2,
   Radio,
   Link as LinkIcon
@@ -43,7 +42,6 @@ export default function Slogans() {
   // Temple Devotional Quotes & Slogans
   const [sloganMl, setSloganMl] = useState('');
   const [sloganEn, setSloganEn] = useState('');
-  const [messageTemplate, setMessageTemplate] = useState('');
 
   useEffect(() => {
     if (temple) {
@@ -69,10 +67,6 @@ export default function Slogans() {
       );
       setSloganEn(
         temple.slogan_en || 'May the divine grace illuminate your life with peace and prosperity.'
-      );
-      setMessageTemplate(
-        temple.darshan_message_template ||
-          'Namaste! Your offering of ₹{amount} to {temple} is received with reverence. Watch sacred darshan: {link}'
       );
     }
   }, [temple]);
@@ -149,7 +143,6 @@ export default function Slogans() {
       darshan_video_url: videoSrc === DEFAULT_VIDEO_SRC ? '' : videoSrc,
       slogan_ml: sloganMl.trim(),
       slogan_en: sloganEn.trim(),
-      darshan_message_template: messageTemplate.trim(),
     });
 
     if (res.success) {
@@ -411,24 +404,6 @@ export default function Slogans() {
                 hint="English translation or secondary devotional motto."
               />
             </div>
-          </div>
-        </SectionCard>
-
-        {/* 🌟 3. Digital Darshan WhatsApp Template */}
-        <SectionCard
-          title="Digital Darshan Message Template"
-          description="Template sent via WhatsApp / SMS containing the sacred video darshan link."
-          icon={MessageSquare}
-        >
-          <div className="space-y-2">
-            <TextArea
-              label="WhatsApp Notification Template"
-              value={messageTemplate}
-              onChange={(e) => setMessageTemplate(e.target.value)}
-              rows={2}
-              placeholder="Namaste! Your offering of ₹{amount} to {temple} is received. Watch darshan: {link}"
-              hint="Available variables: {temple}, {amount}, {donor_name}, {link}"
-            />
           </div>
         </SectionCard>
 
