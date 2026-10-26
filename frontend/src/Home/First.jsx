@@ -121,8 +121,8 @@ export default function First({ temple, templeName = "ചിന്മയ ശ്�
 
             {/* Golden Medallion */}
             <motion.div
-              initial={{ scale: 0, rotate: -45 }}
-              animate={{ scale: 1, rotate: 0 }}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 220, damping: 20, delay: 0.05 }}
               className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-b from-amber-400/35 via-amber-700/25 to-black/90 border-2 border-amber-400/80 flex items-center justify-center shadow-[0_0_40px_rgba(245,158,11,0.6)] backdrop-blur-md transform-gpu will-change-transform z-10"
             >

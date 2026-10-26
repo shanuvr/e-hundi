@@ -146,8 +146,9 @@ function App() {
         {/* State 1: Loading State */}
         {loading && (
           <div className="relative z-20 w-full h-full flex flex-col items-center justify-center p-6 text-center">
-            <div className="w-16 h-16 rounded-full border-2 border-amber-400/20 border-t-amber-400 animate-spin mb-4 flex items-center justify-center shadow-[0_0_24px_rgba(245,158,11,0.3)]">
-              <span className="font-om text-2xl text-amber-200">ॐ</span>
+            <div className="relative w-16 h-16 mb-4 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-2 border-amber-400/20 border-t-amber-400 animate-spin shadow-[0_0_24px_rgba(245,158,11,0.3)]" />
+              <span className="relative z-10 font-om text-2xl text-amber-200 select-none">ॐ</span>
             </div>
             <p className="font-malayalam text-sm text-amber-100 font-semibold drop-shadow-sm">
               ക്ഷേത്ര സന്നിധി ഒരുങ്ങുന്നു...
