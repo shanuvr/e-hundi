@@ -134,3 +134,17 @@ export const getDarshanVideoUrl = (url) => {
   return url;
 };
 
+/**
+ * Checks if the given video URL is an external stream link (e.g., https://...).
+ * Returns false for default fallback (/video.mp4) or local uploads (/media/...).
+ */
+export const isStreamUrl = (url) => {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (trimmed === '/video.mp4') return false;
+  if (trimmed.startsWith('/media/')) return false;
+  if (trimmed.includes('/media/darshan_videos/')) return false;
+  return trimmed.startsWith('http://') || trimmed.startsWith('https://');
+};
+
+

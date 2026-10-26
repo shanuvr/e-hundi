@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Unlock, Sparkles, Share2, Volume2, VolumeX, Maximize2, X, Play } from 'lucide-react';
-import { getDarshanVideoUrl } from '../utils/api';
+import { getDarshanVideoUrl, isStreamUrl } from '../utils/api';
 
 /* Where offerings are collected. Surfaces on the receipt; admin-configurable. */
 const UPI_ID = 'programers@icici';
@@ -26,7 +26,7 @@ const formatStamp = (d) =>
 const SACRED_MEDIA_SRC = '/video.mp4';
 
 /** Live Sanctum Darshan Video Player with Sound Toggle & Blurred Backdrop */
-function DarshanVideoCard({ onExpand, videoSrc = SACRED_MEDIA_SRC, templeTitle = 'ചിന്മയ ശ്രീ ഭുവനേശ്വരി ദർശനം' }) {
+function DarshanVideoCard({ onExpand, videoSrc = SACRED_MEDIA_SRC, templeTitle = 'ചിന്മയ ശ്രീ ഭുവനേശ്വരി ദർശനം', isStream = false }) {
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef(null);
@@ -65,16 +65,29 @@ function DarshanVideoCard({ onExpand, videoSrc = SACRED_MEDIA_SRC, templeTitle =
       {/* Top Header Row */}
       <div className="w-full z-30 flex items-center justify-between px-3 py-1.5 bg-stone-950/95 border-b border-amber-400/30 shrink-0">
         <div className="flex items-center gap-1.5">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
-          </span>
-          <span className="font-malayalam text-[10.5px] sm:text-[11.5px] font-bold text-amber-200 tracking-wide">
-            ലൈവ് ദർശനം
-          </span>
-          <span className="text-[8px] uppercase tracking-wider text-amber-300/80 font-medium">
-            · Live Sanctum
-          </span>
+          {isStream ? (
+            <>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
+              </span>
+              <span className="font-malayalam text-[10.5px] sm:text-[11.5px] font-bold text-amber-200 tracking-wide">
+                ലൈവ് ദർശനം
+              </span>
+              <span className="text-[8px] uppercase tracking-wider text-amber-300/80 font-medium">
+                · Live Sanctum
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="font-malayalam text-[10.5px] sm:text-[11.5px] font-bold text-amber-200 tracking-wide">
+                ദർശനം
+              </span>
+              <span className="text-[8px] uppercase tracking-wider text-amber-300/80 font-medium">
+                · Sanctum
+              </span>
+            </>
+          )}
         </div>
 
         {/* Top Sound Toggle Pill */}
@@ -170,8 +183,10 @@ function DarshanVideoCard({ onExpand, videoSrc = SACRED_MEDIA_SRC, templeTitle =
               onClick={(e) => {
                 e.stopPropagation();
                 onExpand({
-                  title: `${templeTitle} · Darshan`,
-                  desc: 'Live sanctum holy Darshan & Deeparadhana visual offering',
+                  title: `${templeTitle} · ${isStream ? 'Live Darshan' : 'Darshan'}`,
+                  desc: isStream
+                    ? 'Live sanctum holy Darshan & Deeparadhana visual offering'
+                    : 'Sanctum holy Darshan & Deeparadhana visual offering',
                   src: videoSrc,
                   initialMuted: isMuted,
                 });
@@ -422,6 +437,7 @@ export default function Third({
   const tNameEn = temple?.name || templeName;
   const tNameMl = temple?.name_ml || '';
   const displayTitle = tNameMl || tNameEn;
+  const isStream = isStreamUrl(temple?.darshan_video_url);
   const videoSrc = getDarshanVideoUrl(temple?.darshan_video_url) || SACRED_MEDIA_SRC;
   const upiId = temple?.upi_id || UPI_ID;
 
@@ -519,6 +535,7 @@ export default function Third({
           onExpand={setActiveVideo}
           videoSrc={videoSrc}
           templeTitle={displayTitle}
+          isStream={isStream}
         />
       </div>
 
