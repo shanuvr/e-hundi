@@ -1,21 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Building2, 
   CheckCircle2, 
   ExternalLink,
   Image as ImageIcon, 
   Landmark, 
+  Loader2,
   Lock, 
   MapPin, 
   Phone, 
   Save, 
-  ShieldAlert 
+  ShieldAlert,
+  Trash2,
+  UploadCloud 
 } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import SectionCard from '../components/SectionCard';
 import { Button } from '../components/Controls';
 import { TextInput, Select } from '../components/Field';
 import { useAdmin } from '../AdminContext';
+import { api, getLogoUrl } from '../../utils/api';
+
 
 const LANGUAGES = [
   { value: 'ml', label: 'മലയാളം (Malayalam)' },
@@ -70,6 +75,73 @@ export default function TempleProfile() {
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
+
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [isDraggingLogo, setIsDraggingLogo] = useState(false);
+  const logoInputRef = useRef(null);
+
+  const handleLogoUpload = async (file) => {
+    if (!file) return;
+
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      setToast({
+        type: 'error',
+        text: 'Unsupported image format. Please select a PNG, JPG, JPEG, WebP, or SVG file.',
+      });
+      setTimeout(() => setToast(null), 3500);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      setToast({
+        type: 'error',
+        text: `Image size (${sizeMB} MB) exceeds the 5 MB limit. Please select an image under 5 MB.`,
+      });
+      setTimeout(() => setToast(null), 3500);
+      return;
+    }
+
+    try {
+      setUploadingLogo(true);
+      const res = await api.uploadTempleLogo(file, temple?.id);
+      handleChange('logo_url', res.logo_url);
+      setToast({
+        type: 'success',
+        text: 'Logo uploaded successfully! Click “Save changes” to apply.',
+      });
+    } catch (err) {
+      setToast({
+        type: 'error',
+        text: err.message || 'Failed to upload logo image',
+      });
+    } finally {
+      setUploadingLogo(false);
+      setTimeout(() => setToast(null), 3500);
+      if (logoInputRef.current) {
+        logoInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleLogoDrop = (e) => {
+    e.preventDefault();
+    setIsDraggingLogo(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleLogoUpload(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    handleChange('logo_url', '');
+    setToast({
+      type: 'success',
+      text: 'Logo removed. Click “Save changes” to apply default emblem.',
+    });
+    setTimeout(() => setToast(null), 3000);
+  };
+
 
   const handleSave = async (e) => {
     if (e) e.preventDefault();
@@ -185,19 +257,93 @@ export default function TempleProfile() {
           description="Temple emblem or deity icon used on receipts and kiosk headers."
           icon={ImageIcon}
         >
+          <input
+            ref={logoInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml,image/gif"
+            className="hidden"
+            onChange={(e) => handleLogoUpload(e.target.files?.[0])}
+          />
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-            <TextInput
-              label="Logo Image URL / Path"
-              value={form.logo_url}
-              onChange={(e) => handleChange('logo_url', e.target.value)}
-              placeholder="/mandir-logo.png or https://cdn.temple.org/logo.png"
-              hint="Direct link to temple logo PNG/SVG."
-            />
+            {/* Logo Upload Box */}
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDraggingLogo(true);
+              }}
+              onDragLeave={() => setIsDraggingLogo(false)}
+              onDrop={handleLogoDrop}
+              onClick={() => !uploadingLogo && logoInputRef.current?.click()}
+              className={`relative border-2 border-dashed rounded-xl p-3.5 flex flex-col items-center justify-center text-center transition-all cursor-pointer select-none ${
+                isDraggingLogo
+                  ? 'border-amber-500 bg-amber-50/60 ring-2 ring-amber-500/20'
+                  : 'border-stone-300 hover:border-amber-500/70 hover:bg-stone-50/70 bg-stone-50/40'
+              }`}
+            >
+              {uploadingLogo ? (
+                <div className="flex flex-col items-center py-2 space-y-1.5">
+                  <Loader2 className="w-6 h-6 text-amber-700 animate-spin" />
+                  <p className="text-xs font-semibold text-stone-700">Uploading logo image…</p>
+                  <p className="text-[11px] text-stone-500">Checking format & 5 MB size limit</p>
+                </div>
+              ) : form.logo_url ? (
+                <div className="w-full flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0 text-left">
+                    <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-400/40 flex items-center justify-center shrink-0 overflow-hidden">
+                      <img
+                        src={getLogoUrl(form.logo_url)}
+                        alt="Current logo"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-stone-800 truncate">Logo image uploaded</p>
+                      <p className="text-[11px] text-stone-500">Click to replace (Max 5 MB)</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      type="button"
+                      onClick={() => logoInputRef.current?.click()}
+                      className="px-2.5 py-1 text-xs font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200/80 rounded-lg transition-colors cursor-pointer"
+                    >
+                      Change
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRemoveLogo}
+                      title="Remove Logo"
+                      className="p-1 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center py-1.5 space-y-1">
+                  <div className="w-8 h-8 rounded-full bg-amber-500/10 text-amber-800 flex items-center justify-center mb-0.5">
+                    <UploadCloud className="w-4 h-4" />
+                  </div>
+                  <div className="text-xs font-semibold text-stone-800">
+                    <span className="text-amber-800 underline underline-offset-2">Click to upload</span> or drag and drop
+                  </div>
+                  <p className="text-[11px] text-stone-500">
+                    PNG, JPG, WebP, SVG (Maximum size: 5 MB)
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Live Preview Box */}
             <div className="flex items-center gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200">
               <div className="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-400/50 flex items-center justify-center shrink-0 text-amber-800 font-bold overflow-hidden shadow-xs">
                 {form.logo_url ? (
                   <img
-                    src={form.logo_url}
+                    src={getLogoUrl(form.logo_url)}
                     alt="Logo preview"
                     className="w-full h-full object-contain"
                     onError={(e) => {

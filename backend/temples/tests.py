@@ -1,6 +1,7 @@
 import json
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from .models import Temple
 
 
@@ -182,4 +183,33 @@ class SuperadminAndTempleTests(TestCase):
         # Lookup not found
         res = self.client.get('/api/temples/public/non-existent-temple/')
         self.assertEqual(res.status_code, 404)
+
+    def test_upload_logo_success(self):
+        png_content = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15c4'
+        file = SimpleUploadedFile("temple_logo.png", png_content, content_type="image/png")
+        res = self.client.post('/api/upload/temple-logo/', {'logo': file}, HTTP_X_TEMPLE_ID=str(self.temple.id))
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data['success'])
+        self.assertIn('/media/temple_logos/logo_', data['logo_url'])
+
+    def test_upload_logo_exceeds_5mb(self):
+        # 5 MB + 1 byte
+        big_content = b'0' * (5 * 1024 * 1024 + 1)
+        file = SimpleUploadedFile("big_logo.png", big_content, content_type="image/png")
+        res = self.client.post('/api/upload/temple-logo/', {'logo': file})
+        self.assertEqual(res.status_code, 400)
+        self.assertIn('5 MB', res.json()['error'])
+
+    def test_upload_logo_invalid_extension(self):
+        file = SimpleUploadedFile("bad_file.txt", b"hello world", content_type="text/plain")
+        res = self.client.post('/api/upload/temple-logo/', {'logo': file})
+        self.assertEqual(res.status_code, 400)
+        self.assertIn('Unsupported image format', res.json()['error'])
+
+    def test_upload_logo_missing_file(self):
+        res = self.client.post('/api/upload/temple-logo/', {})
+        self.assertEqual(res.status_code, 400)
+        self.assertIn('No image file provided', res.json()['error'])
+
 

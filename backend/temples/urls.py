@@ -23,4 +23,8 @@ urlpatterns = [
 
     # Darshan video upload (15 MB max)
     path('upload/darshan-video/', views.upload_darshan_video_view, name='upload-darshan-video'),
+
+    # Temple logo upload (5 MB max)
+    path('upload/temple-logo/', views.upload_temple_logo_view, name='upload-temple-logo'),
 ]
+

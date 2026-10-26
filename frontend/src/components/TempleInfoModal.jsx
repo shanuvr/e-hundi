@@ -18,6 +18,8 @@ import {
   ExternalLink,
   Building2,
 } from 'lucide-react';
+import { getLogoUrl } from '../utils/api';
+
 
 const POLICIES = [
   { name: 'About Us', path: '/about', icon: Info, label: 'Platform & Intermediary Role' },
@@ -93,7 +95,7 @@ export default function TempleInfoModal({ onClose, temple, templeName = 'Chinmay
           {temple?.logo_url ? (
             <div className="w-12 h-12 rounded-2xl overflow-hidden border border-amber-400/40 shadow-[0_0_18px_rgba(245,158,11,0.3)] mb-1.5 bg-black/60 flex items-center justify-center p-1">
               <img
-                src={temple.logo_url}
+                src={getLogoUrl(temple.logo_url)}
                 alt={tName}
                 className="w-full h-full object-contain"
                 onError={(e) => {

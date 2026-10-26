@@ -593,3 +593,61 @@ def upload_darshan_video_view(request):
     except Exception as e:
         return JsonResponse({'error': f'Failed to save video: {str(e)}'}, status=500)
 
+
+# -------------------------------------------------------------
+# TEMPLE LOGO UPLOAD (5 MB LIMIT)
+# -------------------------------------------------------------
+
+MAX_LOGO_SIZE = 5 * 1024 * 1024  # 5 MB in bytes
+ALLOWED_LOGO_EXTENSIONS = ('.png', '.jpg', '.jpeg', '.webp', '.svg', '.gif')
+
+
+@csrf_exempt
+def upload_temple_logo_view(request):
+    """
+    Upload a temple logo image with a strict 5 MB limit.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    image_file = request.FILES.get('logo') or request.FILES.get('image') or request.FILES.get('file')
+    if not image_file:
+        return JsonResponse({'error': 'No image file provided.'}, status=400)
+
+    # Enforce 5 MB limit
+    if image_file.size > MAX_LOGO_SIZE:
+        size_mb = round(image_file.size / (1024 * 1024), 2)
+        return JsonResponse({
+            'error': f'Image file size ({size_mb} MB) exceeds the 5 MB limit. Please select an image under 5 MB.'
+        }, status=400)
+
+    # Extension check
+    ext = os.path.splitext(image_file.name)[1].lower()
+    if ext not in ALLOWED_LOGO_EXTENSIONS:
+        return JsonResponse({
+            'error': f'Unsupported image format "{ext}". Supported formats are PNG, JPG, JPEG, WebP, SVG, and GIF.'
+        }, status=400)
+
+    try:
+        temple_id = (
+            request.headers.get('X-Temple-ID')
+            or request.POST.get('temple_id')
+            or 'temple'
+        )
+        safe_name = f"logo_{temple_id}_{uuid.uuid4().hex[:8]}{ext}"
+        relative_path = os.path.join('temple_logos', safe_name)
+        saved_path = default_storage.save(relative_path, image_file)
+
+        media_url = f"{settings.MEDIA_URL.rstrip('/')}/{saved_path.replace(os.sep, '/')}"
+
+        return JsonResponse({
+            'success': True,
+            'logo_url': media_url,
+            'filename': image_file.name,
+            'size': image_file.size,
+            'message': 'Temple logo uploaded successfully'
+        })
+    except Exception as e:
+        return JsonResponse({'error': f'Failed to save image: {str(e)}'}, status=500)
+
+

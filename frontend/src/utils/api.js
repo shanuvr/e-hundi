@@ -117,6 +117,46 @@ export const api = {
     }
     return data;
   },
+
+  // Temple Logo Upload (5 MB limit enforced by server & client)
+  uploadTempleLogo: async (file, templeId) => {
+    const formData = new FormData();
+    formData.append('logo', file);
+    if (templeId) {
+      formData.append('temple_id', templeId);
+    }
+    const url = `${API_BASE}/api/upload/temple-logo/`;
+    const headers = {};
+    const localId = localStorage.getItem('temple_admin_id');
+    if (templeId || localId) {
+      headers['X-Temple-ID'] = templeId || localId;
+    }
+    const res = await fetch(url, {
+      method: 'POST',
+      body: formData,
+      headers,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to upload logo');
+    }
+    return data;
+  },
+};
+
+/**
+ * Resolves Temple Logo URL.
+ * Supports relative /media/ paths, blob URLs, and full URLs.
+ */
+export const getLogoUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:')) {
+    return url;
+  }
+  if (url.startsWith('/media/')) {
+    return `${API_BASE}${url}`;
+  }
+  return url;
 };
 
 /**
@@ -133,6 +173,7 @@ export const getDarshanVideoUrl = (url) => {
   }
   return url;
 };
+
 
 /**
  * Checks if the given video URL is an external stream link (e.g., https://...).
