@@ -65,6 +65,9 @@ createRoot(document.getElementById('root')).render(
             </Suspense>
           }
         />
+        {/* Dynamic Temple Portal & Kiosk — /:slug loads the dedicated temple site */}
+        <Route path="/:slug" element={<App />} />
+
         {/* 404 — Wildcard route for all unmatched URLs */}
         <Route path="*" element={<NotFound />} />
       </Routes>

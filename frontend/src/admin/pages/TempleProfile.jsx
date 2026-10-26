@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   Building2, 
   CheckCircle2, 
+  ExternalLink,
   Image as ImageIcon, 
   Landmark, 
   Lock, 
@@ -30,6 +31,7 @@ export default function TempleProfile() {
     name: '',
     name_ml: '',
     short_name: '',
+    slug: '',
     primary_language: 'ml',
     logo_url: '',
     phone: '',
@@ -50,6 +52,7 @@ export default function TempleProfile() {
         name: temple.name || '',
         name_ml: temple.name_ml || '',
         short_name: temple.short_name || '',
+        slug: temple.slug || '',
         primary_language: temple.primary_language || 'ml',
         logo_url: temple.logo_url || '',
         phone: temple.phone || '',
@@ -144,6 +147,29 @@ export default function TempleProfile() {
               placeholder="e.g. Sri Bhuvaneswari"
               hint="Used in the navigation bar and compact displays."
             />
+            <div>
+              <TextInput
+                label="Custom URL Slug (/templename)"
+                value={form.slug}
+                onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, ''))}
+                placeholder="e.g. bhuvaneswari-temple"
+                hint="Your temple's dedicated public address on E-Hundi."
+              />
+              {form.slug && (
+                <div className="mt-1 flex items-center gap-1.5 text-[11px] text-amber-800">
+                  <span className="font-medium text-stone-500">Live Address:</span>
+                  <a
+                    href={`/${form.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono font-semibold underline hover:text-amber-950 inline-flex items-center gap-1"
+                  >
+                    /{form.slug}
+                    <ExternalLink className="w-3 h-3 text-amber-700" />
+                  </a>
+                </div>
+              )}
+            </div>
             <Select
               label="Primary language"
               options={LANGUAGES}

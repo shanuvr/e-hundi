@@ -16,6 +16,17 @@ def create_order(request):
         if amount <= 0:
             return JsonResponse({'error': 'Invalid amount'}, status=400)
 
+        temple_id = data.get('temple_id')
+        temple_name = ''
+        if temple_id:
+            try:
+                from temples.models import Temple
+                t = Temple.objects.filter(pk=temple_id).first()
+                if t:
+                    temple_name = t.name
+            except Exception:
+                pass
+
         amount_in_paise = int(round(amount * 100))
         key_id = settings.RAZORPAY_KEY_ID
         key_secret = settings.RAZORPAY_KEY_SECRET
@@ -32,6 +43,8 @@ def create_order(request):
                     'notes': {
                         'merchant': settings.RAZORPAY_MERCHANT_NAME,
                         'upi_id': settings.RAZORPAY_UPI_ID,
+                        'temple_id': str(temple_id or ''),
+                        'temple_name': temple_name,
                     }
                 }
                 order = client.order.create(data=order_data)
@@ -47,6 +60,7 @@ def create_order(request):
             'key_id': key_id,
             'merchant_name': settings.RAZORPAY_MERCHANT_NAME,
             'upi_id': settings.RAZORPAY_UPI_ID,
+            'temple_name': temple_name,
         })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)

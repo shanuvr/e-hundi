@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.utils.text import slugify
 from .models import Temple
 
 
@@ -153,6 +154,7 @@ def temples_list_create_view(request):
                     name=name,
                     name_ml=data.get('name_ml', '').strip(),
                     short_name=data.get('short_name', '').strip(),
+                    slug=data.get('slug', '').strip() or None,
                     primary_language=data.get('primary_language', 'ml'),
                     logo_url=data.get('logo_url', '').strip(),
                     phone=data.get('phone', '').strip(),
@@ -207,6 +209,8 @@ def temple_detail_update_delete_view(request, pk):
             temple.name_ml = data['name_ml'].strip()
         if 'short_name' in data:
             temple.short_name = data['short_name'].strip()
+        if 'slug' in data and data['slug'].strip():
+            temple.slug = data['slug'].strip()
         if 'primary_language' in data:
             temple.primary_language = data['primary_language']
 
@@ -406,6 +410,8 @@ def admin_temple_profile_view(request):
             temple.name_ml = data['name_ml'].strip()
         if 'short_name' in data:
             temple.short_name = data['short_name'].strip()
+        if 'slug' in data and data['slug'].strip():
+            temple.slug = data['slug'].strip()
         if 'primary_language' in data:
             temple.primary_language = data['primary_language']
         if 'logo_url' in data:
@@ -449,4 +455,70 @@ def admin_temple_profile_view(request):
         })
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+# -------------------------------------------------------------
+# PUBLIC TEMPLE PORTAL / KIOSK
+# -------------------------------------------------------------
+
+@csrf_exempt
+def public_default_temple_view(request):
+    """
+    Returns the first active temple as default for root / preview.
+    """
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    temple = Temple.objects.filter(is_active=True).first()
+    if not temple:
+        return JsonResponse({'error': 'No active temple found'}, status=404)
+
+    return JsonResponse({'success': True, 'temple': temple.to_dict(include_bank=False)})
+
+
+@csrf_exempt
+def public_temple_detail_view(request, identifier):
+    """
+    Public lookup for a temple by slug, short_name, name, or ID.
+    Used by /:templename routes.
+    """
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    ident = identifier.strip()
+    temple = None
+
+    # 1. Direct slug match
+    temple = Temple.objects.filter(slug__iexact=ident).first()
+
+    # 2. Short name match
+    if not temple:
+        temple = Temple.objects.filter(short_name__iexact=ident).first()
+
+    # 3. Match against slugified short_name or slugified name
+    if not temple:
+        target_slug = slugify(ident)
+        if target_slug:
+            temple = Temple.objects.filter(slug__iexact=target_slug).first()
+
+    # 4. Name match
+    if not temple:
+        temple = Temple.objects.filter(name__iexact=ident).first()
+
+    # 5. ID match if numeric
+    if not temple and ident.isdigit():
+        temple = Temple.objects.filter(pk=int(ident)).first()
+
+    if not temple:
+        return JsonResponse({'error': 'Temple not found', 'identifier': identifier}, status=404)
+
+    if not temple.is_active:
+        return JsonResponse({
+            'error': 'This temple is currently inactive or undergoing maintenance',
+            'is_inactive': True,
+            'temple_name': temple.name,
+            'temple_name_ml': temple.name_ml,
+        }, status=403)
+
+    return JsonResponse({'success': True, 'temple': temple.to_dict(include_bank=False)})
 

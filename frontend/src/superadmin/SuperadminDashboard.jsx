@@ -344,11 +344,23 @@ export default function SuperadminDashboard() {
                                 {temple.name_ml}
                               </p>
                             )}
-                            {temple.short_name && (
-                              <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] bg-stone-800 text-stone-400 font-mono">
-                                {temple.short_name}
-                              </span>
-                            )}
+                            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                              {temple.short_name && (
+                                <span className="px-1.5 py-0.5 rounded text-[10px] bg-stone-800 text-stone-400 font-mono">
+                                  {temple.short_name}
+                                </span>
+                              )}
+                              <a
+                                href={`/${temple.slug || temple.id}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[10px] text-amber-400/80 hover:text-amber-300 font-mono inline-flex items-center gap-1 hover:underline"
+                                title="Open Live Temple Site"
+                              >
+                                /{temple.slug || temple.id}
+                                <ExternalLink className="w-2.5 h-2.5" />
+                              </a>
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -428,6 +440,16 @@ export default function SuperadminDashboard() {
                       {/* Actions */}
                       <td className="py-4 px-4 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1.5">
+                          <a
+                            href={`/${temple.slug || temple.id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            title="Open Temple Site & Kiosk"
+                            className="p-1.5 rounded-lg border border-stone-800 bg-stone-900 hover:bg-stone-800 hover:text-amber-300 transition-colors cursor-pointer text-stone-400"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+
                           <button
                             onClick={() => {
                               setSelectedTemple(temple);

@@ -37,6 +37,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
     name: '',
     name_ml: '',
     short_name: '',
+    slug: '',
     primary_language: 'ml',
     email: '',
     password: '',
@@ -73,6 +74,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
         name: temple.name || '',
         name_ml: temple.name_ml || '',
         short_name: temple.short_name || '',
+        slug: temple.slug || '',
         primary_language: temple.primary_language || 'ml',
         email: temple.email || '',
         password: '', // blank unless changing
@@ -258,6 +260,20 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
                     className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
                   />
                   <span className="text-[11px] text-stone-500 mt-1 block">Used where screen space is tight</span>
+                </div>
+
+                <div>
+                  <label className="block mb-1 text-xs font-semibold text-stone-300">Custom URL Slug</label>
+                  <input
+                    type="text"
+                    value={formData.slug}
+                    onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, ''))}
+                    placeholder="e.g. chinmaya-temple"
+                    className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs font-mono text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                  />
+                  <span className="text-[11px] text-stone-500 mt-1 block">
+                    Public address: /{formData.slug || 'templename'} (auto-generated if empty)
+                  </span>
                 </div>
 
                 <div>

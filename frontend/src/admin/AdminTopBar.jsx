@@ -1,4 +1,4 @@
-import { Bell, ChevronDown, Menu, Search } from 'lucide-react';
+import { Bell, ChevronDown, ExternalLink, Menu, Search } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { findNavItem } from './nav';
 import { useAdmin } from './AdminContext';
@@ -47,7 +47,7 @@ export default function AdminTopBar({ onOpenMenu }) {
         <kbd className="hidden lg:inline text-[9px] font-mono text-stone-400 bg-stone-200 border border-stone-300 rounded px-1 py-0.5 shadow-sm">⌘K</kbd>
       </div>
 
-      {/* Temple switcher */}
+      {/* Temple switcher & Live Site Button */}
       <div className="hidden sm:flex items-center gap-2 h-8 pl-2 pr-2.5 rounded-lg bg-stone-50 border border-stone-200 shadow-sm" title={temple?.name || templeName}>
         <div className="w-5 h-5 rounded-md bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-[9px] text-amber-800 font-bold uppercase">
           {templeInitials}
@@ -56,6 +56,19 @@ export default function AdminTopBar({ onOpenMenu }) {
           {templeName}
         </span>
       </div>
+
+      {temple && (
+        <a
+          href={`/${temple.slug || temple.id}`}
+          target="_blank"
+          rel="noreferrer"
+          className="hidden sm:flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-amber-400/40 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-semibold transition-colors"
+          title="Open Public Temple Site"
+        >
+          <ExternalLink className="w-3.5 h-3.5 text-amber-700" />
+          <span>Live Site</span>
+        </a>
+      )}
 
       <button
         aria-label="Notifications"

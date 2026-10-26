@@ -29,7 +29,15 @@ const triggerHaptic = (pattern = 40) => {
   }
 };
 
-export default function Second({ onBack, onNext, amount = 0, onAmountChange, onOpenInfo, templeName = 'Chinmaya Sri Bhuvaneswari Navagraha Temple' }) {
+export default function Second({
+  onBack,
+  onNext,
+  amount = 0,
+  onAmountChange,
+  onOpenInfo,
+  temple,
+  templeName = 'Chinmaya Sri Bhuvaneswari Navagraha Temple'
+}) {
   const [showInfo, setShowInfo] = useState(false);
   const bandaramRef = useRef(null);
   const lastGlowTimer = useRef(null);
@@ -85,7 +93,7 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, onO
       const res = await fetch(`${apiUrl}/api/create-order/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: amt }),
+        body: JSON.stringify({ amount: amt, temple_id: temple?.id }),
       });
       if (res.ok) {
         orderData = await res.json();
@@ -371,8 +379,8 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, onO
           className="flex-1 mx-2 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/25 transition-all cursor-pointer text-center"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0 self-center" />
-          <span className="font-malayalam text-[11px] sm:text-[12px] text-amber-100 font-semibold leading-tight text-center">
-            {templeName || "ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം"}
+          <span className="font-malayalam text-[11px] sm:text-[12px] text-amber-100 font-semibold leading-tight text-center truncate">
+            {temple?.name_ml || templeName || temple?.name || "ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം"}
           </span>
           <Info className="w-3 h-3 text-amber-300/80 shrink-0 self-center ml-0.5" />
         </motion.button>
@@ -573,7 +581,8 @@ export default function Second({ onBack, onNext, amount = 0, onAmountChange, onO
       <AnimatePresence>
         {showInfo && (
           <TempleInfoModal
-            templeName={templeName}
+            temple={temple}
+            templeName={temple?.name || templeName}
             onClose={() => setShowInfo(false)}
           />
         )}

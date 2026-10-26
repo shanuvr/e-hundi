@@ -25,7 +25,7 @@ const formatStamp = (d) =>
 const SACRED_MEDIA_SRC = '/video.mp4';
 
 /** Live Sanctum Darshan Video Player with Sound Toggle & Blurred Backdrop */
-function DarshanVideoCard({ onExpand }) {
+function DarshanVideoCard({ onExpand, videoSrc = SACRED_MEDIA_SRC, templeTitle = 'ചിന്മയ ശ്രീ ഭുവനേശ്വരി ദർശനം' }) {
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef(null);
@@ -106,9 +106,9 @@ function DarshanVideoCard({ onExpand }) {
         onClick={togglePlay}
         className="relative w-full flex-1 min-h-0 overflow-hidden bg-black flex items-center justify-center cursor-pointer select-none"
       >
-        {/* Layer 1: Blurred Backdrop Video (smooth fill for side bars, zero extra download, strictly static no zoom) */}
+        {/* Layer 1: Blurred Backdrop Video */}
         <video
-          src={SACRED_MEDIA_SRC}
+          src={videoSrc}
           autoPlay
           loop
           muted
@@ -118,10 +118,10 @@ function DarshanVideoCard({ onExpand }) {
           className="absolute inset-0 w-full h-full object-cover blur-md brightness-[0.35] pointer-events-none"
         />
 
-        {/* Layer 2: Main Deity Video (Full frame visible, never cropped, no zoom animations) */}
+        {/* Layer 2: Main Deity Video */}
         <video
           ref={videoRef}
-          src={SACRED_MEDIA_SRC}
+          src={videoSrc}
           autoPlay
           loop
           muted={isMuted}
@@ -169,9 +169,9 @@ function DarshanVideoCard({ onExpand }) {
               onClick={(e) => {
                 e.stopPropagation();
                 onExpand({
-                  title: 'ചിന്മയ ശ്രീ ഭുവനേശ്വരി ദർശനം · Aarti Darshan',
+                  title: `${templeTitle} · Darshan`,
                   desc: 'Live sanctum holy Aarti & Deeparadhana visual offering',
-                  src: SACRED_MEDIA_SRC,
+                  src: videoSrc,
                   initialMuted: isMuted,
                 });
               }}
@@ -411,7 +411,19 @@ function SuccessDialog({ amount, templeName, receipt, paidAt, onViewDarshan, onR
   );
 }
 
-export default function Third({ onBack, onReset, amount = 0, templeName = 'Chinmaya Sri Bhuvaneswari Navagraha Temple' }) {
+export default function Third({
+  onBack,
+  onReset,
+  amount = 0,
+  temple,
+  templeName = 'Chinmaya Sri Bhuvaneswari Navagraha Temple'
+}) {
+  const tNameEn = temple?.name || templeName;
+  const tNameMl = temple?.name_ml || '';
+  const displayTitle = tNameMl || tNameEn;
+  const videoSrc = temple?.darshan_video_url || SACRED_MEDIA_SRC;
+  const upiId = temple?.upi_id || UPI_ID;
+
   // The offering is already settled by the time this screen plays, so the receipt
   // is fixed for the lifetime of the screen and the success pop is up front.
   const [receipt] = useState(makeReceipt);
@@ -439,10 +451,17 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Chinm
   };
 
   const share = async () => {
-    const text = `I offered ₹${amount} at ${templeName} through E-Hundi. Receipt ${receipt}.`;
+    const defaultTemplate = `I offered ₹{amount} at {temple} through E-Hundi. Receipt {receipt}. Watch darshan: {link}`;
+    const rawTemplate = temple?.darshan_message_template || defaultTemplate;
+    const text = rawTemplate
+      .replace('{amount}', amount)
+      .replace('{temple}', tNameEn)
+      .replace('{receipt}', receipt)
+      .replace('{link}', window.location.href);
+
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'E-Hundi Offering', text });
+        await navigator.share({ title: `${tNameEn} E-Hundi Offering`, text });
         return;
       }
       await navigator.clipboard.writeText(text);
@@ -490,7 +509,11 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Chinm
 
       {/* Sanctum Live Darshan Video Card */}
       <div className="relative z-10 w-full flex-1 min-h-[180px] sm:min-h-[220px] flex flex-col py-1 overflow-hidden">
-        <DarshanVideoCard onExpand={setActiveVideo} />
+        <DarshanVideoCard
+          onExpand={setActiveVideo}
+          videoSrc={videoSrc}
+          templeTitle={displayTitle}
+        />
       </div>
 
       {/* Receipt summary */}
@@ -501,7 +524,7 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Chinm
               <Sparkles className="w-3 h-3 text-amber-200" />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-[10.5px] font-semibold text-amber-100">{templeName}</p>
+              <p className="truncate text-[10.5px] font-semibold text-amber-100">{displayTitle}</p>
               <p className="text-[8px] uppercase tracking-[0.2em] text-amber-200/50">Digital Hundi</p>
             </div>
           </div>
@@ -516,7 +539,7 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Chinm
 
           <div className="flex items-center justify-between px-3.5 py-1.5 bg-black/30 border-t border-amber-400/15">
             <span className="text-[8.5px] uppercase tracking-[0.2em] text-amber-200/50">Paid to</span>
-            <span className="truncate text-[10px] font-medium text-amber-100/90">{UPI_ID}</span>
+            <span className="truncate text-[10px] font-medium text-amber-100/90">{upiId}</span>
           </div>
 
           <div className="flex items-center justify-between gap-2 px-3.5 py-1.5 bg-black/30 border-t border-amber-400/15">
@@ -552,7 +575,7 @@ export default function Third({ onBack, onReset, amount = 0, templeName = 'Chinm
         {showDone && (
           <SuccessDialog
             amount={amount}
-            templeName={templeName}
+            templeName={displayTitle}
             receipt={receipt}
             paidAt={paidAt}
             onViewDarshan={() => setShowDone(false)}

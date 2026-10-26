@@ -34,7 +34,11 @@ function Kalasham({ className = '' }) {
   );
 }
 
-export default function First({ templeName = "ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം", onOpenInfo, onComplete }) {
+export default function First({ temple, templeName = "ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം", onOpenInfo, onComplete }) {
+  const displayNameMl = temple?.name_ml || templeName || temple?.name;
+  const displayNameEn = temple?.name || '';
+  const displaySlogan = temple?.slogan_ml || temple?.slogan_en || "നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം";
+
   useEffect(() => {
     const timer = setTimeout(onComplete, FIRST_SCREEN_DURATION);
     return () => clearTimeout(timer);
@@ -86,12 +90,18 @@ export default function First({ templeName = "ചിന്മയ ശ്രീ �
             e.stopPropagation();
             if (onOpenInfo) onOpenInfo();
           }}
-          className="px-4 py-1 sm:px-5 sm:py-1.5 rounded-full bg-black/80 hover:bg-black/95 border border-amber-400/50 shadow-[0_4px_16px_rgba(0,0,0,0.8)] backdrop-blur-md flex items-center gap-1.5 cursor-pointer transition-all group"
+          className="max-w-[92%] px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-black/80 hover:bg-black/95 border border-amber-400/50 shadow-[0_4px_16px_rgba(0,0,0,0.8)] backdrop-blur-md flex items-center justify-center gap-1.5 cursor-pointer transition-all group"
+          title="ക്ഷേത്ര വിവരങ്ങൾ / View Temple Details"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <p className="font-malayalam text-[11px] sm:text-[13px] font-bold text-amber-100 group-hover:text-amber-200 drop-shadow-sm">
-            {templeName}
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+          <p className="font-malayalam text-[11px] sm:text-[13px] font-bold text-amber-100 group-hover:text-amber-200 drop-shadow-sm truncate">
+            {displayNameMl}
           </p>
+          {temple?.city && (
+            <span className="text-[9px] text-amber-300/60 uppercase tracking-wider shrink-0 hidden sm:inline">
+              · {temple.city}
+            </span>
+          )}
         </div>
       </motion.div>
 
@@ -181,7 +191,7 @@ export default function First({ templeName = "ചിന്മയ ശ്രീ �
           <span className="pointer-events-none absolute inset-1.5 rounded-xl border border-amber-300/20" />
 
           <h2 className="relative font-malayalam text-xs sm:text-sm font-bold text-amber-100 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
-            &ldquo;നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം&rdquo;
+            &ldquo;{displaySlogan}&rdquo;
           </h2>
 
           <div className="relative mt-2 flex justify-center">

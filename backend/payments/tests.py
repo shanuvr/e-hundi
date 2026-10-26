@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch, MagicMock
 from django.test import TestCase, Client
 from django.urls import reverse
 
@@ -16,7 +17,12 @@ class CreateOrderTests(TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_valid_amount_returns_order_payload(self):
+    @patch('razorpay.Client')
+    def test_valid_amount_returns_order_payload(self, mock_client_cls):
+        mock_client = MagicMock()
+        mock_client.order.create.return_value = {'id': 'order_mock_12345'}
+        mock_client_cls.return_value = mock_client
+
         response = self.client.post(
             self.url,
             data=json.dumps({'amount': 51}),
@@ -28,3 +34,4 @@ class CreateOrderTests(TestCase):
         self.assertEqual(data['currency'], 'INR')
         self.assertEqual(data['merchant_name'], 'programers')
         self.assertEqual(data['upi_id'], 'programers@icici')
+

@@ -16,4 +16,8 @@ urlpatterns = [
     path('admin/login/', views.admin_login_view, name='admin-login'),
     path('admin/logout/', views.admin_logout_view, name='admin-logout'),
     path('admin/temple/', views.admin_temple_profile_view, name='admin-temple-profile'),
+
+    # Public Temple Portal / Kiosk (/api/temples/public/...)
+    path('temples/public/', views.public_default_temple_view, name='public-default-temple'),
+    path('temples/public/<str:identifier>/', views.public_temple_detail_view, name='public-temple-detail'),
 ]

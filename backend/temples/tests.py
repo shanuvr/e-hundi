@@ -149,3 +149,26 @@ class SuperadminAndTempleTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue(res.json()['success'])
 
+    def test_public_default_temple(self):
+        res = self.client.get('/api/temples/public/')
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data['success'])
+        self.assertEqual(data['temple']['id'], self.temple.id)
+        self.assertNotIn('bank_account_number', data['temple'])
+
+    def test_public_temple_lookup_by_slug_and_short_name(self):
+        # Lookup by exact slug
+        res = self.client.get(f'/api/temples/public/{self.temple.slug}/')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['temple']['name'], 'Test Temple')
+
+        # Lookup by short_name
+        res = self.client.get('/api/temples/public/Test/')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['temple']['name'], 'Test Temple')
+
+        # Lookup not found
+        res = self.client.get('/api/temples/public/non-existent-temple/')
+        self.assertEqual(res.status_code, 404)
+

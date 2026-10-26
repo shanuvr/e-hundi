@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 
 
 class Temple(models.Model):
@@ -12,6 +13,9 @@ class Temple(models.Model):
         max_length=255, blank=True, default='', help_text="Temple name in Malayalam"
     )
     short_name = models.CharField(max_length=100, blank=True, default='')
+    slug = models.SlugField(
+        max_length=150, unique=True, blank=True, null=True, help_text="URL slug for temple"
+    )
     primary_language = models.CharField(max_length=10, default='ml')
 
     # Assets (optional)
@@ -54,12 +58,28 @@ class Temple(models.Model):
     def __str__(self):
         return f"{self.name} ({self.short_name or self.email})"
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.short_name or self.name)
+            if not base_slug:
+                base_slug = 'temple'
+            candidate = base_slug
+            idx = 1
+            while Temple.objects.filter(slug=candidate).exclude(pk=self.pk).exists():
+                candidate = f"{base_slug}-{idx}"
+                idx += 1
+            self.slug = candidate
+        else:
+            self.slug = slugify(self.slug)
+        super().save(*args, **kwargs)
+
     def to_dict(self, include_bank=True):
         data = {
             'id': self.id,
             'name': self.name,
             'name_ml': self.name_ml,
             'short_name': self.short_name,
+            'slug': self.slug,
             'primary_language': self.primary_language,
             'logo_url': self.logo_url,
             'phone': self.phone,

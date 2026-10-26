@@ -30,8 +30,28 @@ const POLICIES = [
   { name: 'Platform Disclaimer', path: '/disclaimer', icon: AlertCircle, label: 'Intermediary Status & FCRA' },
 ];
 
-export default function TempleInfoModal({ onClose, templeName = 'Chinmaya Sri Bhuvaneswari Navagraha Temple' }) {
+export default function TempleInfoModal({ onClose, temple, templeName = 'Chinmaya Sri Bhuvaneswari Navagraha Temple' }) {
   const [activeTab, setActiveTab] = useState('temple'); // 'temple' | 'legal'
+
+  const tName = temple?.name || templeName || 'Temple';
+  const tNameMl = temple?.name_ml || '';
+  const tSlogan = temple?.slogan_ml || temple?.slogan_en || '';
+  
+  const addressParts = [
+    temple?.street_address,
+    temple?.city,
+    temple?.state,
+    temple?.pin_code,
+  ].filter(Boolean);
+  const locationText = addressParts.length > 0 
+    ? addressParts.join(', ') 
+    : 'East Fort, Marine Drive, Kerala - 695001';
+
+  const phoneText = temple?.phone || '+91 471 2345678';
+  const whatsappText = temple?.whatsapp || temple?.phone || '+91 98470 12345';
+  const emailText = temple?.email || 'office@ehundi.org';
+  const cleanPhone = phoneText.replace(/[^\d+]/g, '');
+  const cleanWa = whatsappText.replace(/\D/g, '');
 
   return (
     <motion.div
@@ -70,15 +90,36 @@ export default function TempleInfoModal({ onClose, templeName = 'Chinmaya Sri Bh
 
         {/* Modal Top Header */}
         <div className="flex flex-col items-center text-center shrink-0 pt-1">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400/30 to-amber-700/20 border border-amber-400/35 flex items-center justify-center font-om text-xl text-amber-200 shadow-[0_0_18px_rgba(245,158,11,0.3)] mb-1.5">
-            ॐ
-          </div>
+          {temple?.logo_url ? (
+            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-amber-400/40 shadow-[0_0_18px_rgba(245,158,11,0.3)] mb-1.5 bg-black/60 flex items-center justify-center p-1">
+              <img
+                src={temple.logo_url}
+                alt={tName}
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentNode.innerHTML = '<span class="font-om text-xl text-amber-200">ॐ</span>';
+                }}
+              />
+            </div>
+          ) : (
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400/30 to-amber-700/20 border border-amber-400/35 flex items-center justify-center font-om text-xl text-amber-200 shadow-[0_0_18px_rgba(245,158,11,0.3)] mb-1.5">
+              ॐ
+            </div>
+          )}
           <h3 className="font-cinzel text-xs sm:text-sm font-bold text-amber-100 leading-tight px-6 truncate max-w-full">
-            {templeName}
+            {tName}
           </h3>
-          <p className="font-malayalam text-[11px] text-amber-300/80 mt-0.5">
-            ചിന്മയ ശ്രീ ഭുവനേശ്വരി നവഗ്രഹ ക്ഷേത്രം
-          </p>
+          {tNameMl && (
+            <p className="font-malayalam text-[11px] text-amber-300/80 mt-0.5 truncate max-w-full px-4">
+              {tNameMl}
+            </p>
+          )}
+          {tSlogan && (
+            <p className="font-malayalam text-[10px] text-amber-200/60 italic mt-0.5 max-w-[280px]">
+              &ldquo;{tSlogan}&rdquo;
+            </p>
+          )}
         </div>
 
         {/* Two-Tab Navigation */}
@@ -113,35 +154,46 @@ export default function TempleInfoModal({ onClose, templeName = 'Chinmaya Sri Bh
               <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
               <div className="min-w-0 flex-1">
                 <p className="text-[8.5px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Location</p>
-                <p className="text-[10px] text-stone-200 leading-tight mt-0.5">East Fort, Marine Drive, Kerala - 695001</p>
+                <p className="text-[10px] text-stone-200 leading-tight mt-0.5">{locationText}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15">
-                <Phone className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <a
+                href={cleanPhone ? `tel:${cleanPhone}` : undefined}
+                className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15 hover:border-amber-400/35 transition-colors group"
+              >
+                <Phone className="w-3.5 h-3.5 text-amber-400 group-hover:text-amber-300 shrink-0" />
                 <div className="min-w-0">
                   <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Phone</p>
-                  <p className="text-[9.5px] font-medium text-stone-200 truncate">+91 471 2345678</p>
+                  <p className="text-[9.5px] font-medium text-stone-200 group-hover:text-amber-200 truncate">{phoneText}</p>
                 </div>
-              </div>
+              </a>
 
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15">
+              <a
+                href={cleanWa ? `https://wa.me/${cleanWa}` : undefined}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15 hover:border-emerald-400/35 transition-colors group"
+              >
                 <MessageCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                 <div className="min-w-0">
                   <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">WhatsApp</p>
-                  <p className="text-[9.5px] font-medium text-stone-200 truncate">+91 98470 12345</p>
+                  <p className="text-[9.5px] font-medium text-stone-200 group-hover:text-emerald-300 truncate">{whatsappText}</p>
                 </div>
-              </div>
+              </a>
             </div>
 
-            <div className="flex items-center gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15">
-              <Mail className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <a
+              href={`mailto:${emailText}`}
+              className="flex items-center gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15 hover:border-amber-400/35 transition-colors group block"
+            >
+              <Mail className="w-3.5 h-3.5 text-amber-400 group-hover:text-amber-300 shrink-0" />
               <div className="min-w-0 flex-1">
                 <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">Email</p>
-                <p className="text-[9.5px] font-medium text-stone-200 truncate">office@chinmayabhuvaneswari.temple</p>
+                <p className="text-[9.5px] font-medium text-stone-200 group-hover:text-amber-200 truncate">{emailText}</p>
               </div>
-            </div>
+            </a>
 
             <div className="flex items-center gap-2.5 p-2 rounded-xl bg-black/40 border border-amber-400/15">
               <Clock className="w-3.5 h-3.5 text-amber-300 shrink-0" />
@@ -150,6 +202,16 @@ export default function TempleInfoModal({ onClose, templeName = 'Chinmaya Sri Bh
                 <p className="text-[9px] text-stone-200 leading-tight">05:30 AM – 12:00 PM · 05:00 PM – 08:30 PM</p>
               </div>
             </div>
+
+            {temple?.gstin && (
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-amber-400/15">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[8px] uppercase tracking-[0.16em] text-amber-200/50 font-medium">GSTIN / Reg No.</p>
+                  <p className="text-[9.5px] font-medium text-stone-200 truncate">{temple.gstin}</p>
+                </div>
+              </div>
+            )}
 
             {/* Link to Legal tab */}
             <button
