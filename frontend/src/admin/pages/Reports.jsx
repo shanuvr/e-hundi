@@ -8,13 +8,15 @@ import {
   Search, 
   Users, 
   Filter, 
-  ChevronDown 
+  ChevronDown,
+  ShieldCheck
 } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import SectionCard from '../components/SectionCard';
 import StatCard from '../components/StatCard';
 import { DataTable, Pill, Dot } from '../components/DataTable';
 import { Button } from '../components/Controls';
+import { useAdmin } from '../AdminContext';
 
 const ROWS = [
   ['#4821', '₹500', '02 Oct, 10:42', 'Success'],
@@ -52,6 +54,7 @@ const DENOM = [
 ];
 
 export default function Reports() {
+  const { temple } = useAdmin();
   const [statusFilter, setStatusFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -66,17 +69,57 @@ export default function Reports() {
     });
   }, [statusFilter, searchQuery]);
 
+  const handleExportCSV = () => {
+    const headers = ['Receipt Ref', 'Amount', 'Timestamp', 'Status'];
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [headers.join(','), ...filteredRows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute(
+      'download',
+      `${(temple?.short_name || temple?.name || 'temple').replace(/\s+/g, '_')}_offerings_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-3">
       <PageHeader
         title="Dashboard Overview"
-        subtitle="Real-time transaction stream, analytics, and kiosk collection summaries."
+        subtitle={`Real-time offerings, analytics, and kiosk collection summaries for ${temple?.name || 'Temple'}.`}
         actions={
-          <Button variant="primary" icon={Download}>
+          <Button variant="primary" icon={Download} onClick={handleExportCSV}>
             Export CSV
           </Button>
         }
       />
+
+      {/* Temple status strip */}
+      {temple && (
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-xs shadow-2xs">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-semibold text-stone-800">
+              {temple.name}
+            </span>
+            {temple.city && (
+              <span className="text-[11px] text-stone-500">
+                · {temple.city}, {temple.state}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-3 text-[11px] text-stone-600 font-mono">
+            <span>UPI: <strong className="text-amber-900 font-semibold">{temple.upi_id || 'Not configured'}</strong></span>
+            <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-sans font-bold text-[10px]">
+              Active Console
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Ultra-Compact Stat Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">

@@ -2,11 +2,27 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import AdminSideBar from '../components/AdminSideBar';
 import AdminTopBar from './AdminTopBar';
+import { useAdmin } from './AdminContext';
 
 export default function AdminLayout() {
+  const { temple, loading } = useAdmin();
   // Drawer + rail collapse state.
   const [navOpen, setNavOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+
+  if (loading && !temple) {
+    return (
+      <div className="min-h-dvh flex flex-col items-center justify-center bg-[#f8fafc] text-stone-900 gap-3">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white shadow-md animate-pulse">
+          <span className="font-om text-lg leading-none">ॐ</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-4 h-4 rounded-full border-2 border-amber-500/25 border-t-amber-500 animate-spin" />
+          <p className="text-xs uppercase tracking-[0.2em] text-stone-600 font-semibold">Connecting Temple Console…</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-dvh bg-[#f8fafc] text-stone-900">

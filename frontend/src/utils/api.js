@@ -80,6 +80,11 @@ export const api = {
       body: JSON.stringify({ email, password }),
     }),
 
+  adminLogout: () =>
+    request('/api/admin/logout/', {
+      method: 'POST',
+    }),
+
   getAdminTemple: () => request('/api/admin/temple/'),
 
   updateAdminTemple: (data) =>
@@ -88,3 +93,4 @@ export const api = {
       body: JSON.stringify(data),
     }),
 };
+

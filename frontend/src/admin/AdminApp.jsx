@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
+import { AdminProvider } from './AdminContext';
 
 // Each console page is its own chunk, so opening Slogans doesn't pull the
 // reports table or the settings danger zone with it.
@@ -33,7 +34,13 @@ export default function AdminApp() {
           </Suspense>
         }
       />
-      <Route element={<AdminLayout />}>
+      <Route
+        element={
+          <AdminProvider>
+            <AdminLayout />
+          </AdminProvider>
+        }
+      >
         <Route
           index
           element={

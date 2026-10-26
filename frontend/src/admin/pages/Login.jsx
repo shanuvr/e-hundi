@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Eye, EyeOff, Lock, ShieldAlert, ShieldCheck, User } from 'lucide-react';
 import { CONTROL } from '../components/Field';
@@ -12,11 +12,16 @@ const HIGHLIGHTS = [
 
 export default function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('office@chinmayabhuvaneswari.temple');
-  const [password, setPassword] = useState('bhandaaram');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    localStorage.removeItem('temple_admin_id');
+    localStorage.removeItem('temple_admin_user');
+  }, []);
 
   return (
     <div className="min-h-dvh w-full bg-[#f8fafc] text-stone-900 lg:grid lg:grid-cols-2">

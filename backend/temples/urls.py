@@ -14,5 +14,6 @@ urlpatterns = [
 
     # Temple Admin Authentication & Profile (/admin)
     path('admin/login/', views.admin_login_view, name='admin-login'),
+    path('admin/logout/', views.admin_logout_view, name='admin-logout'),
     path('admin/temple/', views.admin_temple_profile_view, name='admin-temple-profile'),
 ]

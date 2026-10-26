@@ -1,10 +1,21 @@
 import { Bell, ChevronDown, Menu, Search } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { findNavItem } from './nav';
+import { useAdmin } from './AdminContext';
 
 export default function AdminTopBar({ onOpenMenu }) {
   const { pathname } = useLocation();
   const current = findNavItem(pathname);
+  const { temple } = useAdmin();
+
+  const templeName = temple?.short_name || temple?.name || 'Temple Console';
+  const templeInitials = templeName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase() || 'TC';
 
   return (
     <header className="sticky top-0 z-30 flex items-center gap-2.5 px-3.5 sm:px-5 h-13 border-b border-stone-200 bg-white/90 backdrop-blur-xl shadow-sm">
@@ -37,17 +48,12 @@ export default function AdminTopBar({ onOpenMenu }) {
       </div>
 
       {/* Temple switcher */}
-      <div className="hidden sm:flex items-center gap-2 h-8 pl-2 pr-2.5 rounded-lg bg-stone-50 border border-stone-200 shadow-sm">
-        <div className="w-4 h-4 rounded-md bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-[8px] text-amber-800 font-bold" />
-        <span className="text-[11px] font-semibold text-stone-800 max-w-[12rem] truncate">
-          {(() => {
-            try {
-              const u = JSON.parse(localStorage.getItem('temple_admin_user') || '{}');
-              return u.short_name || u.name || 'Chinmaya Sri Bhuvaneswari';
-            } catch {
-              return 'Chinmaya Sri Bhuvaneswari';
-            }
-          })()}
+      <div className="hidden sm:flex items-center gap-2 h-8 pl-2 pr-2.5 rounded-lg bg-stone-50 border border-stone-200 shadow-sm" title={temple?.name || templeName}>
+        <div className="w-5 h-5 rounded-md bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-[9px] text-amber-800 font-bold uppercase">
+          {templeInitials}
+        </div>
+        <span className="text-[11px] font-semibold text-stone-800 max-w-[14rem] truncate">
+          {templeName}
         </span>
       </div>
 

@@ -363,6 +363,12 @@ def admin_login_view(request):
 
 
 @csrf_exempt
+def admin_logout_view(request):
+    logout(request)
+    return JsonResponse({'success': True, 'message': 'Logged out successfully'})
+
+
+@csrf_exempt
 def admin_temple_profile_view(request):
     """
     Temple Admins can read & update their profile.
@@ -371,17 +377,17 @@ def admin_temple_profile_view(request):
     user = request.user
     temple = None
 
-    # Fallback to authorization or session, or query parameter if passed
-    if user.is_authenticated and hasattr(user, 'temple'):
+    # Priority 1: Check X-Temple-ID header (from client localStorage) or GET param
+    temple_id = request.headers.get('X-Temple-ID') or request.META.get('HTTP_X_TEMPLE_ID') or request.GET.get('temple_id')
+    if temple_id:
+        try:
+            temple = Temple.objects.get(pk=temple_id)
+        except (Temple.DoesNotExist, ValueError):
+            pass
+
+    # Priority 2: Session user if associated with a temple
+    if not temple and user.is_authenticated and hasattr(user, 'temple'):
         temple = user.temple
-    else:
-        # Support token/id based lookup if session cookies aren't shared across ports
-        temple_id = request.headers.get('X-Temple-ID') or request.GET.get('temple_id')
-        if temple_id:
-            try:
-                temple = Temple.objects.get(pk=temple_id)
-            except Temple.DoesNotExist:
-                pass
 
     if not temple:
         # Default fallback to first active temple for preview/demo
@@ -410,6 +416,11 @@ def admin_temple_profile_view(request):
             temple.phone = data['phone'].strip()
         if 'whatsapp' in data:
             temple.whatsapp = data['whatsapp'].strip()
+        if 'email' in data and data['email'].strip():
+            temple.email = data['email'].strip()
+            if temple.user:
+                temple.user.email = temple.email
+                temple.user.save()
         if 'street_address' in data:
             temple.street_address = data['street_address'].strip()
         if 'city' in data:
@@ -440,3 +451,4 @@ def admin_temple_profile_view(request):
         })
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
+

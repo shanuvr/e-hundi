@@ -111,3 +111,43 @@ class SuperadminAndTempleTests(TestCase):
         )
         self.assertEqual(login_res.status_code, 200)
         self.assertEqual(login_res.json()['temple']['short_name'], 'Sabarimala')
+
+    def test_admin_temple_profile_get_and_put(self):
+        # Test GET with X-Temple-ID header
+        res = self.client.get('/api/admin/temple/', HTTP_X_TEMPLE_ID=str(self.temple.id))
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertEqual(data['temple']['id'], self.temple.id)
+        self.assertEqual(data['temple']['name'], 'Test Temple')
+
+        # Test PUT update (including attempting to modify bank details which must be ignored)
+        update_res = self.client.put(
+            '/api/admin/temple/',
+            data=json.dumps({
+                'name': 'Updated Bhuvaneswari Temple',
+                'short_name': 'Updated Temple',
+                'city': 'Kochi',
+                'slogan_ml': 'പുതിയ സ്ലോഗൻ',
+                'bank_account_number': 'HACKED_ACCOUNT_99999',
+                'upi_id': 'hacked@upi',
+            }),
+            content_type='application/json',
+            HTTP_X_TEMPLE_ID=str(self.temple.id),
+        )
+        self.assertEqual(update_res.status_code, 200)
+        updated = update_res.json()['temple']
+        self.assertEqual(updated['name'], 'Updated Bhuvaneswari Temple')
+        self.assertEqual(updated['short_name'], 'Updated Temple')
+        self.assertEqual(updated['city'], 'Kochi')
+        self.assertEqual(updated['slogan_ml'], 'പുതിയ സ്ലോഗൻ')
+
+        # Verify in DB that bank details were NOT changed
+        self.temple.refresh_from_db()
+        self.assertEqual(self.temple.bank_account_number, '1234567890')
+        self.assertEqual(self.temple.upi_id, 'test@upi')
+
+    def test_admin_logout(self):
+        res = self.client.post('/api/admin/logout/')
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(res.json()['success'])
+

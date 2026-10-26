@@ -1,6 +1,7 @@
 import { NavLink, Link } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
 import { ADMIN_NAV } from '../admin/nav';
+import { useAdmin } from '../admin/AdminContext';
 
 function NavItem({ item, collapsed, onNavigate }) {
   const Icon = item.icon;
@@ -37,6 +38,18 @@ function NavItem({ item, collapsed, onNavigate }) {
 }
 
 export default function AdminSideBar({ open, onClose, collapsed, onToggleCollapse }) {
+  const { temple, logout } = useAdmin();
+
+  const templeName = temple?.short_name || temple?.name || 'Temple Console';
+  const subtitle = temple?.city ? `${temple.city}${temple.state ? `, ${temple.state}` : ''}` : (temple?.email || 'Authorized Mandapam');
+  const initials = templeName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase() || 'TC';
+
   return (
     <>
       {/* Scrim for mobile drawer */}
@@ -88,29 +101,37 @@ export default function AdminSideBar({ open, onClose, collapsed, onToggleCollaps
 
         {/* Footer */}
         <div className="border-t border-stone-200/80 p-2.5 space-y-1.5 bg-stone-50/70">
-          <Link
-            to="/admin/login"
-            onClick={onClose}
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              logout();
+            }}
             title={collapsed ? 'Sign out' : undefined}
-            className={`flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-stone-600 hover:text-rose-700 hover:bg-rose-50 transition-colors ${
+            className={`w-full flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-stone-600 hover:text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer ${
               collapsed ? 'lg:justify-center lg:px-0' : ''
             }`}
           >
             <LogOut className={`w-3.5 h-3.5 shrink-0 ${collapsed ? '' : 'ml-0.5'}`} />
             <span className={`truncate ${collapsed ? 'lg:hidden' : ''}`}>Sign out</span>
-          </Link>
+          </button>
 
           <div
+            title={`${temple?.name || templeName}\n${temple?.email || ''}`}
             className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 bg-white border border-stone-200 shadow-sm ${
               collapsed ? 'lg:justify-center lg:px-0' : ''
             }`}
           >
-            <div className="w-6 h-6 shrink-0 rounded-md bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-[9px] text-amber-800 font-bold">
-              CB
+            <div className="w-6 h-6 shrink-0 rounded-md bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-[9px] text-amber-800 font-bold uppercase">
+              {initials}
             </div>
             <div className={`min-w-0 flex-1 ${collapsed ? 'lg:hidden' : ''}`}>
-              <p className="truncate text-[11px] font-semibold text-stone-800 leading-tight">Chinmaya Sri Bhuvaneswari</p>
-              <p className="text-[9px] text-stone-500 leading-tight mt-0.5 font-medium">Navagraha Temple</p>
+              <p className="truncate text-[11px] font-semibold text-stone-800 leading-tight">
+                {templeName}
+              </p>
+              <p className="truncate text-[9px] text-stone-500 leading-tight mt-0.5 font-medium">
+                {subtitle}
+              </p>
             </div>
           </div>
 
