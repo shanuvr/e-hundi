@@ -39,7 +39,7 @@ function App() {
     setStep(0);
     setAmount(0);
 
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8004';
     const endpoint = slug
       ? `${apiUrl}/api/temples/public/${encodeURIComponent(slug)}/`
       : `${apiUrl}/api/temples/public/`;

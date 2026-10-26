@@ -86,7 +86,7 @@ export default function Second({
     triggerHaptic([30, 40, 60]);
 
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8004';
     let orderData = null;
 
     try {
