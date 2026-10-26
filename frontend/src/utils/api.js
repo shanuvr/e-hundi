@@ -8,7 +8,7 @@ async function request(endpoint, options = {}) {
   };
 
   const templeId = localStorage.getItem('temple_admin_id');
-  if (templeId) {
+  if (templeId && !endpoint.includes('/login/')) {
     headers['X-Temple-ID'] = templeId;
   }
 
