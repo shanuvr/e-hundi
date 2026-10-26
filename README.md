@@ -27,7 +27,7 @@ Backend
 $env:ENV = "dev"
 cd $root/backend
 venv\Scripts\activate
-Python manage.py runserver 8002
+Python manage.py runserver 8004
 ```
 
 frontend
