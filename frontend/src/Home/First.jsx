@@ -111,6 +111,7 @@ export default function First({ temple, templeName = "ചിന്മയ ശ്�
           {/* Prabhavali + Radiant Sanctum Halo */}
           <Prabhavali className="absolute w-[200px] h-[200px] sm:w-[225px] sm:h-[225px] opacity-70 drop-shadow-[0_0_24px_rgba(245,158,11,0.28)] transform-gpu" />
           <motion.div
+            initial={{ scale: 1, opacity: 0.35 }}
             animate={{ scale: [1, 1.15, 1], opacity: [0.35, 0.65, 0.35] }}
             transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
             className="absolute w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-tr from-amber-500/35 via-orange-500/28 to-yellow-300/38 blur-2xl pointer-events-none transform-gpu will-change-transform"
@@ -125,6 +126,7 @@ export default function First({ temple, templeName = "ചിന്മയ ശ്�
           >
             {/* Pulsing divine aura inside medallion for smooth 120 FPS */}
             <motion.div
+              initial={{ opacity: 0.7, scale: 0.95 }}
               animate={{ opacity: [0.7, 1, 0.7], scale: [0.95, 1.05, 0.95] }}
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
               className="absolute inset-0 rounded-full bg-amber-400/20 blur-sm pointer-events-none transform-gpu"
@@ -196,6 +198,7 @@ export default function First({ temple, templeName = "ചിന്മയ ശ്�
 
           <div className="relative mt-2 flex justify-center">
             <motion.span
+              initial={{ opacity: 0.75 }}
               animate={{ opacity: [0.75, 1, 0.75] }}
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
               className="px-3 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 font-malayalam text-[11px] font-semibold drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transform-gpu"

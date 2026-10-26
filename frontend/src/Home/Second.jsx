@@ -404,6 +404,7 @@ const BYPASS_PAYMENT_GATEWAY = true;
         >
           <motion.span
             className="block"
+            initial={{ rotate: 0 }}
             animate={rung ? { rotate: [-22, 22, -16, 16, -7, 7, 0] } : { rotate: 0 }}
             transition={{ duration: 0.9 }}
           >
@@ -445,11 +446,13 @@ const BYPASS_PAYMENT_GATEWAY = true;
           <div className="absolute left-1/2 -translate-x-1/2" style={{ top: '26%' }}>
             <motion.div
               className="h-1.5 w-16 sm:w-16 rounded-full bg-amber-200"
+              initial={{ opacity: 0.18, scaleX: 1 }}
               animate={slotGlow ? { opacity: [0, 1, 0.15], scaleX: [0.7, 1.15, 1] } : { opacity: 0.18 }}
               transition={{ duration: 0.7, ease: 'easeOut' }}
             />
             <motion.div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-300/70 blur-md"
+              initial={{ width: 0, height: 0, opacity: 0 }}
               animate={slotGlow ? { width: 140, height: 140, opacity: [0.9, 0] } : { width: 0, height: 0, opacity: 0 }}
               transition={{ duration: 0.65, ease: 'easeOut' }}
             />
