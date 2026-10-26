@@ -9,7 +9,6 @@ const Reports = lazy(() => import('./pages/Reports'));
 const TempleProfile = lazy(() => import('./pages/TempleProfile'));
 const Slogans = lazy(() => import('./pages/Slogans'));
 const Branding = lazy(() => import('./pages/Branding'));
-const Payments = lazy(() => import('./pages/Payments'));
 const Darshan = lazy(() => import('./pages/Darshan'));
 const Settings = lazy(() => import('./pages/Settings'));
 
@@ -67,14 +66,7 @@ export default function AdminApp() {
             </Suspense>
           }
         />
-        <Route
-          path="payments"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Payments />
-            </Suspense>
-          }
-        />
+        <Route path="payments" element={<Navigate to="/admin" replace />} />
         <Route path="darshan" element={<Navigate to="/admin/slogans" replace />} />
         <Route path="reports" element={<Navigate to="/admin" replace />} />
         <Route path="settings" element={<Navigate to="/admin" replace />} />
