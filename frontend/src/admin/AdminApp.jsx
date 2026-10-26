@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
+import { AdminProvider } from './AdminContext';
 
 // Each console page is its own chunk, so opening Slogans doesn't pull the
 // reports table or the settings danger zone with it.
@@ -9,7 +10,6 @@ const Reports = lazy(() => import('./pages/Reports'));
 const TempleProfile = lazy(() => import('./pages/TempleProfile'));
 const Slogans = lazy(() => import('./pages/Slogans'));
 const Branding = lazy(() => import('./pages/Branding'));
-const Payments = lazy(() => import('./pages/Payments'));
 const Darshan = lazy(() => import('./pages/Darshan'));
 const Settings = lazy(() => import('./pages/Settings'));
 const About = lazy(() => import('../pages/About'));
@@ -42,7 +42,13 @@ export default function AdminApp() {
           </Suspense>
         }
       />
-      <Route element={<AdminLayout />}>
+      <Route
+        element={
+          <AdminProvider>
+            <AdminLayout />
+          </AdminProvider>
+        }
+      >
         <Route
           index
           element={
@@ -75,14 +81,7 @@ export default function AdminApp() {
             </Suspense>
           }
         />
-        <Route
-          path="payments"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Payments />
-            </Suspense>
-          }
-        />
+        <Route path="payments" element={<Navigate to="/admin" replace />} />
         {/* Compliance and Legal Pages with Admin Theme */}
         <Route path="about" element={<Suspense fallback={<PageFallback />}><About /></Suspense>} />
         <Route path="pricing" element={<Suspense fallback={<PageFallback />}><Pricing /></Suspense>} />
@@ -92,7 +91,6 @@ export default function AdminApp() {
         <Route path="refund-policy" element={<Suspense fallback={<PageFallback />}><RefundPolicy /></Suspense>} />
         <Route path="shipping-policy" element={<Suspense fallback={<PageFallback />}><ShippingPolicy /></Suspense>} />
         <Route path="disclaimer" element={<Suspense fallback={<PageFallback />}><Disclaimer /></Suspense>} />
-
         <Route path="darshan" element={<Navigate to="/admin/slogans" replace />} />
         <Route path="reports" element={<Navigate to="/admin" replace />} />
         <Route path="settings" element={<Navigate to="/admin" replace />} />

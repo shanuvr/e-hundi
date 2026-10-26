@@ -153,7 +153,7 @@ export default function Settings() {
             <div className="min-w-0 flex-1">
               <p className="text-sm font-bold text-rose-200">Reset kiosk caches and configurations</p>
               <p className="mt-1 text-xs text-stone-200 leading-relaxed font-normal">
-                Wipes offline caches across all paired terminals. Donation ledger and UPI records remain secure.
+                Wipes offline caches across all paired terminals. Donation ledger and settlement records remain secure.
               </p>
             </div>
             <div className="flex items-center gap-2.5 shrink-0">

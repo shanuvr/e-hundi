@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { 
   Save, 
   Sparkles, 
@@ -7,12 +7,15 @@ import {
   CheckCircle2, 
   RefreshCw, 
   Film,
-  FileVideo
+  FileVideo,
+  ShieldAlert,
+  MessageSquare
 } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import SectionCard from '../components/SectionCard';
 import { Button } from '../components/Controls';
-import { TextInput, TextArea, Toggle } from '../components/Field';
+import { TextInput, TextArea } from '../components/Field';
+import { useAdmin } from '../AdminContext';
 
 const ML = 'sm:[&_input]:font-malayalam sm:[&_textarea]:font-malayalam';
 const DEFAULT_VIDEO_SRC = '/video.mp4';
@@ -20,13 +23,47 @@ const DEFAULT_VIDEO_NAME = 'video.mp4 (Sacred Temple Darshan)';
 const DEFAULT_VIDEO_SIZE = '14.8 MB';
 
 export default function Slogans() {
+  const { temple, saveTemple, saving } = useAdmin();
   const fileInputRef = useRef(null);
+
   const [videoSrc, setVideoSrc] = useState(DEFAULT_VIDEO_SRC);
   const [videoName, setVideoName] = useState(DEFAULT_VIDEO_NAME);
   const [videoSize, setVideoSize] = useState(DEFAULT_VIDEO_SIZE);
   const [isDragging, setIsDragging] = useState(false);
-  const [savedToast, setSavedToast] = useState('');
-  const [directUrl, setDirectUrl] = useState(DEFAULT_VIDEO_SRC);
+  const [savedToast, setSavedToast] = useState(null);
+  const [directUrl, setDirectUrl] = useState('');
+
+  // Temple Devotional Quotes & Slogans
+  const [sloganMl, setSloganMl] = useState('');
+  const [sloganEn, setSloganEn] = useState('');
+  const [messageTemplate, setMessageTemplate] = useState('');
+
+  useEffect(() => {
+    if (temple) {
+      if (temple.darshan_video_url) {
+        setVideoSrc(temple.darshan_video_url);
+        setDirectUrl(temple.darshan_video_url);
+        setVideoName(temple.darshan_video_url.split('/').pop() || 'Remote Darshan Stream');
+        setVideoSize('Remote Stream');
+      } else {
+        setVideoSrc(DEFAULT_VIDEO_SRC);
+        setDirectUrl('');
+        setVideoName(DEFAULT_VIDEO_NAME);
+        setVideoSize(DEFAULT_VIDEO_SIZE);
+      }
+
+      setSloganMl(
+        temple.slogan_ml || 'ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു'
+      );
+      setSloganEn(
+        temple.slogan_en || 'May the divine grace illuminate your life with peace and prosperity.'
+      );
+      setMessageTemplate(
+        temple.darshan_message_template ||
+          'Namaste! Your offering of ₹{amount} to {temple} is received with reverence. Watch sacred darshan: {link}'
+      );
+    }
+  }, [temple]);
 
   const handleFileChange = (file) => {
     if (!file) return;
@@ -41,10 +78,10 @@ export default function Slogans() {
     setVideoSrc(objectUrl);
     setVideoName(file.name);
     setVideoSize(sizeStr);
-    setDirectUrl('');
+    setDirectUrl(objectUrl);
 
-    setSavedToast(`“${file.name}” set as active Darshan video!`);
-    setTimeout(() => setSavedToast(''), 3000);
+    setSavedToast({ type: 'success', text: `“${file.name}” set as active Darshan video!` });
+    setTimeout(() => setSavedToast(null), 3500);
   };
 
   const handleDrop = (e) => {
@@ -59,9 +96,9 @@ export default function Slogans() {
     setVideoSrc(DEFAULT_VIDEO_SRC);
     setVideoName(DEFAULT_VIDEO_NAME);
     setVideoSize(DEFAULT_VIDEO_SIZE);
-    setDirectUrl(DEFAULT_VIDEO_SRC);
-    setSavedToast('Reset to default video (/video.mp4)!');
-    setTimeout(() => setSavedToast(''), 3000);
+    setDirectUrl('');
+    setSavedToast({ type: 'success', text: 'Reset to default video (/video.mp4)!' });
+    setTimeout(() => setSavedToast(null), 3000);
   };
 
   const handleDirectUrlApply = () => {
@@ -69,31 +106,57 @@ export default function Slogans() {
     setVideoSrc(directUrl.trim());
     setVideoName('Online Stream Link');
     setVideoSize('Remote CDN');
-    setSavedToast('Video stream link applied!');
-    setTimeout(() => setSavedToast(''), 3000);
+    setSavedToast({ type: 'success', text: 'Video stream link applied to preview!' });
+    setTimeout(() => setSavedToast(null), 3000);
   };
 
-  const handleSaveAll = () => {
-    setSavedToast('Changes saved successfully!');
-    setTimeout(() => setSavedToast(''), 3000);
+  const handleSaveAll = async () => {
+    const res = await saveTemple({
+      darshan_video_url: videoSrc === DEFAULT_VIDEO_SRC ? '' : videoSrc,
+      slogan_ml: sloganMl.trim(),
+      slogan_en: sloganEn.trim(),
+      darshan_message_template: messageTemplate.trim(),
+    });
+
+    if (res.success) {
+      setSavedToast({ type: 'success', text: 'Darshan video and slogans saved successfully!' });
+    } else {
+      setSavedToast({ type: 'error', text: res.error || 'Failed to save changes.' });
+    }
+    setTimeout(() => setSavedToast(null), 3500);
   };
 
   return (
     <div className="max-w-5xl space-y-4">
       {/* Toast Notification */}
       {savedToast && (
-        <div className="fixed top-5 right-5 z-50 flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-amber-600 text-stone-950 font-bold text-xs shadow-lg animate-bounce">
-          <CheckCircle2 className="w-4 h-4 text-stone-950" />
-          <span>{savedToast}</span>
+        <div
+          className={`fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-xl shadow-lg font-bold text-xs animate-bounce ${
+            savedToast.type === 'success'
+              ? 'bg-emerald-600 text-white shadow-emerald-600/30'
+              : 'bg-rose-600 text-white shadow-rose-600/30'
+          }`}
+        >
+          {savedToast.type === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+          ) : (
+            <ShieldAlert className="w-4 h-4 text-rose-200" />
+          )}
+          <span>{savedToast.text}</span>
         </div>
       )}
 
       <PageHeader
-        title="Slogans & Darshan Video"
-        subtitle="Manage the sacred Darshan video stream and temple blessing quotes."
+        title="Slogans & Sacred Darshan"
+        subtitle={`Customized blessing slogans, kiosk mantras, and darshan media for ${temple?.name || 'Temple'}.`}
         actions={
-          <Button variant="primary" icon={Save} onClick={handleSaveAll}>
-            Save changes
+          <Button
+            variant="primary"
+            icon={Save}
+            onClick={handleSaveAll}
+            disabled={saving}
+          >
+            {saving ? 'Saving…' : 'Save changes'}
           </Button>
         }
       />
@@ -102,7 +165,7 @@ export default function Slogans() {
         {/* 🌟 1. Sacred Darshan Video Manager */}
         <SectionCard
           title="Sacred Darshan Video & Aarti Media"
-          description="Upload or set the video stream played on the donor completion screen and Mantra Dhwani player."
+          description="The video stream played on the donor completion screen and Mantra Dhwani audio-video kiosk player."
           icon={Video}
         >
           <input
@@ -180,7 +243,7 @@ export default function Slogans() {
                     <span className="text-xs font-bold text-stone-800">Active Darshan Video</span>
                   </div>
                   <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-[9.5px] font-semibold text-amber-800 font-mono">
-                    Screen 3 Kiosk
+                    Live Preview
                   </span>
                 </div>
 
@@ -234,43 +297,61 @@ export default function Slogans() {
         {/* 🌟 2. Main Temple Slogans & Quotes */}
         <SectionCard
           title="Temple Blessing Slogans & Motto"
-          description="The primary devotional quotes displayed on the welcome screen and donation hundi."
+          description="The primary devotional quotes and blessings displayed on the welcome screen and donation completion."
           icon={Sparkles}
         >
           <div className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <TextArea
-                label="Welcome Plaque Slogan (Malayalam)"
-                defaultValue="&ldquo;നിങ്ങളുടെ സമർപ്പണം, ഭഗവാന്റെ അനുഗ്രഹം&rdquo;"
-                rows={2}
+                label="Main Hundi Blessing (Malayalam)"
+                value={sloganMl}
+                onChange={(e) => setSloganMl(e.target.value)}
+                rows={3}
                 className={ML}
-                hint="Displayed on the brass plaque under the sacred Om."
+                placeholder="ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു"
+                hint="Main devotional quote displayed on the kiosk offering screen."
               />
               <TextArea
-                label="Main Hundi Blessing (Malayalam)"
-                defaultValue="ഭക്തിനിർഭരമായ ഓരോ സമർപ്പണവും അനന്തമായ പുണ്യവും ഐശ്വര്യവുമാകുന്നു"
-                rows={2}
-                className={ML}
-                hint="Main devotional quote on the offering screen."
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <TextInput
-                label="Temple Moolamantra Tag"
-                defaultValue="॥ ഓം നമഃ ശിവായ ॥"
-                className={ML}
-                hint="Flanked by the sacred burning diyas."
-              />
-              <TextInput
-                label="Devotional Tagline"
-                defaultValue="ഡിജിറ്റൽ ഭാണ്ഡാര സമർപ്പണം"
-                className={ML}
-                hint="Subtitle under the temple title."
+                label="Devotional Tagline / Blessing (English)"
+                value={sloganEn}
+                onChange={(e) => setSloganEn(e.target.value)}
+                rows={3}
+                placeholder="May the divine grace illuminate your life with peace and prosperity."
+                hint="English translation or secondary devotional motto."
               />
             </div>
           </div>
         </SectionCard>
+
+        {/* 🌟 3. Digital Darshan WhatsApp Template */}
+        <SectionCard
+          title="Digital Darshan Message Template"
+          description="Template sent via WhatsApp / SMS containing the sacred video darshan link."
+          icon={MessageSquare}
+        >
+          <div className="space-y-2">
+            <TextArea
+              label="WhatsApp Notification Template"
+              value={messageTemplate}
+              onChange={(e) => setMessageTemplate(e.target.value)}
+              rows={2}
+              placeholder="Namaste! Your offering of ₹{amount} to {temple} is received. Watch darshan: {link}"
+              hint="Available variables: {temple}, {amount}, {donor_name}, {link}"
+            />
+          </div>
+        </SectionCard>
+
+        <div className="flex justify-end pt-2">
+          <Button
+            variant="primary"
+            icon={Save}
+            onClick={handleSaveAll}
+            disabled={saving}
+            className="px-6 py-2.5 text-xs sm:text-sm"
+          >
+            {saving ? 'Saving changes…' : 'Save Slogans & Darshan'}
+          </Button>
+        </div>
       </div>
     </div>
   );

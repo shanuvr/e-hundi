@@ -3,7 +3,6 @@ import { MONEY } from '../../data/money';
 
 const SAMPLE = {
   templeName: 'Chinmaya Sri Bhuvaneswari Navagraha Temple',
-  upiId: 'programers.ibz@icici',
   receipt: 'EH-K3M9QW2',
   amount: 340,
 };
@@ -128,8 +127,8 @@ function ReceiptMock() {
             <span className="font-cinzel text-[13px] font-bold text-amber-50">₹{SAMPLE.amount}</span>
           </div>
           <div className="flex items-center justify-between px-2.5 py-1 bg-black/25">
-            <span className="text-[5.5px] uppercase tracking-[0.18em] text-amber-200/40">UPI</span>
-            <span className="text-[6.5px] text-amber-100/80">{SAMPLE.upiId}</span>
+            <span className="text-[5.5px] uppercase tracking-[0.18em] text-amber-200/40">Receipt</span>
+            <span className="text-[6.5px] text-amber-100/80">{SAMPLE.receipt}</span>
           </div>
         </div>
         <div className="w-full py-1.5 rounded-lg bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-center font-malayalam text-[9px] font-semibold text-stone-950">

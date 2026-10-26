@@ -1,17 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Eye, EyeOff, Lock, ShieldCheck, User } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Lock, ShieldAlert, ShieldCheck, User } from 'lucide-react';
 import { CONTROL } from '../components/Field';
+import { api } from '../../utils/api';
 
 const HIGHLIGHTS = [
-  'Temple profile, bilingual mantras & UPI accounts',
+  'Temple profile, bilingual mantras & settlement accounts',
   'Real-time collection reports & audit tracking',
   'Multi-kiosk device pairing & live darshan video',
 ];
 
 export default function Login() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    localStorage.removeItem('temple_admin_id');
+    localStorage.removeItem('temple_admin_user');
+  }, []);
 
   return (
     <div className="min-h-dvh w-full bg-[#f8fafc] text-stone-900 lg:grid lg:grid-cols-2">
@@ -71,10 +81,34 @@ export default function Login() {
             <p className="mt-1.5 text-xs sm:text-sm text-stone-500 font-normal">Sign in with your temple administrator credentials.</p>
           </div>
 
+          {error && (
+            <div className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2.5">
+              <ShieldAlert className="w-4 h-4 shrink-0 text-rose-500" />
+              <span>{error}</span>
+            </div>
+          )}
+
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              navigate('/admin');
+              setError('');
+              setLoading(true);
+              try {
+                const res = await api.adminLogin(email.trim(), password);
+                if (res.success) {
+                  localStorage.setItem('temple_admin_user', JSON.stringify(res.temple || {}));
+                  if (res.temple?.id) {
+                    localStorage.setItem('temple_admin_id', res.temple.id);
+                  }
+                  navigate('/admin');
+                } else {
+                  setError('Login failed. Please check credentials.');
+                }
+              } catch (err) {
+                setError(err.message || 'Invalid email or password.');
+              } finally {
+                setLoading(false);
+              }
             }}
             className="space-y-4"
           >
@@ -87,7 +121,9 @@ export default function Login() {
                 <input
                   id="login-id"
                   type="text"
-                  defaultValue="temple@shrimahadeva.org"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@temple.org"
                   autoComplete="username"
                   className={`${CONTROL} pl-9`}
@@ -109,7 +145,9 @@ export default function Login() {
                 <input
                   id="login-password"
                   type={showPassword ? 'text' : 'password'}
-                  defaultValue="bhandaaram"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   autoComplete="current-password"
                   className={`${CONTROL} pl-9 pr-10`}
@@ -138,13 +176,22 @@ export default function Login() {
 
             <button
               type="submit"
+              disabled={loading}
               className="group w-full flex items-center justify-center gap-2 rounded-lg py-2.5
                 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-stone-950 text-xs sm:text-sm font-bold
-                shadow-sm hover:brightness-105
-                active:scale-[0.99] transition-all cursor-pointer"
+                shadow-sm hover:brightness-105 active:scale-[0.99] disabled:opacity-60 transition-all cursor-pointer"
             >
-              Enter Temple Console
-              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              {loading ? (
+                <>
+                  <span className="w-4 h-4 rounded-full border-2 border-stone-950/30 border-t-stone-950 animate-spin" />
+                  Verifying…
+                </>
+              ) : (
+                <>
+                  Enter Temple Console
+                  <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </>
+              )}
             </button>
           </form>
 
