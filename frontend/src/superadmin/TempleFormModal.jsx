@@ -28,6 +28,14 @@ const TABS = [
   { id: 'media', label: 'Darshan & Slogans', icon: Sparkles },
 ];
 
+const slugify = (text) =>
+  (text || '')
+    .toLowerCase()
+    .replace(/[\s_]+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-+/, '');
+
 export default function TempleFormModal({ temple, onClose, onSave }) {
   const isEditing = Boolean(temple && temple.id);
 
@@ -38,6 +46,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
   const [videoUploadError, setVideoUploadError] = useState('');
   const [mediaMode, setMediaMode] = useState('upload');
   const [sloganMlLimitReached, setSloganMlLimitReached] = useState(false);
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
   const fileInputRef = useRef(null);
 
   // Form State
@@ -79,6 +88,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
 
   useEffect(() => {
     if (temple) {
+      setIsSlugManuallyEdited(true);
       setFormData({
         name: temple.name || '',
         name_ml: temple.name_ml || '',
@@ -109,11 +119,27 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
 
         logo_url: temple.logo_url || '',
       });
+    } else {
+      setIsSlugManuallyEdited(false);
     }
   }, [temple]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleShortNameChange = (val) => {
+    setFormData((prev) => ({
+      ...prev,
+      short_name: val,
+      ...(!isEditing && !isSlugManuallyEdited ? { slug: slugify(val) } : {}),
+    }));
+  };
+
+  const handleSlugChange = (val) => {
+    const cleaned = val.toLowerCase().replace(/[^a-z0-9-_]/g, '');
+    setIsSlugManuallyEdited(cleaned.length > 0);
+    handleChange('slug', cleaned);
   };
 
   const handleVideoFileChange = async (file) => {
@@ -292,7 +318,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
                   <input
                     type="text"
                     value={formData.short_name}
-                    onChange={(e) => handleChange('short_name', e.target.value)}
+                    onChange={(e) => handleShortNameChange(e.target.value)}
                     placeholder="Chinmaya Sri Bhuvaneswari"
                     className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
                   />
@@ -304,7 +330,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
                   <input
                     type="text"
                     value={formData.slug}
-                    onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, ''))}
+                    onChange={(e) => handleSlugChange(e.target.value)}
                     placeholder="e.g. chinmaya-temple"
                     className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs font-mono text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
                   />
