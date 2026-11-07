@@ -116,7 +116,47 @@ export default function Second({
       onNext();
     };
 
-    // If Razorpay SDK is loaded and credentials are provided
+    // 1. CASHFREE EASY SPLIT GATEWAY (Direct vendor settlement to temple)
+    if (orderData?.gateway === 'cashfree' && orderData?.payment_session_id) {
+      const getCashfree = () => {
+        if (typeof window !== 'undefined' && typeof window.Cashfree === 'function') {
+          return Promise.resolve(window.Cashfree);
+        }
+        return new Promise((resolve) => {
+          const script = document.createElement('script');
+          script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+          script.onload = () => resolve(window.Cashfree);
+          script.onerror = () => resolve(null);
+          document.body.appendChild(script);
+        });
+      };
+
+      const CashfreeSdk = await getCashfree();
+      if (CashfreeSdk) {
+        try {
+          const cashfree = CashfreeSdk({
+            mode: orderData.environment === 'production' ? 'production' : 'sandbox',
+          });
+          cashfree.checkout({
+            paymentSessionId: orderData.payment_session_id,
+            redirectTarget: '_modal',
+          }).then((result) => {
+            if (result?.error) {
+              console.warn('Cashfree payment dismissed or failed:', result.error);
+              setPaying(false);
+            }
+            if (result?.paymentDetails) {
+              handleSuccess();
+            }
+          });
+          return;
+        } catch (err) {
+          console.error('Failed to open Cashfree checkout:', err);
+        }
+      }
+    }
+
+    // 2. RAZORPAY GATEWAY (Fallback)
     if (typeof window !== 'undefined' && window.Razorpay && keyId && !keyId.startsWith('rzp_test_placeholder')) {
       const options = {
         key: keyId,

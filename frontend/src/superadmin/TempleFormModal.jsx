@@ -65,6 +65,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
     bank_account_holder: '',
     bank_account_number: '',
     bank_ifsc: '',
+    pan_number: '',
 
     // Contact & Location
     phone: '',
@@ -102,6 +103,7 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
         bank_account_holder: temple.bank_account_holder || '',
         bank_account_number: temple.bank_account_number || '',
         bank_ifsc: temple.bank_ifsc || '',
+        pan_number: temple.pan_number || '',
 
         phone: temple.phone || '',
         whatsapp: temple.whatsapp || '',
@@ -478,6 +480,37 @@ export default function TempleFormModal({ temple, onClose, onSave }) {
                     className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 uppercase font-mono transition-all"
                   />
                 </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block mb-1 text-xs font-semibold text-stone-300">
+                    PAN of Temple / Trust <span className="text-stone-400 text-[11px] font-normal">(Used for Cashfree Easy Split direct settlements)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.pan_number}
+                    onChange={(e) => handleChange('pan_number', e.target.value.toUpperCase())}
+                    placeholder="e.g. AAATT1234F"
+                    maxLength={10}
+                    className="w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-xs text-stone-100 placeholder:text-stone-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 uppercase font-mono transition-all"
+                  />
+                  <span className="text-[11px] text-stone-500 mt-1 block">
+                    10-digit alphanumeric PAN of the temple committee/trust. If omitted, Cashfree extracts from GSTIN if available.
+                  </span>
+                </div>
+
+                {temple?.cashfree_vendor_id && (
+                  <div className="sm:col-span-2 p-3 rounded-lg bg-stone-900/80 border border-stone-800 flex items-center justify-between text-xs">
+                    <div>
+                      <span className="text-stone-400">Cashfree Split Vendor ID: </span>
+                      <span className="font-mono text-amber-300">{temple.cashfree_vendor_id}</span>
+                    </div>
+                    {temple.cashfree_status && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        {temple.cashfree_status}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}

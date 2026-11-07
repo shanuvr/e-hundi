@@ -48,12 +48,15 @@ class Temple(models.Model):
         default="Namaste! Your offering of ₹{amount} to {temple} is received. Watch your darshan: {link}",
     )
 
-    # Bank Details (Mandatory & Superadmin-only)
+    # Bank & Payment Routing Details (Mandatory & Superadmin-only)
     bank_name = models.CharField(max_length=150, help_text="Bank Name")
     bank_account_holder = models.CharField(max_length=255, help_text="Registered Payee / Account Holder Name")
     bank_account_number = models.CharField(max_length=100, help_text="Account Number")
     bank_ifsc = models.CharField(max_length=30, help_text="IFSC Code")
     upi_id = models.CharField(max_length=150, blank=True, default='', help_text="Temple UPI ID / VPA")
+    pan_number = models.CharField(max_length=20, blank=True, default='', help_text="PAN of Temple / Trust")
+    cashfree_vendor_id = models.CharField(max_length=100, blank=True, default='', help_text="Cashfree Easy Split Vendor ID")
+    cashfree_status = models.CharField(max_length=50, blank=True, default='', help_text="Cashfree Vendor Verification Status")
 
     # System Status & Timestamps
     is_active = models.BooleanField(default=True)
@@ -112,5 +115,8 @@ class Temple(models.Model):
                 'bank_account_number': self.bank_account_number,
                 'bank_ifsc': self.bank_ifsc,
                 'upi_id': self.upi_id,
+                'pan_number': self.pan_number,
+                'cashfree_vendor_id': self.cashfree_vendor_id,
+                'cashfree_status': self.cashfree_status,
             })
         return data

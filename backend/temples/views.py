@@ -182,7 +182,15 @@ def temples_list_create_view(request):
                     bank_account_number=bank_account_number,
                     bank_ifsc=bank_ifsc,
                     upi_id=upi_id,
+                    pan_number=data.get('pan_number', '').strip().upper(),
                 )
+
+            # Auto-sync temple as Cashfree Vendor for split settlements
+            try:
+                from payments.cashfree import sync_temple_as_vendor
+                sync_temple_as_vendor(temple)
+            except Exception:
+                pass
 
             return JsonResponse({
                 'success': True,
@@ -285,8 +293,18 @@ def temple_detail_update_delete_view(request, pk):
             temple.bank_ifsc = data['bank_ifsc'].strip().upper()
         if 'upi_id' in data and data['upi_id'].strip():
             temple.upi_id = data['upi_id'].strip()
+        if 'pan_number' in data:
+            temple.pan_number = data['pan_number'].strip().upper()
 
         temple.save()
+
+        # Re-sync Cashfree vendor details if updated
+        try:
+            from payments.cashfree import sync_temple_as_vendor
+            sync_temple_as_vendor(temple)
+        except Exception:
+            pass
+
         return JsonResponse({
             'success': True,
             'message': 'Temple updated successfully',
