@@ -85,3 +85,52 @@ class CreateOrderTests(TestCase):
         self.assertEqual(data['gateway'], 'razorpay')
         self.assertEqual(data['order_id'], 'order_mock_12345')
         self.assertEqual(data['amount'], 5100)
+
+
+class VerifyPaymentTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('verify_payment')
+
+    def test_missing_order_id_returns_400(self):
+        response = self.client.post(
+            self.url,
+            data=json.dumps({}),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 400)
+
+    @patch('payments.views.verify_order_status')
+    def test_verify_payment_paid(self, mock_verify):
+        mock_verify.return_value = {
+            'order_id': 'cf_order_test_123',
+            'order_status': 'PAID',
+            'order_amount': 51.0,
+        }
+        response = self.client.post(
+            self.url,
+            data=json.dumps({'order_id': 'cf_order_test_123'}),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertEqual(data['order_status'], 'PAID')
+
+    @patch('payments.views.verify_order_status')
+    def test_verify_payment_not_paid(self, mock_verify):
+        mock_verify.return_value = {
+            'order_id': 'cf_order_test_123',
+            'order_status': 'ACTIVE',
+            'order_amount': 51.0,
+        }
+        response = self.client.post(
+            self.url,
+            data=json.dumps({'order_id': 'cf_order_test_123'}),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertEqual(data['order_status'], 'ACTIVE')
+

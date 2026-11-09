@@ -1,8 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
-import { ArrowLeft, Bell, Loader2, Info, X, Phone, MessageCircle, Mail, MapPin, ShieldCheck, Clock } from 'lucide-react';
+import { ArrowLeft, Bell, Loader2, Info } from 'lucide-react';
 import Money from '../components/Money';
 import Label from '../components/Label';
 
@@ -41,7 +40,6 @@ export default function Second({
   const [showInfo, setShowInfo] = useState(false);
   const bandaramRef = useRef(null);
   const lastGlowTimer = useRef(null);
-  const hasLeftTab = useRef(false);
   const bandAnim = useAnimationControls();
   const [flights, setFlights] = useState([]);
   const [ripples, setRipples] = useState([]);
@@ -68,21 +66,9 @@ export default function Second({
 
   const submitOffering = useCallback(async () => {
     const amt = Number(amount);
-    if (!Number.isFinite(amt) || amt <= 0) return;
-
-    // Second tap while "paying" = user confirms they returned
-    if (paying) {
-      setPaying(false);
-      hasLeftTab.current = false;
-      celebrateOffering();
-      playTempleBell();
-      triggerHaptic([25, 30, 25, 30, 80]);
-      onNext();
-      return;
-    }
+    if (!Number.isFinite(amt) || amt <= 0 || paying) return;
 
     setPaying(true);
-    hasLeftTab.current = false;
     triggerHaptic([30, 40, 60]);
 
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -109,7 +95,6 @@ export default function Second({
 
     const handleSuccess = () => {
       setPaying(false);
-      hasLeftTab.current = false;
       celebrateOffering();
       playTempleBell();
       triggerHaptic([25, 30, 25, 30, 80]);
@@ -140,19 +125,58 @@ export default function Second({
           cashfree.checkout({
             paymentSessionId: orderData.payment_session_id,
             redirectTarget: '_modal',
-          }).then((result) => {
+          }).then(async (result) => {
             if (result?.error) {
               console.warn('Cashfree payment dismissed or failed:', result.error);
               setPaying(false);
+              return;
             }
-            if (result?.paymentDetails) {
+
+            const verifyStatus = async () => {
+              try {
+                const res = await fetch(`${apiUrl}/api/verify-payment/`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ order_id: orderData.order_id }),
+                });
+                if (res.ok) {
+                  const data = await res.json();
+                  return data.order_status === 'PAID';
+                }
+              } catch (e) {
+                console.warn('Verification check error:', e);
+              }
+              return false;
+            };
+
+            const isPaid = await verifyStatus();
+            if (isPaid) {
               handleSuccess();
+              return;
             }
+
+            if (result?.paymentDetails) {
+              setTimeout(async () => {
+                const retryPaid = await verifyStatus();
+                if (retryPaid || result?.paymentDetails) {
+                  handleSuccess();
+                } else {
+                  setPaying(false);
+                }
+              }, 1500);
+              return;
+            }
+
+            setPaying(false);
           });
           return;
         } catch (err) {
           console.error('Failed to open Cashfree checkout:', err);
+          setPaying(false);
+          return;
         }
+      } else {
+        setPaying(false);
       }
     }
 
@@ -212,63 +236,21 @@ export default function Second({
         return;
       } catch (e) {
         console.error('Failed to open Razorpay modal:', e);
+        setPaying(false);
+        return;
       }
     }
 
     // Direct mobile UPI launch fallback (instant testing before entering keys)
     if (isMobile) {
       window.location.href = buildUpiUrl(amt);
+      setPaying(false);
     } else {
+      setPaying(false);
       navigator.clipboard?.writeText(UPI_ID).catch(() => { });
-      alert(`Pay ₹${amt} to UPI ID: ${UPI_ID} (copied). Add active Razorpay key to .env for full gateway checkout.`);
+      alert(`Pay ₹${amt} to UPI ID: ${UPI_ID} (copied). Add active gateway keys to .env for full checkout.`);
     }
   }, [amount, paying, onNext, temple]);
-
-  // When donor completes payment in UPI app and returns to the browser tab
-  useEffect(() => {
-    if (!paying) return;
-
-    const handleVisibilityChange = () => {
-      // 1. User switches from browser to UPI app -> document becomes hidden
-      if (document.visibilityState === 'hidden') {
-        hasLeftTab.current = true;
-      }
-      // 2. User returns back to this website -> document becomes visible
-      else if (document.visibilityState === 'visible' && hasLeftTab.current) {
-        hasLeftTab.current = false;
-        setPaying(false);
-        celebrateOffering();
-        playTempleBell();
-        triggerHaptic([25, 30, 25, 30, 80]);
-        onNext();
-      }
-    };
-
-    const handleWindowBlur = () => {
-      hasLeftTab.current = true;
-    };
-
-    const handleWindowFocus = () => {
-      if (hasLeftTab.current) {
-        hasLeftTab.current = false;
-        setPaying(false);
-        celebrateOffering();
-        playTempleBell();
-        triggerHaptic([25, 30, 25, 30, 80]);
-        onNext();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleWindowBlur);
-    window.addEventListener('focus', handleWindowFocus);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleWindowBlur);
-      window.removeEventListener('focus', handleWindowFocus);
-    };
-  }, [paying, onNext]);
 
   const dropRipple = useCallback((id) => {
     setRipples((r) => r.filter((x) => x.id !== id));
@@ -581,10 +563,10 @@ export default function Second({
         <motion.button
           type="button"
           onClick={submitOffering}
-          disabled={amount <= 0}
+          disabled={amount <= 0 || paying}
           whileTap={amount === 0 || paying ? undefined : { scale: 0.97 }}
           className={`w-full py-2.5 sm:py-2.5 px-6 rounded-2xl font-malayalam text-base sm:text-base border transition-all duration-300 flex items-center justify-center gap-2 select-none ${paying
-            ? 'bg-gradient-to-r from-amber-500/75 via-amber-400/75 to-amber-600/75 text-stone-950 font-semibold border-yellow-200/30 cursor-pointer'
+            ? 'bg-gradient-to-r from-amber-500/70 via-amber-400/70 to-amber-600/70 text-stone-950 font-semibold border-yellow-200/30 cursor-not-allowed opacity-80'
             : amount > 0
               ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-semibold shadow-[0_8px_25px_rgba(217,119,6,0.35)] border-yellow-200/50 cursor-pointer'
               : 'bg-amber-400/15 text-amber-200/45 border-amber-200/10 cursor-not-allowed'
@@ -593,14 +575,14 @@ export default function Second({
           {paying ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>ദർശനം കാണുക / View Darshan</span>
+              <span>സമർപ്പണം പൂർത്തിയാക്കുന്നു…</span>
             </>
           ) : (
             <span className={amount > 0 ? '' : 'opacity-70'}>സമർപ്പിക്കുക</span>
           )}
         </motion.button>
 
-        {/* Status line under the button, only while opening UPI */}
+        {/* Status line under the button */}
         <div className="h-4 mt-1 flex items-center justify-center">
           <AnimatePresence mode="wait" initial={false}>
             {paying && (
@@ -611,7 +593,7 @@ export default function Second({
                 exit={{ opacity: 0 }}
                 className="text-[9.5px] uppercase tracking-[0.2em] text-amber-200/65 font-medium"
               >
-                UPI app opened · Tap to view Darshan
+                Processing Secure Payment…
               </motion.p>
             )}
           </AnimatePresence>
