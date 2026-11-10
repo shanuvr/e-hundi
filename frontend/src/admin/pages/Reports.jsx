@@ -135,12 +135,11 @@ export default function Reports() {
       item.status,
     ]);
 
-    const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      [headers.join(','), ...rowsData.map((e) => e.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
+    const csvString = [headers.join(','), ...rowsData.map((e) => e.join(','))].join('\r\n');
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
+    link.href = url;
     link.setAttribute(
       'download',
       `${(temple?.short_name || temple?.name || 'temple').replace(/\s+/g, '_')}_offerings_${new Date().toISOString().slice(0, 10)}.csv`
@@ -148,6 +147,7 @@ export default function Reports() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -160,12 +160,10 @@ export default function Reports() {
             <Button
               variant="ghost"
               icon={RefreshCw}
+              className={refreshing ? '[&>svg]:animate-spin' : ''}
               onClick={() => fetchDashboardData(true)}
               disabled={refreshing}
             >
-              <span className={refreshing ? 'animate-spin inline-block' : ''}>
-                <RefreshCw className="w-3.5 h-3.5 inline mr-1" />
-              </span>
               Refresh
             </Button>
             <Button variant="primary" icon={Download} onClick={handleExportCSV} disabled={!offerings.length}>
