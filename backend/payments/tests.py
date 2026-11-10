@@ -4,6 +4,7 @@ from django.test import TestCase, Client, override_settings
 from django.urls import reverse
 from django.contrib.auth.models import User
 from temples.models import Temple
+from payments.models import Payment
 
 
 class CreateOrderTests(TestCase):
@@ -37,7 +38,7 @@ class CreateOrderTests(TestCase):
         CASHFREE_ENV='SANDBOX'
     )
     @patch('payments.views.create_split_order')
-    def test_cashfree_split_order_creation(self, mock_split):
+    def test_cashfree_split_order_creation_and_persistence(self, mock_split):
         mock_split.return_value = {
             'order_id': 'cf_order_test_123',
             'cf_order_id': '1472521',
@@ -60,6 +61,13 @@ class CreateOrderTests(TestCase):
         self.assertEqual(data['payment_session_id'], 'session_mock_123')
         self.assertEqual(data['temple_name'], 'Test Temple')
         self.assertEqual(data['upi_id'], 'temple@hdfc')
+
+        # Verify Payment model record created
+        payment = Payment.objects.filter(order_id='cf_order_test_123').first()
+        self.assertIsNotNone(payment)
+        self.assertEqual(payment.temple, self.temple)
+        self.assertEqual(float(payment.amount), 51.0)
+        self.assertEqual(payment.status, 'PENDING')
 
     @override_settings(
         CASHFREE_APP_ID=None,
@@ -91,6 +99,22 @@ class VerifyPaymentTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('verify_payment')
+        self.user = User.objects.create_user(username='temple@test.com', email='temple@test.com', password='password123')
+        self.temple = Temple.objects.create(
+            user=self.user,
+            name='Test Temple',
+            email='temple@test.com',
+            bank_name='HDFC Bank',
+            bank_account_holder='Test Temple Trust',
+            bank_account_number='123456789012',
+            bank_ifsc='HDFC0000001',
+        )
+        self.payment = Payment.objects.create(
+            temple=self.temple,
+            order_id='cf_order_test_123',
+            amount=100.0,
+            status='PENDING',
+        )
 
     def test_missing_order_id_returns_400(self):
         response = self.client.post(
@@ -101,11 +125,11 @@ class VerifyPaymentTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
     @patch('payments.views.verify_order_status')
-    def test_verify_payment_paid(self, mock_verify):
+    def test_verify_payment_paid_updates_db(self, mock_verify):
         mock_verify.return_value = {
             'order_id': 'cf_order_test_123',
             'order_status': 'PAID',
-            'order_amount': 51.0,
+            'order_amount': 100.0,
         }
         response = self.client.post(
             self.url,
@@ -117,12 +141,15 @@ class VerifyPaymentTests(TestCase):
         self.assertTrue(data['success'])
         self.assertEqual(data['order_status'], 'PAID')
 
+        self.payment.refresh_from_db()
+        self.assertEqual(self.payment.status, 'SUCCESS')
+
     @patch('payments.views.verify_order_status')
     def test_verify_payment_not_paid(self, mock_verify):
         mock_verify.return_value = {
             'order_id': 'cf_order_test_123',
             'order_status': 'ACTIVE',
-            'order_amount': 51.0,
+            'order_amount': 100.0,
         }
         response = self.client.post(
             self.url,
@@ -134,3 +161,77 @@ class VerifyPaymentTests(TestCase):
         self.assertTrue(data['success'])
         self.assertEqual(data['order_status'], 'ACTIVE')
 
+        self.payment.refresh_from_db()
+        self.assertEqual(self.payment.status, 'PENDING')
+
+
+class AdminDashboardViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('admin_dashboard')
+        self.user = User.objects.create_user(username='temple@test.com', email='temple@test.com', password='password123')
+        self.temple = Temple.objects.create(
+            user=self.user,
+            name='Chinmaya Navagraha',
+            email='temple@test.com',
+            bank_name='ICICI Bank',
+            bank_account_holder='Chinmaya Trust',
+            bank_account_number='987654321',
+            bank_ifsc='ICIC0000001',
+        )
+        Payment.objects.create(
+            temple=self.temple,
+            order_id='ord_101',
+            amount=500.0,
+            status='SUCCESS',
+            donor_name='Ramesh',
+            donor_phone='9812345678'
+        )
+        Payment.objects.create(
+            temple=self.temple,
+            order_id='ord_102',
+            amount=200.0,
+            status='SUCCESS',
+            donor_name='Priya',
+            donor_phone='9812345679'
+        )
+        Payment.objects.create(
+            temple=self.temple,
+            order_id='ord_103',
+            amount=100.0,
+            status='PENDING',
+            donor_name='Devotee'
+        )
+
+    def test_dashboard_returns_real_metrics_and_offerings(self):
+        response = self.client.get(
+            self.url,
+            HTTP_X_TEMPLE_ID=str(self.temple.id)
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+
+        metrics = data['metrics']
+        self.assertEqual(metrics['total_amount'], 700.0)
+        self.assertEqual(metrics['total_count'], 2)
+        self.assertEqual(metrics['unique_donors'], 2)
+
+        offerings = data['offerings']
+        self.assertEqual(len(offerings), 3)
+
+        status_counts = data['status_counts']
+        self.assertEqual(status_counts['All'], 3)
+        self.assertEqual(status_counts['Success'], 2)
+        self.assertEqual(status_counts['Pending'], 1)
+
+    def test_dashboard_filter_by_status(self):
+        response = self.client.get(
+            f"{self.url}?status=Pending",
+            HTTP_X_TEMPLE_ID=str(self.temple.id)
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        offerings = data['offerings']
+        self.assertEqual(len(offerings), 1)
+        self.assertEqual(offerings[0]['order_id'], 'ord_103')

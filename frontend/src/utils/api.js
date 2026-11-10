@@ -87,6 +87,16 @@ export const api = {
 
   getAdminTemple: () => request('/api/admin/temple/'),
 
+  getAdminDashboard: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.status && params.status !== 'All') query.append('status', params.status);
+    if (params.q) query.append('q', params.q);
+    if (params.startDate) query.append('start_date', params.startDate);
+    if (params.endDate) query.append('end_date', params.endDate);
+    const qs = query.toString();
+    return request(`/api/admin/dashboard/${qs ? `?${qs}` : ''}`);
+  },
+
   updateAdminTemple: (data) =>
     request('/api/admin/temple/', {
       method: 'PUT',

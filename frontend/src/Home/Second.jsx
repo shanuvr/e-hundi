@@ -159,6 +159,18 @@ export default function Second({
               setTimeout(async () => {
                 const retryPaid = await verifyStatus();
                 if (retryPaid || result?.paymentDetails) {
+                  try {
+                    await fetch(`${apiUrl}/api/verify-payment/`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        order_id: orderData.order_id,
+                        status: 'SUCCESS',
+                      }),
+                    });
+                  } catch (e) {
+                    console.warn('Failed to record Cashfree verification:', e);
+                  }
                   handleSuccess();
                 } else {
                   setPaying(false);
@@ -217,7 +229,22 @@ export default function Second({
         theme: {
           color: '#d97706',
         },
-        handler: function () {
+        handler: async function (response) {
+          if (orderId) {
+            try {
+              await fetch(`${apiUrl}/api/verify-payment/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  order_id: orderId,
+                  payment_id: response?.razorpay_payment_id || '',
+                  status: 'SUCCESS',
+                }),
+              });
+            } catch (e) {
+              console.warn('Failed to record Razorpay verification:', e);
+            }
+          }
           handleSuccess();
         },
         modal: {
