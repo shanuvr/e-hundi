@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { 
   BarChart3, 
   Calendar, 
+  Check,
   Download, 
   FileText, 
   IndianRupee, 
@@ -39,12 +40,29 @@ export default function Reports() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [justCompleted, setJustCompleted] = useState(false);
+  const [isDipping, setIsDipping] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(() => new Date());
+  const [timeAgoText, setTimeAgoText] = useState('Updated just now');
   const [statusFilter, setStatusFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [page, setPage] = useState(1);
   const pageSize = 10;
+
+  const formatLastUpdated = (date) => {
+    if (!date) return 'Updated just now';
+    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (seconds < 15) return 'Updated just now';
+    if (seconds < 60) return `Updated ${seconds}s ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes === 1) return 'Updated 1 min ago';
+    if (minutes < 60) return `Updated ${minutes} mins ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours === 1) return 'Updated 1 hour ago';
+    return `Updated ${hours} hours ago`;
+  };
 
   const fetchDashboardData = useCallback(async (isRefresh = false) => {
     try {
@@ -60,6 +78,18 @@ export default function Reports() {
 
       if (res && res.success) {
         setData(res);
+        const updateTimestamp = new Date();
+        setLastUpdated(updateTimestamp);
+        setTimeAgoText(formatLastUpdated(updateTimestamp));
+
+        // When manually refreshed, pulse opacity right as data arrives
+        if (isRefresh) {
+          setIsDipping(true);
+          setTimeout(() => setIsDipping(false), 220);
+
+          setJustCompleted(true);
+          setTimeout(() => setJustCompleted(false), 1000);
+        }
       }
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
@@ -72,6 +102,13 @@ export default function Reports() {
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
+
+  // Keep "Updated X ago" counter fresh every 10 seconds
+  useEffect(() => {
+    const updateText = () => setTimeAgoText(formatLastUpdated(lastUpdated));
+    const interval = setInterval(updateText, 10000);
+    return () => clearInterval(interval);
+  }, [lastUpdated]);
 
   // Reset pagination when filter or search changes
   useEffect(() => {
@@ -156,15 +193,25 @@ export default function Reports() {
         title="Dashboard Overview"
         subtitle={`Real-time offerings, analytics, and kiosk collection summaries for ${temple?.name || 'Temple'}.`}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {timeAgoText && (
+              <span className="text-[11px] font-medium text-stone-500 mr-0.5 select-none hidden sm:inline-flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse" />
+                {timeAgoText}
+              </span>
+            )}
             <Button
-              variant="ghost"
-              icon={RefreshCw}
-              className={refreshing ? '[&>svg]:animate-spin' : ''}
+              variant={justCompleted ? 'outline' : 'ghost'}
+              icon={justCompleted ? Check : RefreshCw}
+              className={`transition-all select-none ${
+                refreshing ? '[&>svg]:animate-spin' : ''
+              } ${
+                justCompleted ? '!text-emerald-700 !border-emerald-300 !bg-emerald-50 shadow-2xs' : ''
+              }`}
               onClick={() => fetchDashboardData(true)}
               disabled={refreshing}
             >
-              Refresh
+              {justCompleted ? 'Updated' : 'Refresh'}
             </Button>
             <Button variant="primary" icon={Download} onClick={handleExportCSV} disabled={!offerings.length}>
               Export CSV
@@ -173,7 +220,13 @@ export default function Reports() {
         }
       />
 
-      {/* Temple status strip */}
+      {/* Content Area with Soft Opacity Dip Pulse on Refresh */}
+      <div
+        className={`space-y-3 transition-opacity duration-200 ease-in-out ${
+          isDipping ? 'opacity-65' : 'opacity-100'
+        }`}
+      >
+        {/* Temple status strip */}
       {temple && (
         <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-xs shadow-2xs">
           <div className="flex items-center gap-2">
@@ -507,6 +560,7 @@ export default function Reports() {
             </div>
           </SectionCard>
         </div>
+      </div>
       </div>
     </div>
   );
