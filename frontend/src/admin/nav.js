@@ -2,7 +2,6 @@ import {
   Landmark,
   LayoutDashboard,
   MessageSquareQuote,
-  Palette,
 } from 'lucide-react';
 
 /**
@@ -18,7 +17,6 @@ export const ADMIN_NAV = [
     items: [
       { to: '/admin/temple', label: 'Temple Profile', icon: Landmark },
       { to: '/admin/slogans', label: 'Slogans & Darshan', icon: MessageSquareQuote },
-      { to: '/admin/branding', label: 'Branding & Motion', icon: Palette },
     ],
   },
 ];

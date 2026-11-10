@@ -217,31 +217,8 @@ export default function Reports() {
           isDipping ? 'opacity-65' : 'opacity-100'
         }`}
       >
-        {/* Temple status strip */}
-      {temple && (
-        <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-xs shadow-2xs">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-semibold text-stone-800">
-              {temple.name}
-            </span>
-            {temple.city && (
-              <span className="text-[11px] text-stone-500">
-                · {temple.city}, {temple.state}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-3 text-[11px] text-stone-600">
-            <span className="font-medium text-stone-700">{temple.bank_name || 'ICICI Bank'}</span>
-            <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-sans font-bold text-[10px]">
-              {temple.cashfree_status === 'ACTIVE' ? 'Cashfree Split Active' : (temple.cashfree_status || 'Active Console')}
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Live Stat Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+        {/* Live Stat Metrics */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
         <StatCard
           label="Today's offerings"
           value={`₹${metrics.today_amount.toLocaleString('en-IN')}`}
@@ -478,8 +455,8 @@ export default function Reports() {
             </div>
           ) : paginatedOfferings.length > 0 ? (
             <DataTable
-              head={['Receipt Ref', 'Amount', 'Donor / Method', 'Timestamp', 'Status']}
-              colWidths={['w-[22%]', 'w-[18%]', 'w-[28%]', 'w-[20%]', 'w-[12%]']}
+              head={['Receipt Ref', 'Amount', 'Method', 'Donor', 'Timestamp', 'Status']}
+              colWidths={['w-[18%]', 'w-[15%]', 'w-[15%]', 'w-[22%]', 'w-[18%]', 'w-[12%]']}
               rows={paginatedOfferings.map((row) => [
                 <span key={row.id} className="font-mono font-medium text-stone-800 text-[11px]">
                   {row.ref}
@@ -487,10 +464,12 @@ export default function Reports() {
                 <span key={`amt-${row.id}`} className="font-semibold text-stone-900 tabular-nums">
                   {row.amount_formatted}
                 </span>,
-                <div key={`donor-${row.id}`} className="truncate">
-                  <span className="text-stone-800 font-medium text-[11px]">{row.donor_name}</span>
-                  <span className="text-stone-400 text-[10px] ml-1.5">· {row.method || 'Online'}</span>
-                </div>,
+                <span key={`method-${row.id}`} className="inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-medium bg-stone-100 text-stone-700 border border-stone-200">
+                  {row.method || 'Online'}
+                </span>,
+                <span key={`donor-${row.id}`} className="text-stone-800 font-medium text-[11px] truncate block">
+                  {row.donor_name || 'Devotee'}
+                </span>,
                 <span key={`time-${row.id}`} className="text-stone-600 text-[11px]">
                   {row.timestamp || row.date}
                 </span>,
