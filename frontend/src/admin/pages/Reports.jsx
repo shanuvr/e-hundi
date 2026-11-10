@@ -11,10 +11,7 @@ import {
   Filter, 
   ChevronDown,
   RefreshCw,
-  Smartphone,
   TrendingUp,
-  Clock,
-  Wifi,
   AlertCircle
 } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
@@ -133,12 +130,6 @@ export default function Reports() {
   }, [weekChart]);
 
   const denominations = data?.denominations || [];
-  const kiosk = data?.kiosk || {
-    device_name: `${temple?.name || 'Temple'} Hundi Kiosk 01`,
-    last_heartbeat: 'Online · Active',
-    connection: 'Online · 4G / Wi-Fi',
-    status: 'Accepting offerings',
-  };
 
   const statusCounts = data?.status_counts || {
     All: 0,
@@ -281,7 +272,7 @@ export default function Reports() {
         />
       </div>
 
-      {/* 7-Day Trend Chart & Kiosk Health */}
+      {/* 7-Day Trend Chart & Denomination Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <SectionCard
           className="lg:col-span-2"
@@ -327,53 +318,39 @@ export default function Reports() {
           )}
         </SectionCard>
 
-        {/* Live Kiosk Health Card */}
-        <SectionCard title="Kiosk status" description="Your live donation device." icon={Smartphone}>
-          <div className="space-y-2.5">
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 shrink-0 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center">
-                <Smartphone className="w-3.5 h-3.5 text-stone-600" />
+        {/* By Denomination Distribution */}
+        <SectionCard title="By denomination" description="Which notes and coins devotees offer most." icon={BarChart3}>
+          <div className="space-y-2">
+            {denominations.length > 0 ? (
+              denominations.map((d) => (
+                <div key={d.label}>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-[11px] font-semibold text-stone-700">{d.label}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-stone-400">({d.count})</span>
+                      <span className="text-[11px] font-bold text-amber-800 tabular-nums">{d.pct}%</span>
+                    </div>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-stone-100 overflow-hidden border border-stone-200">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-500"
+                      style={{ width: `${Math.min(100, Math.max(d.pct, d.count > 0 ? 5 : 0))}%` }}
+                    />
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="py-6 text-center text-stone-400 text-xs">
+                Awaiting offering denomination data.
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[9.5px] uppercase tracking-[0.16em] text-stone-500 font-semibold">Device</p>
-                <p className="text-[11.5px] font-semibold text-stone-800 truncate">{kiosk.device_name}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 shrink-0 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center">
-                <Clock className="w-3.5 h-3.5 text-stone-600" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[9.5px] uppercase tracking-[0.16em] text-stone-500 font-semibold">Last Activity</p>
-                <p className="text-[11.5px] font-semibold text-stone-800 truncate">{kiosk.last_heartbeat}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 shrink-0 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center">
-                <Wifi className="w-3.5 h-3.5 text-emerald-600" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[9.5px] uppercase tracking-[0.16em] text-stone-500 font-semibold">Connection</p>
-                <p className="text-[11.5px] font-semibold text-stone-800 truncate">{kiosk.connection}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-3 pt-3 border-t border-stone-200 flex items-center gap-2">
-            <Pill tone="emerald">
-              <Dot tone="emerald" />
-              {kiosk.status}
-            </Pill>
+            )}
           </div>
         </SectionCard>
       </div>
 
-      {/* Main Transactions Stream & Denomination Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 pt-0.5">
+      {/* Main Transactions Stream (Full width) */}
+      <div className="pt-0.5">
         <SectionCard
-          className="lg:col-span-2"
           title="All recent offerings"
           description="Real-time transaction stream from temple kiosks and portal."
           icon={Calendar}
@@ -529,37 +506,6 @@ export default function Reports() {
             </div>
           )}
         </SectionCard>
-
-        {/* By Denomination Distribution */}
-        <div className="space-y-3">
-          <SectionCard title="By denomination" description="Which notes and coins devotees offer most." icon={BarChart3}>
-            <div className="space-y-2">
-              {denominations.length > 0 ? (
-                denominations.map((d) => (
-                  <div key={d.label}>
-                    <div className="flex items-center justify-between mb-0.5">
-                      <span className="text-[11px] font-semibold text-stone-700">{d.label}</span>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-stone-400">({d.count})</span>
-                        <span className="text-[11px] font-bold text-amber-800 tabular-nums">{d.pct}%</span>
-                      </div>
-                    </div>
-                    <div className="h-1.5 rounded-full bg-stone-100 overflow-hidden border border-stone-200">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-500"
-                        style={{ width: `${Math.min(100, Math.max(d.pct, d.count > 0 ? 5 : 0))}%` }}
-                      />
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="py-6 text-center text-stone-400 text-xs">
-                  Awaiting offering denomination data.
-                </div>
-              )}
-            </div>
-          </SectionCard>
-        </div>
       </div>
       </div>
     </div>
