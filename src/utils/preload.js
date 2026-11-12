@@ -1,4 +1,5 @@
 import { MONEY } from '../data/money';
+import { preloadCoinAudio } from './audio';
 
 const ASSETS_TO_PRELOAD = [
   '/bg.jpg',
@@ -15,6 +16,7 @@ let hasPreloaded = false;
 export const preloadAssets = () => {
   if (hasPreloaded || typeof window === 'undefined') return;
   hasPreloaded = true;
+  preloadCoinAudio();
 
   // Defer preloading slightly so the welcome screen 120fps entrance animation finishes first
   const schedulePreload = () => {
